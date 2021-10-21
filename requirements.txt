@@ -1,0 +1,2 @@
+pybleno==0.11
+PyYAML==6.0
