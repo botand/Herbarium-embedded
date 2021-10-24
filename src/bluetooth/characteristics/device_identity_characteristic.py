@@ -1,5 +1,8 @@
 import array
+import logging
 from pybleno import Characteristic, Descriptor
+
+_DEVICE_IDENTITY_CHARACTERISTIC = 'DeviceIdentityCharacteristic'
 
 
 class DeviceIdentityCharacteristic(Characteristic):
@@ -35,4 +38,5 @@ class DeviceIdentityCharacteristic(Characteristic):
             data = array.array('b')
             data.frombytes(self._device_uuid.encode())
 
+            logging.debug(_DEVICE_IDENTITY_CHARACTERISTIC + ' onReadRequest')
             callback(Characteristic.RESULT_SUCCESS, data)
