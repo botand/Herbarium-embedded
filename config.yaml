@@ -2,12 +2,13 @@ version: 0.0.1
 logging_level: 'DEBUG'
 device_uuid: '2222'
 ble:
+  device_name: 'Herbarium'
   services:
     device_identity:
-      uuid: '180f'
+      uuid: 'f696ae27-e2ea-46d2-9b51-b43067e1ffdc'
   characteristics:
     device_identity:
-        uuid: 'ec00'
+        uuid: '625b2da1-767c-4df5-9ff0-d194ba5f95ce'
         descriptors:
-          - uuid: '2901'
+          - uuid: '2a6eed4b-4722-4b22-bec1-71ebc2b084e0'
             value: 'Get the device uuid'

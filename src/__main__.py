@@ -9,7 +9,7 @@ def main():
     logging.getLogger().setLevel(level=config['logging_level'])
     logging.info('Version: ' + config['version'])
 
-    ble = BleService('Herbariun')
+    ble = BleService(config_ble['device_name'])
     ble.start_advertising([
         DeviceIdentityService(config['device_uuid'])
     ])
