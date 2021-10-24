@@ -16,8 +16,8 @@ class BleService:
         self._services = []
         self.device_name = device_name
 
-        self._bleno.onAdvertisingStart(self._on_advertising_start)
-        self._bleno.onStateChange(self._on_state_change)
+        self._bleno.on('advertisingStart', self._on_advertising_start)
+        self._bleno.on('stateChange', self._on_state_change)
 
     def _on_state_change(self, state):
         logging.debug(_SERVICE_TAG + 'on -> stateChange: ' + state)
@@ -47,7 +47,7 @@ class BleService:
             ]
 
         self._bleno.start()
-        logging.debug(_SERVICE_TAG + ' starting')
+        logging.debug(_SERVICE_TAG + 'starting')
 
     def _on_advertising_start(self, error):
         logging.debug(_SERVICE_TAG + 'on -> advertisingStart: ' + ('error ' + error if error else 'success'))
