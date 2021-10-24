@@ -1,1 +1,2 @@
-import characteristics
+from .characteristics import *
+from .services import *

@@ -10,4 +10,4 @@ ble:
         uuid: 'ec00'
         descriptors:
           - uuid: '2901'
-            description: 'Get the device uuid'
+            value: 'Get the device uuid'
