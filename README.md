@@ -15,7 +15,20 @@ This is an end of study project realized by three student of the [ÉTS](etsmtl.c
 
 ### Requirements
 
-TODO 
+- python3 or more
+
+This project should run on a Raspberry Pi with bluetooth. For `Ubuntu/Debian/Raspbian`
+install the following packages:
+
+```shell
+sudo apt-get install bluetooth bluez libbluetooth-dev libudev-dev
+```
+
+Install the python requirements:
+
+```shell
+pip3 install -r requirements.txt
+```
 
 ### Local setup
 
@@ -23,4 +36,11 @@ TODO
 
 ### Run the code
 
-TODO
+First you will need to declare the environment variable `CONFIG_YAML_FILE`,
+which redirect to the `config.yaml` file. The file given in this repository is
+**NOT FOR PRODUCTION USE**. So to start the code, execute the following:
+
+```shell
+export CONFIG_YAML_FILE='<YOUR-CONFIG-FILE>'
+python3 -m src
+```

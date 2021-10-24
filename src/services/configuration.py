@@ -1,7 +1,8 @@
+import os
 import yaml
 import logging
 
-_file_path = 'config.yaml'
+_file_path = os.environ['CONFIG_YAML_FILE']
 
 config = None
 config_ble = None
