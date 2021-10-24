@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
-import sys
-
+from src.bluetooth.services.device_identity_service import DeviceIdentityService
 from src.services.configuration import config, config_ble
 from src.services.ble_service import BleService
-from src.models.characteristics import DeviceIdentityCharacteristic
 import logging
 
 
@@ -12,8 +10,9 @@ def main():
     logging.info('Version: ' + config['version'])
 
     ble = BleService('Herbariun')
-    ble.start_advertising('ec00', [
-        DeviceIdentityCharacteristic(config_ble['characteristics']['device_identity'], config['device_uuid'])])
+    ble.start_advertising([
+        DeviceIdentityService(config['device_uuid'])
+    ])
 
     logging.info('Hit ENTER to stop the program')
     input()

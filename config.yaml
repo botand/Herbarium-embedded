@@ -2,7 +2,12 @@ version: 0.0.1
 logging_level: 'DEBUG'
 device_uuid: '2222'
 ble:
+  services:
+    device_identity:
+      uuid: '180f'
   characteristics:
     device_identity:
-        service_uuid: '2901'
         uuid: 'ec00'
+        descriptors:
+          - uuid: '2901'
+            description: 'Get the device uuid'

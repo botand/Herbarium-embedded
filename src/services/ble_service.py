@@ -12,8 +12,8 @@ class BleService:
         :type device_name: str
         """
         self._bleno = Bleno()
-        self._service_uuid = None
         self._services = []
+        self._services_uuids = []
         self.device_name = device_name
 
         self._bleno.on('advertisingStart', self._on_advertising_start)
@@ -23,28 +23,21 @@ class BleService:
         logging.debug(_SERVICE_TAG + 'on -> stateChange: ' + state)
 
         if state == 'poweredOn':
-            self._bleno.startAdvertising(self.device_name, self._services)
+            self._bleno.startAdvertising(self.device_name, self._services_uuids)
         else:
             self._bleno.stopAdvertising()
 
-    def start_advertising(self, service_uuid, characteristics=None):
+    def start_advertising(self, services):
         """
-        Start advertising a service with the given characteristics
-        :param service_uuid: Uuid used by the service advertised
-        :type service_uuid: str
-        :param characteristics: list of characteristics to advertise
-        :type characteristics: list
+        Start advertising a list of services
+        :param services: Services to advertise
+        :type services: list
         """
-        if characteristics is None:
-            characteristics = []
+        self._services = services
+        self._services_uuids.clear()
 
-        self._service_uuid = service_uuid
-        self._services = [
-                BlenoPrimaryService({
-                    'uuid': service_uuid,
-                    'characteristics': characteristics
-                })
-            ]
+        for service in self._services:
+            self._services_uuids.append(service.uuid)
 
         self._bleno.start()
         logging.debug(_SERVICE_TAG + 'starting')

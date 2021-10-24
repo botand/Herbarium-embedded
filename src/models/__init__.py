@@ -1,1 +1,1 @@
-from .characteristics.device_identity_characteristic import DeviceIdentityCharacteristic
+
