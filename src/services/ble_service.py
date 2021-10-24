@@ -16,6 +16,7 @@ class BleService:
         self.device_name = device_name
 
         self._bleno.onAdvertisingStart(self._on_advertising_start)
+        self._bleno.onStateChange(self._on_state_change)
 
     def _on_state_change(self, state):
         logging.debug(_SERVICE_TAG + 'on -> stateChange: ' + state)
@@ -43,6 +44,7 @@ class BleService:
                     'characteristics': characteristics
                 })
             ]
+
         self._bleno.start()
 
     def _on_advertising_start(self, error):
