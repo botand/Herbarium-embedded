@@ -1,4 +1,5 @@
 version: 0.0.1
+logging_level: 'DEBUG'
 device_uuid: '2222'
 ble:
   characteristics:

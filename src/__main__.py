@@ -8,7 +8,8 @@ import logging
 
 
 def main():
-    print('Version: ' + config['version'])
+    logging.getLogger().setLevel(level=config['logging_level'])
+    logging.info('Version: ' + config['version'])
 
     ble = BleService('Herbariun')
     ble.start_advertising('ec00', [
