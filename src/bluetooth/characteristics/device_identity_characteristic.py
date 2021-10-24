@@ -1,3 +1,4 @@
+import array
 from pybleno import Characteristic, Descriptor
 
 
@@ -16,5 +17,5 @@ class DeviceIdentityCharacteristic(Characteristic):
             'uuid': characteristic_config['uuid'],
             'properties': ['read'],
             'descriptors': descriptors,
-            'value': device_uuid
+            'value': array.array('B', device_uuid)
         })
