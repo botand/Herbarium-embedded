@@ -1,3 +1,7 @@
 version: 0.0.1
+device_uuid: '2222'
 ble:
   characteristics:
+    device_identity:
+        service_uuid: '2901'
+        uuid: 'ec00'

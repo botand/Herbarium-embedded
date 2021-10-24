@@ -1,0 +1,1 @@
+from .device_identity_characteristic import DeviceIdentityCharacteristic
