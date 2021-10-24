@@ -5,10 +5,10 @@ ble:
   device_name: 'Herbarium'
   services:
     device_identity:
-      uuid: 'f696ae27-e2ea-46d2-9b51-b43067e1ffdc'
+      uuid: '180a' # Device information
   characteristics:
     device_identity:
-        uuid: '625b2da1-767c-4df5-9ff0-d194ba5f95ce'
+        uuid: '2a25' # Serial number string
         descriptors:
-          - uuid: '2a6eed4b-4722-4b22-bec1-71ebc2b084e0'
+          - uuid: '2901'
             value: 'Get the device uuid'
