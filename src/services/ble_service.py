@@ -1,7 +1,8 @@
 from pybleno import Bleno, BlenoPrimaryService
 import logging
 
-_SERVICE_TAG="BleService"
+_SERVICE_TAG = "BleService - "
+
 
 class BleService:
 
@@ -46,6 +47,7 @@ class BleService:
             ]
 
         self._bleno.start()
+        logging.debug(_SERVICE_TAG + ' starting')
 
     def _on_advertising_start(self, error):
         logging.debug(_SERVICE_TAG + 'on -> advertisingStart: ' + ('error ' + error if error else 'success'))
