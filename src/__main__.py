@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 from src.bluetooth.services.device_identity_service import DeviceIdentityService
 from src.services.configuration import config, config_ble
-from src.services.ble_service import BleService
+from src.services import BleService, StatusIndicatorService
+from src.utils.colors import VIOLET
 import logging
 
 
@@ -13,6 +14,9 @@ def main():
     ble.start_advertising([
         DeviceIdentityService(config['device_uuid'])
     ])
+
+    status_indicator_service = StatusIndicatorService(config['status_indicator'])
+    status_indicator_service.fill(VIOLET)
 
     logging.info('Hit ENTER to stop the program')
     input()
