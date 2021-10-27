@@ -1,2 +1,5 @@
 pybleno==0.11
 PyYAML==6.0
+Adafruit-Blinka==6.15.0
+rpi-ws281x==4.3.0
+adafruit-circuitpython-neopixel==6.2.2
