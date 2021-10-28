@@ -42,8 +42,8 @@ which redirect to the `config.yaml` file. The file given in this repository is
 
 ```shell
 sudo su
-export CONFIG_YAML_FILE='<YOUR-CONFIG-FILE>'
-python3 -m src
+sudo export CONFIG_YAML_FILE='<YOUR-CONFIG-FILE>'
+sudo python3 -m src
 ```
 You can also write the `CONFIG_YAML_FILE` variable into the `/etc/environment` file.
 Note that you will have to logout and login to access the variable.
