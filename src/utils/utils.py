@@ -1,3 +1,4 @@
+import time
 import board
 
 
@@ -9,53 +10,20 @@ def pin_number_to_digital_gpio(pin):
     :return:
     """
 
-    if pin == 0:
-        return board.D0
-    elif pin == 1:
-        return board.D1
-    elif pin == 2:
-        return board.D2
-    elif pin == 3:
-        return board.D3
-    elif pin == 4:
-        return board.D4
-    elif pin == 5:
-        return board.D5
-    elif pin == 6:
-        return board.D6
-    elif pin == 7:
-        return board.D7
-    elif pin == 8:
-        return board.D8
-    elif pin == 9:
-        return board.D9
-    elif pin == 10:
-        return board.D10
-    elif pin == 11:
-        return board.D11
-    elif pin == 12:
-        return board.D12
-    elif pin == 13:
-        return board.D13
-    elif pin == 14:
-        return board.D14
-    elif pin == 15:
-        return board.D15
-    elif pin == 16:
-        return board.D16
-    elif pin == 17:
-        return board.D17
-    elif pin == 18:
-        return board.D18
-    elif pin == 19:
-        return board.D19
-    elif pin == 20:
-        return board.D20
-    elif pin == 21:
-        return board.D21
-    elif pin == 22:
-        return board.D22
-    elif pin == 23:
-        return board.D23
-    elif pin == 24:
-        return board.D24
+    pins = [
+        board.D0, board.D1, board.D2, board.D3, board.D4, board.D5, board.D6, board.D7, board.D8, board.D9,
+        board.D10, board.D11, board.D12, board.D13, board.D14, board.D15, board.D16, board.D17, board.D18, board.D19,
+        board.D20, board.D21, board.D22, board.D23, board.D24, board.D25, board.D26, board.D27
+    ]
+
+    return pins[pin]
+
+
+def time_in_millisecond():
+    """
+    Current time in millisecond
+
+    :return: epoch in millisecond
+    :rtype: int
+    """
+    return round(time.time() * 1000)
