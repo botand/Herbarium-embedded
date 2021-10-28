@@ -18,7 +18,6 @@ def main():
     # ])
     status_indicator_service = StatusIndicatorService(config['status_indicator'])
 
-
     status_indicator_service.add_status(StatusPattern('Breathing pattern', led_utils.COLOR_VIOLET,
                                                       led_utils.BREATHING_ANIMATION, 0.7))
     status_indicator_service.add_status(StatusPattern('Solid pattern', led_utils.COLOR_GREEN,
@@ -38,7 +37,7 @@ def main():
     print('You can stop the program using Ctrl + C safely ;)')
     try:
         while True:
-            # status_indicator_service.update()
+            status_indicator_service.update()
             if time_in_millisecond() - prev > 1000:
                 prev = time_in_millisecond()
 
@@ -50,8 +49,9 @@ def main():
                     on = True
 
     except KeyboardInterrupt:
-        lightning_led.turn_off_all()
         logging.debug(f'Stop de la boucle principal par Keyboard Interrupt')
+        lightning_led.turn_off_all()
+
 
     # logging.info('Hit ENTER to stop the program')
     # ble.stop_advertising()
