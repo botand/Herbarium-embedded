@@ -25,8 +25,8 @@ class LightningLed:
             self._strip[i] = (round(color[0]*brightness),
                               round(color[1]*brightness),
                               round(color[2]*brightness))
-            logging.debug(f"{_SERVICE_TAG} LED {tile_nb} : ({self._strip[i](0)}, "
-                          f"{self._strip[i](1)}, {self._strip[i](2)})")
+            #logging.debug(f"{_SERVICE_TAG} LED {tile_nb} : ({self._strip[i](0)}, "f"{self._strip[i](1)}, {self._strip[i](2)})")
+        self._strip.show()
 
     def turn_on(self, tile_nb):
         logging.debug(f"{_SERVICE_TAG} Turn ON Tile {tile_nb} Lightning")
@@ -39,5 +39,6 @@ class LightningLed:
     def turn_off_all(self):
         for i in range(self._led_count):
             self._strip[i] = led_utils.COLOR_BLACK
+        self._strip.show()
         logging.debug(f"{_SERVICE_TAG} Turn OFF All Tiles Lightning")
 
