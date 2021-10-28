@@ -1,7 +1,6 @@
 import board
 import time
 from neopixel import NeoPixel
-from rpi_ws281x import Adafruit_NeoPixel
 from src.utils import pin_number_to_digital_gpio, time_in_millisecond, led_utils
 from src.models import StatusPattern
 import logging

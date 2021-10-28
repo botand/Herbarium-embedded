@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 from src.bluetooth.services.device_identity_service import DeviceIdentityService
 from src.services.configuration import config, config_ble
-from src.services import BleService, StatusIndicatorService
+from src.services import BleService, StatusIndicatorService, LightningLed
 from src.models import StatusPattern
-from src.utils import led_utils
+from src.utils import led_utils, time_in_millisecond
 import logging
 import keyboard
 
@@ -16,8 +16,8 @@ def main():
     # ble.start_advertising([
     #     DeviceIdentityService(config['device_uuid'])
     # ])
-
     status_indicator_service = StatusIndicatorService(config['status_indicator'])
+
 
     status_indicator_service.add_status(StatusPattern('Breathing pattern', led_utils.COLOR_VIOLET,
                                                       led_utils.BREATHING_ANIMATION, 0.7))
@@ -30,17 +30,31 @@ def main():
     status_indicator_service.add_status(StatusPattern('Theathre chase pattern', led_utils.COLOR_ORANGE,
                                                       led_utils.THEATRE_CHASE_ANIMATION, 0.1))
 
+    lightning_led = LightningLed(config['led_strip'])
+    lightning_led.turn_off_all()
+    prev = time_in_millisecond()
+    on = True
+
     print('You can stop the program using Ctrl + C safely ;)')
     try:
         while True:
-            status_indicator_service.update()
+            # status_indicator_service.update()
+            if time_in_millisecond() - prev > 1000:
+                prev = time_in_millisecond()
+
+                if on:
+                    lightning_led.turn_on(1)
+                    on = False
+                else:
+                    lightning_led.turn_off(1)
+                    on = True
 
     except KeyboardInterrupt:
-        exit()
+        logging.debug(f'Stop de la boucle principal par Keyboard Interrupt')
 
     # logging.info('Hit ENTER to stop the program')
     # ble.stop_advertising()
-    status_indicator_service.turn_off()
+
 
 
 if __name__ == '__main__':
