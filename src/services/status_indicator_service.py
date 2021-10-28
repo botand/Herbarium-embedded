@@ -125,6 +125,8 @@ class StatusIndicatorService:
             self._breathing_animation(animation)
         elif animation.animation_type == led_utils.BLINKING_ANIMATION:
             self._blinking_animation(animation)
+        elif animation.animation_type == led_utils.SPINNING_ANIMATION:
+            self._spinning_animation(animation)
 
         # Update the pixels
         self._ring.show()
@@ -179,6 +181,24 @@ class StatusIndicatorService:
         else:
             self._ring.brightness = 0
 
+    def _spinning_animation(self, animation):
+        """
+        Spin the pixels of the indicator
+        :param animation: pattern to apply
+        :type animation StatusPattern
+        """
+        self._ring.brightness = animation.max_brightness
+
+        for i in range(self._led_count):
+            color = led_utils.BLACK
+            if i == self._current_offset:
+                color = animation.color
+            self._ring[i] = color
+
+        self._current_offset += 1
+        if self._current_offset >= self._led_count:
+            self._current_offset = 0
+
     def _interval_modifier(self, new_animation=False):
         """
         Determine the interval between each update based on the animation
@@ -193,5 +213,7 @@ class StatusIndicatorService:
             modifier = 10
         elif pattern.animation_type == led_utils.BLINKING_ANIMATION:
             modifier = 50
+        elif pattern.animation_type == led_utils.SPINNING_ANIMATION:
+            modifier = 5
 
         return round(self._interval_update * modifier) if new_animation is False else 1

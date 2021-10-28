@@ -25,6 +25,8 @@ def main():
                                                       led_utils.SOLID_ANIMATION, 0.1))
     status_indicator_service.add_status(StatusPattern('Blinking pattern', led_utils.RED,
                                                       led_utils.BLINKING_ANIMATION))
+    status_indicator_service.add_status(StatusPattern('Spinning pattern', led_utils.LEAF_GREEN,
+                                                      led_utils.SPINNING_ANIMATION, 0.7))
 
     print('You can stop the program using Ctrl + C safely ;)')
     try:
