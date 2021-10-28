@@ -1,4 +1,4 @@
-version: 0.0.1
+version: 0.1.0
 logging_level: 'DEBUG'
 device_uuid: '2222'
 ble:

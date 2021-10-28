@@ -28,7 +28,7 @@ def main():
     status_indicator_service.add_status(StatusPattern('Spinning pattern', led_utils.COLOR_LEAF_GREEN,
                                                       led_utils.SPINNING_ANIMATION, 0.7))
     status_indicator_service.add_status(StatusPattern('Theathre chase pattern', led_utils.COLOR_ORANGE,
-                                                      led_utils.THEATRE_CHASE_ANIMATION, 0.5))
+                                                      led_utils.THEATRE_CHASE_ANIMATION, 0.1))
 
     print('You can stop the program using Ctrl + C safely ;)')
     try:
