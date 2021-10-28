@@ -14,12 +14,12 @@ ble:
             value: 'Get the device uuid'
 status_indicator:
   led_count: 16
-  gpio_data_in: 18 # According to the documentation, should be one of GPIO10, GPIO12, GPIO18 or GPIO21. Ref: https://learn.adafruit.com/neopixels-on-raspberry-pi/raspberry-pi-wiring
+  gpio_data_in: 18 # Pin 12, According to the documentation, should be one of GPIO10, GPIO12, GPIO18 or GPIO21. Ref: https://learn.adafruit.com/neopixels-on-raspberry-pi/raspberry-pi-wiring
   # Minimum time allowed by pattern when there is multiple pattern at the same time. This time is in seconds.
   multi_animation_maximum_time: 5
   # Number of milliseconds between each update
   interval_update: 10
 led_strip:
-  gpio_data_in: 21
+  gpio_data_in: 21 # Pin 40
   led_count: 144 # Total Lightning LED number in the whole herbarium
   led_by_tile: 8 # Number of LED by tile

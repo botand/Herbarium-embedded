@@ -33,20 +33,30 @@ def main():
     lightning_led.turn_off_all()
     prev = time_in_millisecond()
     on = True
+    tile = 1
 
     print('You can stop the program using Ctrl + C safely ;)')
     try:
         while True:
             status_indicator_service.update()
-            if time_in_millisecond() - prev > 1000:
+            if time_in_millisecond() - prev > 500:
                 prev = time_in_millisecond()
 
+                if tile > 16:
+                    if on:
+                        on = False
+                    else:
+                        on = True
+                    tile = 1
+
                 if on:
-                    lightning_led.turn_on(1)
-                    on = False
+                    lightning_led.turn_on(tile)
+
                 else:
-                    lightning_led.turn_off(1)
-                    on = True
+                    lightning_led.turn_off(tile)
+
+                tile = tile + 1
+
 
     except KeyboardInterrupt:
         logging.debug(f'Stop de la boucle principal par Keyboard Interrupt')
