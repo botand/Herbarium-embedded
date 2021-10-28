@@ -18,4 +18,4 @@ status_indicator:
   # Minimum time allowed by pattern when there is multiple pattern at the same time. This time is in seconds.
   multi_animation_maximum_time: 10
   # Number of milliseconds between each update
-  interval_update: 50
+  interval_update: 10

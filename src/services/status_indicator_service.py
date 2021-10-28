@@ -13,6 +13,8 @@ _LED_PIN_CONFIG_KEY = "gpio_data_in"
 _MULTI_ANIMATION_MAXIMUM_TIME = "multi_animation_maximum_time"
 _INTERVAL_UPDATE = "interval_update"
 
+_BREATHING_ANIMATION_STEP = 0.02
+
 _SECOND_TO_MILLISECONDS = 1000
 
 
@@ -92,6 +94,8 @@ class StatusIndicatorService:
             self._turn_off()
             self._current_animation_index = None
 
+        new_animation = False
+
         # Switch to the next animation if needed
         if (time_in_millisecond() - self._current_animation_started_at) > self._maximum_time_in_display and \
                 len(self._animations_in_progress) > 1:
@@ -103,8 +107,9 @@ class StatusIndicatorService:
             self._current_animation_started_at = time_in_millisecond()
             self._current_brightness = 0
             self._current_token = 0
+            new_animation = True
 
-        if (time_in_millisecond() - self._last_update) > self._interval_update:
+        if (time_in_millisecond() - self._last_update) > self._interval_modifier(new_animation):
             self._update_animation()
             self._last_update = time_in_millisecond()
 
@@ -150,8 +155,24 @@ class StatusIndicatorService:
         elif self._current_brightness <= 0:
             self._current_offset = 0
 
-        self._current_brightness += 0.01 if self._current_offset == 0 else -0.01
+        self._current_brightness += _BREATHING_ANIMATION_STEP if self._current_offset == 0 \
+            else -_BREATHING_ANIMATION_STEP
 
         self._ring.fill(animation.color)
         self._ring.brightness = self._current_brightness
         self._ring.show()
+
+    def _interval_modifier(self, new_animation=False):
+        """
+        Determine the interval between each update based on the animation
+        :return: number of millisecond that need to be elapsed between update
+        :rtype int
+        """
+        pattern = self._animations_in_progress[self._current_animation_index]
+        modifier = 1
+        if pattern.animation_type == led_utils.SOLID_ANIMATION:
+            modifier = 10000
+        elif pattern.animation_type == led_utils.BREATHING_ANIMATION:
+            modifier = 10
+
+        return round(self._interval_update * modifier) if new_animation is False else 1
