@@ -16,11 +16,12 @@ class LightningLed:
         :param config:
         """
         self._led_count = config[_LED_COUNT_CONFIG_KEY]
+        self._led_by_tile = config[_LED_BY_TILE_KEY]
         self._strip = NeoPixel(pin_number_to_digital_gpio(config[_LED_PIN_CONFIG_KEY]), self._led_count,
                               auto_write=False)
 
     def _update_segment(self, tile_nb, color, brightness):
-        for i in range(tile_nb*_LED_BY_TILE_KEY-_LED_BY_TILE_KEY, tile_nb*_LED_BY_TILE_KEY):
+        for i in range(tile_nb*self._led_by_tile-self._led_by_tile, tile_nb*self._led_by_tile):
             self._strip[i] = (round(color[0]*brightness),
                               round(color[1]*brightness),
                               round(color[2]*brightness))
