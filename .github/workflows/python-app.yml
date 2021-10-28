@@ -7,13 +7,37 @@ on:
   push:
     branches: [ main ]
   pull_request:
-    branches: [ main ]
 
 jobs:
-  build:
-
+  version_validation:
+    name: Validate the version
     runs-on: ubuntu-latest
-
+    outputs:
+      version: ${{ steps.split.outputs._0 }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Get the version from the config file
+        id: version
+        uses: CumulusDS/get-yaml-paths-action@v0.1.0
+        with:
+          file: config.yaml
+          version: version
+      - name: Validate that version doesn't exists
+        uses: mukunku/tag-exists-action@v1.0.0
+        id: checkTag
+        with:
+          tag: ${{ steps.version.outputs.version }}
+      - if: ${{ steps.checkTag.outputs.exists == 'true' && github.event_name == 'pull_request' }}
+        name: Post comment on PR
+        uses: thollander/actions-comment-pull-request@1.0.1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          message: '${{ steps.version.outputs.version }} already exists, please update the version in the config file.'
+      - if: ${{ steps.checkTag.outputs.exists == 'true' }}
+        name: Fails because the tag already exists.
+        run: exit 1
+  build:
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 3.9
@@ -31,6 +55,21 @@ jobs:
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Test with pytest
-      run: |
-        pytest
+#    Disabled for now because we don't have any test written
+#    - name: Test with pytest
+#      run: |
+#        pytest
+  create_pre_release:
+    name: Create Github pre-release
+    if: ${{ github.event_name == 'push' }}
+    needs: [ version_validation, build ]
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      - name: Create pre-release
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          automatic_release_tag: ${{ needs.version_validation.outputs.version }}
+          title: v${{ needs.version_validation.outputs.version }}
