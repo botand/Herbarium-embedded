@@ -127,6 +127,8 @@ class StatusIndicatorService:
             self._blinking_animation(animation)
         elif animation.animation_type == led_utils.SPINNING_ANIMATION:
             self._spinning_animation(animation)
+        elif animation.animation_type == led_utils.THEATRE_CHASE_ANIMATION:
+            self._theatre_chase_animation(animation)
 
         # Update the pixels
         self._ring.show()
@@ -190,7 +192,7 @@ class StatusIndicatorService:
         self._ring.brightness = animation.max_brightness
 
         for i in range(self._led_count):
-            color = led_utils.BLACK
+            color = led_utils.COLOR_BLACK
             if i == self._current_offset:
                 color = animation.color
             self._ring[i] = color
@@ -198,6 +200,27 @@ class StatusIndicatorService:
         self._current_offset += 1
         if self._current_offset >= self._led_count:
             self._current_offset = 0
+
+    def _theatre_chase_animation(self, animation):
+        """
+        Spin the pixels of the indicator
+        :param animation: pattern to apply
+        :type animation StatusPattern
+        """
+        self._ring.brightness = animation.max_brightness
+
+        for i in range(self._led_count):
+            if (self._current_token == 0 and i <= self._current_offset) or \
+                    (self._current_token == 1 and i >= self._current_offset):
+                color = animation.color
+            else:
+                color = led_utils.COLOR_BLACK
+            self._ring[i] = color
+
+        self._current_offset += 1
+        if self._current_offset >= self._led_count:
+            self._current_offset = 0
+            self._current_token = self._current_token == 0
 
     def _interval_modifier(self, new_animation=False):
         """
@@ -215,5 +238,7 @@ class StatusIndicatorService:
             modifier = 50
         elif pattern.animation_type == led_utils.SPINNING_ANIMATION:
             modifier = 5
+        elif pattern.animation_type == led_utils.THEATRE_CHASE_ANIMATION:
+            modifier = 10
 
         return round(self._interval_update * modifier) if new_animation is False else 1
