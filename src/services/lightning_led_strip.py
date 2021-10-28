@@ -25,6 +25,8 @@ class LightningLed:
             self._strip[i] = (round(color[0]*brightness),
                               round(color[1]*brightness),
                               round(color[2]*brightness))
+            logging.debug(f"{_SERVICE_TAG} LED {tile_nb} : ({self._strip[i](0)}, "
+                          f"{self._strip[i](1)}, {self._strip[i](2)})")
 
     def turn_on(self, tile_nb):
         logging.debug(f"{_SERVICE_TAG} Turn ON Tile {tile_nb} Lightning")
