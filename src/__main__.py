@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from src.bluetooth.services.device_identity_service import DeviceIdentityService
 from src.services.configuration import config, config_ble
-from src.services import BleService, StatusIndicatorService, LightningLed
+from src.services import BleService, StatusIndicatorService, LightningLedService
 from src.models import StatusPattern
 from src.utils import led_utils, time_in_millisecond
 import logging
@@ -30,7 +30,7 @@ def main():
     status_indicator_service.add_status(StatusPattern('Theathre chase pattern', led_utils.COLOR_ORANGE,
                                                       led_utils.THEATRE_CHASE_ANIMATION, 0.1))
 
-    lightning_led = LightningLed(config['led_strip'])
+    lightning_led = LightningLedService(config['led_strip'])
     lightning_led.turn_off_all()
     prev = time_in_millisecond()
     on = True
@@ -50,6 +50,7 @@ def main():
                     on = True
 
     except KeyboardInterrupt:
+        lightning_led.turn_off_all()
         logging.debug(f'Stop de la boucle principal par Keyboard Interrupt')
 
     # logging.info('Hit ENTER to stop the program')

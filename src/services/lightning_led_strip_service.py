@@ -9,7 +9,7 @@ _LED_PIN_CONFIG_KEY = "gpio_data_in"
 _LED_BY_TILE_KEY = "led_by_tile"
 
 
-class LightningLed:
+class LightningLedService:
     def __init__(self, config):
         """
 
