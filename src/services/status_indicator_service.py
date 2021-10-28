@@ -107,6 +107,7 @@ class StatusIndicatorService:
             self._current_animation_started_at = time_in_millisecond()
             self._current_brightness = 0
             self._current_token = 0
+            self._current_offset = 0
             new_animation = True
 
         if (time_in_millisecond() - self._last_update) > self._interval_modifier(new_animation):
