@@ -123,6 +123,11 @@ class StatusIndicatorService:
             self._solid_animation(animation)
         elif animation.animation_type == led_utils.BREATHING_ANIMATION:
             self._breathing_animation(animation)
+        elif animation.animation_type == led_utils.BLINKING_ANIMATION:
+            self._blinking_animation(animation)
+
+        # Update the pixels
+        self._ring.show()
 
     def _turn_off(self):
         """
@@ -135,18 +140,17 @@ class StatusIndicatorService:
     def _solid_animation(self, animation):
         """
         Set the same color to all the pixels
-        :param animation:
+        :param animation: pattern to apply
         :type animation StatusPattern
         :return: void
         """
         self._ring.fill(animation.color)
         self._ring.brightness = animation.max_brightness
-        self._ring.show()
 
     def _breathing_animation(self, animation):
         """
         Make the pixels breath in the ring
-        :param animation:
+        :param animation: patter to apply
         :type animation StatusPattern
         :return: void
         """
@@ -160,7 +164,20 @@ class StatusIndicatorService:
 
         self._ring.fill(animation.color)
         self._ring.brightness = self._current_brightness
-        self._ring.show()
+
+    def _blinking_animation(self, animation):
+        """
+        Make the status indicator blink
+        :param animation: pattern to apply
+        :type animation StatusPattern
+        """
+        self._current_offset = self._current_offset == 0
+
+        if self._current_offset == 1:
+            self._ring.fill(animation.color)
+            self._ring.brightness = animation.max_brightness
+        else:
+            self._ring.brightness = 0
 
     def _interval_modifier(self, new_animation=False):
         """
@@ -174,5 +191,7 @@ class StatusIndicatorService:
             modifier = 10000
         elif pattern.animation_type == led_utils.BREATHING_ANIMATION:
             modifier = 10
+        elif pattern.animation_type == led_utils.BLINKING_ANIMATION:
+            modifier = 50
 
         return round(self._interval_update * modifier) if new_animation is False else 1

@@ -19,10 +19,12 @@ def main():
 
     status_indicator_service = StatusIndicatorService(config['status_indicator'])
 
-    status_indicator_service.add_status(StatusPattern('Update pattern', led_utils.VIOLET,
+    status_indicator_service.add_status(StatusPattern('Breathing pattern', led_utils.VIOLET,
                                                       led_utils.BREATHING_ANIMATION, 0.7))
-    status_indicator_service.add_status(StatusPattern('Another pattern', led_utils.GREEN,
+    status_indicator_service.add_status(StatusPattern('Solid pattern', led_utils.GREEN,
                                                       led_utils.SOLID_ANIMATION, 0.1))
+    status_indicator_service.add_status(StatusPattern('Blinking pattern', led_utils.RED,
+                                                      led_utils.BLINKING_ANIMATION))
 
     print('You can stop the program using Ctrl + C safely ;)')
     try:
