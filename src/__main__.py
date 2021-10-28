@@ -40,6 +40,7 @@ def main():
 
     # logging.info('Hit ENTER to stop the program')
     # ble.stop_advertising()
+    status_indicator_service.turn_off()
 
 
 if __name__ == '__main__':

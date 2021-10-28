@@ -91,7 +91,7 @@ class StatusIndicatorService:
         # No more animation to run but there is still one in play
         if len(self._animations_in_progress) == 0:
             logging.debug(f'{_SERVICE_TAG} turning off ring')
-            self._turn_off()
+            self.turn_off()
             self._current_animation_index = None
 
         new_animation = False
@@ -134,7 +134,7 @@ class StatusIndicatorService:
         # Update the pixels
         self._ring.show()
 
-    def _turn_off(self):
+    def turn_off(self):
         """
         Turn off all the led of the ring.
         :return: void
