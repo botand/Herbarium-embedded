@@ -4,6 +4,7 @@ from src.services.configuration import config, config_ble
 from src.services import BleService, StatusIndicatorService, LightningLedService
 from src.models import StatusPattern
 from src.utils import led_utils, time_in_millisecond
+import RPi.GPIO as GPIO
 import logging
 import keyboard
 
@@ -61,6 +62,7 @@ def main():
     except KeyboardInterrupt:
         logging.debug(f'Stop de la boucle principal par Keyboard Interrupt')
         lightning_led.turn_off_all()
+        GPIO.cleanup()
 
 
     # logging.info('Hit ENTER to stop the program')

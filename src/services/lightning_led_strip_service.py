@@ -1,5 +1,5 @@
 from neopixel import NeoPixel
-from src.utils import pin_number_to_digital_gpio, time_in_millisecond, led_utils
+from src.utils import pin_number_to_digital_gpio , led_utils
 from src.models import StatusPattern
 import logging
 
@@ -25,7 +25,6 @@ class LightningLedService:
             self._strip[i] = (round(color[0]*brightness),
                               round(color[1]*brightness),
                               round(color[2]*brightness))
-            #logging.debug(f"{_SERVICE_TAG} LED {tile_nb} : ({self._strip[i](0)}, "f"{self._strip[i](1)}, {self._strip[i](2)})")
         self._strip.show()
 
     def turn_on(self, tile_nb):
