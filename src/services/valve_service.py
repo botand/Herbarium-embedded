@@ -27,5 +27,5 @@ class ValveService:
         logging.debug("Closing the valve")
 
     def open_valve(self):
-        self._valve.ChangeDutyCycle(1)
+        self._valve.ChangeDutyCycle(10)
         logging.debug("Opening the valve")
