@@ -23,7 +23,7 @@ class ValveService:
         self._valve.start(0)
 
     def close_valve(self):
-        self._valve.ChangeDutyCycle(0)
+        self._valve.ChangeDutyCycle(0.1)
         logging.debug("Closing the valve")
 
     def open_valve(self):
