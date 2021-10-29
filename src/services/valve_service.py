@@ -7,7 +7,7 @@ import logging
 _SERVICE_TAG = "led_strip - "
 _VALVE_PIN_CONFIG_KEY = "gpio_position_out"
 _VALVE_POSITION_OFF = "position_off"
-_VALVE_POSITION_ON = "position_om"
+_VALVE_POSITION_ON = "position_on"
 
 
 class ValveService:
