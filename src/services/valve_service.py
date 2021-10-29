@@ -20,7 +20,7 @@ class ValveService:
         GPIO.setup(12, GPIO.OUT)
         #self._valve = GPIO.PWM(pin_number_to_digital_gpio(config[_VALVE_PIN_CONFIG_KEY]), 50)
         self._valve = GPIO.PWM(12, 50)
-        self._valve.start()
+        self._valve.start(0)
 
     def close_valve(self):
         self._valve.ChangeDutyCycle(0)
