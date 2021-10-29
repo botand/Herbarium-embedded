@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from src.bluetooth.services.device_identity_service import DeviceIdentityService
 from src.services.configuration import config, config_ble
-from src.services import BleService, StatusIndicatorService, LightningLedService
+from src.services import BleService, StatusIndicatorService, LightningLedService, ValveService
 from src.models import StatusPattern
 from src.utils import led_utils, time_in_millisecond
 import RPi.GPIO as GPIO
@@ -32,15 +32,21 @@ def main():
 
     lightning_led = LightningLedService(config['led_strip'])
     lightning_led.turn_off_all()
+
+    valve = ValveService(config['valve'])
+    valve.close_valve()
+
     prev = time_in_millisecond()
+
     on = True
+    open_trig = True
     tile = 1
 
     print('You can stop the program using Ctrl + C safely ;)')
     try:
         while True:
             status_indicator_service.update()
-            if time_in_millisecond() - prev > 500:
+            if time_in_millisecond() - prev > 800:
                 prev = time_in_millisecond()
 
                 if tile > 16:
@@ -57,6 +63,13 @@ def main():
                     lightning_led.turn_off(tile)
 
                 tile = tile + 1
+
+                if open_trig:
+                    valve.open_valve()
+                    open_trig = False
+                else:
+                    valve.close_valve()
+                    open_trig = True
 
 
     except KeyboardInterrupt:
