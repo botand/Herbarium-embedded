@@ -22,9 +22,9 @@ class ValveService:
         self._valve = GPIO.PWM(12, 50)
 
     def close_valve(self):
-        self._valve = ChangeDutyCycle(0)
+        self._valve.ChangeDutyCycle(0)
         logging.debug("Closing the valve")
 
     def open_valve(self):
-        self._valve = ChangeDutyCycle(1)
+        self._valve.ChangeDutyCycle(1)
         logging.debug("Opening the valve")
