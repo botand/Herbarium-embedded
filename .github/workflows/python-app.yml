@@ -40,19 +40,6 @@ jobs:
       - if: ${{ steps.checkTag.outputs.exists == 'true' }}
         name: Fails because the tag already exists.
         run: exit 1
-  execute_linter:
-    name: Execute the linter
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout the repository
-        uses: actions/checkout@v2
-      - name: Set up Python 3.9
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.9
-      - name: Install dependencies
-        run: |
-          pip3 install --no-cache-dir -r dev-requirements.txt
   execute_tests:
     name: Execute tests and linter
     runs-on: ubuntu-latest
