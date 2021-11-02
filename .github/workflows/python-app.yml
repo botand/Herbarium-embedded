@@ -65,7 +65,6 @@ jobs:
     needs:
       - version_validation
       - execute_tests
-      - execute_linter
     runs-on: ubuntu-latest
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
