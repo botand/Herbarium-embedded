@@ -21,8 +21,8 @@ def _get_file_handler():
     """
     file_handler = handlers.TimedRotatingFileHandler(
         f"{config['logging']['path']}/{config['version']}{config['logging']['filename_suffix']}",
-        when='midnight',
-        interval=1
+        when="midnight",
+        interval=1,
     )
     file_handler.setFormatter(_FORMATTER)
     return file_handler
@@ -36,7 +36,7 @@ def get_logger(logger_name):
     :return: logger
     """
     logger = getLogger(logger_name)
-    logger.setLevel(config['logging']['level'])
+    logger.setLevel(config["logging"]["level"])
     logger.addHandler(_get_console_handler())
     logger.addHandler(_get_file_handler())
     logger.propagate = False

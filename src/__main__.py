@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
 """Main program"""
 from src.bluetooth.services.device_identity_service import DeviceIdentityService
-from src.services.configuration import config, config_ble
-from src.services import BleService, StatusIndicatorService
+from src.services import (
+    config,
+    config_ble,
+    BleService,
+    StatusIndicatorService,
+    InternetConnectionService,
+)
 from src.models import StatusPattern
 from src.utils import led_utils
 
@@ -22,6 +27,9 @@ def main():
             0.1,
         )
     )
+
+    # Check the internet connection
+    InternetConnectionService.check_connection()
 
     print("You can stop the program using Ctrl + C safely ;)")
     try:
