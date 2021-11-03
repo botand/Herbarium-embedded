@@ -1,10 +1,10 @@
 """Service to interact with the status indicator"""
-import logging
 from neopixel import NeoPixel
-from src.utils import pin_number_to_digital_gpio, time_in_millisecond, led_utils
+from src.utils import pin_number_to_digital_gpio, time_in_millisecond, led_utils, logger
 from src.models import StatusPattern
 
-_SERVICE_TAG = "StatusIndicatorService - "
+_SERVICE_TAG = "services.StatusIndicatorService"
+_logger = logger.get_logger(_SERVICE_TAG)
 
 _LED_COUNT_CONFIG_KEY = "led_count"
 _LED_PIN_CONFIG_KEY = "gpio_data_in"
@@ -70,7 +70,7 @@ class StatusIndicatorService:
         if not isinstance(status, StatusPattern):
             raise TypeError("status type must be an StatusPattern")
         if status not in self._animations_in_progress:
-            logging.debug("%s adding pattern: %s", _SERVICE_TAG, status)
+            _logger.debug("adding pattern: %s", status)
             self._animations_in_progress.append(status)
             if len(self._animations_in_progress) == 1:
                 self._current_animation_index = 0
@@ -84,7 +84,7 @@ class StatusIndicatorService:
         """
         if not isinstance(status, StatusPattern):
             raise TypeError("status type must be an StatusPattern")
-        logging.debug("%s removing pattern: %s", _SERVICE_TAG, status)
+        _logger.debug("removing pattern: %s", status)
         index_removed = self._animations_in_progress.index(status)
         self._animations_in_progress.pop(index_removed)
 
@@ -107,7 +107,6 @@ class StatusIndicatorService:
 
         # No more animation to run but there is still one in play
         if len(self._animations_in_progress) == 0:
-            logging.debug("%s turning off ring", _SERVICE_TAG)
             self.turn_off()
             self._current_animation_index = None
 
@@ -123,7 +122,7 @@ class StatusIndicatorService:
                 self._current_animation_index += 1
             else:
                 self._current_animation_index = 0
-            logging.debug("%s starting next animation", _SERVICE_TAG)
+            _logger.debug("starting next animation")
             self._current_animation_started_at = time_in_millisecond()
             self._current_brightness = 0
             self._current_token = 0
@@ -161,6 +160,7 @@ class StatusIndicatorService:
         Turn off all the led of the ring.
         :return: void
         """
+        _logger.debug("turning off ring")
         self._ring.brightness = 0.0
         self._ring.show()
 

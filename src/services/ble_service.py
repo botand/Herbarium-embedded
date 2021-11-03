@@ -1,8 +1,9 @@
 """Service to interact with the BLE"""
-import logging
 from pybleno import Bleno
+from src.utils import logger
 
-_SERVICE_TAG = "BleService -"
+_SERVICE_TAG = "services.BleService"
+_logger = logger.get_logger(_SERVICE_TAG)
 
 
 class BleService:
@@ -28,7 +29,7 @@ class BleService:
         Handle the change of state.
         :param state:
         """
-        logging.debug("%s on -> stateChange: %s", _SERVICE_TAG, state)
+        _logger.debug("on -> stateChange: %s", state)
 
         if state == "poweredOn":
             self._bleno.startAdvertising(self.device_name, self._services_uuids)
@@ -48,16 +49,15 @@ class BleService:
             self._services_uuids.append(service.uuid)
 
         self._bleno.start()
-        logging.debug("%s starting", _SERVICE_TAG)
+        _logger.debug("starting")
 
     def _on_advertising_start(self, error):
         """
         Set the BLE services when advertising start
         :param error:
         """
-        logging.debug(
-            "%s on -> advertisingStart: %s",
-            _SERVICE_TAG,
+        _logger.debug(
+            "on -> advertisingStart: %s",
             ("error " + error if error else "success"),
         )
 
@@ -71,4 +71,4 @@ class BleService:
         """
         self._bleno.stopAdvertising()
         self._bleno.disconnect()
-        logging.debug("%s disconnected", _SERVICE_TAG)
+        _logger.debug("disconnected")

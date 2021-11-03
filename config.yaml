@@ -1,5 +1,8 @@
 version: 0.1.0
-logging_level: 'DEBUG'
+logging:
+  level: 'DEBUG'
+  path: 'logs'
+  filename_suffix: '.log'
 device_uuid: '2222'
 ble:
   device_name: 'Herbarium'
