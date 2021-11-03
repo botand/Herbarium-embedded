@@ -21,11 +21,11 @@ class ValveService:
         :type config : dict of str
         """
 
-        self._valve_pin = pin_number_to_digital_gpio(config[_VALVE_PIN_CONFIG_KEY])
-        self._valve_S0 = pin_number_to_digital_gpio(config[_VALVE_SELECTOR_PIN_S0])
-        self._valve_S1 = pin_number_to_digital_gpio(config[_VALVE_SELECTOR_PIN_S1])
-        self._valve_S2 = pin_number_to_digital_gpio(config[_VALVE_SELECTOR_PIN_S2])
-        self._valve_S3 = pin_number_to_digital_gpio(config[_VALVE_SELECTOR_PIN_S3])
+        self._valve_pin = config[_VALVE_PIN_CONFIG_KEY]
+        self._valve_S0 = config[_VALVE_SELECTOR_PIN_S0]
+        self._valve_S1 = config[_VALVE_SELECTOR_PIN_S1]
+        self._valve_S2 = config[_VALVE_SELECTOR_PIN_S2]
+        self._valve_S3 = config[_VALVE_SELECTOR_PIN_S3]
         self._pwm_freq = config[_PWM_FREQ]
         self._pos_off = config[_VALVE_POSITION_OFF]
         self._pos_on = config[_VALVE_POSITION_ON]
