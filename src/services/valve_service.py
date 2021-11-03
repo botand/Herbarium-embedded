@@ -47,7 +47,11 @@ class ValveService:
         """
         bin_valve_nb = "{0:b}".format(valve_nb)
 
-        #
+        # number of 0 correction, all number must be on 4 digit
+        zero = "0"
+        for i in range(4-len(bin_valve_nb)):
+            bin_valve_nb = zero + bin_valve_nb
+
         if bin_valve_nb[0] == '1':
             GPIO.output(self._valve_S3, GPIO.HIGH)
         else:
