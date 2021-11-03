@@ -31,10 +31,10 @@ class ValveService:
         self._pos_on = config[_VALVE_POSITION_ON]
 
         # GPIO Assignation and configuration
-        GPIO.setup(self._valve_S0, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-        GPIO.setup(self._valve_S1, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-        GPIO.setup(self._valve_S2, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-        GPIO.setup(self._valve_S3, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+        GPIO.setup(self._valve_S0, GPIO.OUT)
+        GPIO.setup(self._valve_S1, GPIO.OUT)
+        GPIO.setup(self._valve_S2, GPIO.OUT)
+        GPIO.setup(self._valve_S3, GPIO.OUT)
 
         GPIO.setup(self._valve_pin, GPIO.OUT, pull_up_down=GPIO.PUD_DOWN)
         self._valve = GPIO.PWM(self._valve_pin, self._pwm_freq)
