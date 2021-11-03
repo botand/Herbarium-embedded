@@ -1,10 +1,14 @@
-from pybleno import Bleno, BlenoPrimaryService
+"""Service to interact with the BLE"""
 import logging
+from pybleno import Bleno
 
-_SERVICE_TAG = "BleService - "
+_SERVICE_TAG = "BleService -"
 
 
 class BleService:
+    """
+    Service that interact with the BLE card.
+    """
 
     def __init__(self, device_name):
         """
@@ -16,13 +20,17 @@ class BleService:
         self._services_uuids = []
         self.device_name = device_name
 
-        self._bleno.on('advertisingStart', self._on_advertising_start)
-        self._bleno.on('stateChange', self._on_state_change)
+        self._bleno.on("advertisingStart", self._on_advertising_start)
+        self._bleno.on("stateChange", self._on_state_change)
 
     def _on_state_change(self, state):
-        logging.debug(_SERVICE_TAG + 'on -> stateChange: ' + state)
+        """
+        Handle the change of state.
+        :param state:
+        """
+        logging.debug("%s on -> stateChange: %s", _SERVICE_TAG, state)
 
-        if state == 'poweredOn':
+        if state == "poweredOn":
             self._bleno.startAdvertising(self.device_name, self._services_uuids)
         else:
             self._bleno.stopAdvertising()
@@ -40,10 +48,18 @@ class BleService:
             self._services_uuids.append(service.uuid)
 
         self._bleno.start()
-        logging.debug(_SERVICE_TAG + 'starting')
+        logging.debug("%s starting", _SERVICE_TAG)
 
     def _on_advertising_start(self, error):
-        logging.debug(_SERVICE_TAG + 'on -> advertisingStart: ' + ('error ' + error if error else 'success'))
+        """
+        Set the BLE services when advertising start
+        :param error:
+        """
+        logging.debug(
+            "%s on -> advertisingStart: %s",
+            _SERVICE_TAG,
+            ("error " + error if error else "success"),
+        )
 
         if not error:
             self._bleno.setServices(self._services)
@@ -55,4 +71,4 @@ class BleService:
         """
         self._bleno.stopAdvertising()
         self._bleno.disconnect()
-        logging.debug(_SERVICE_TAG + 'disconnected')
+        logging.debug("%s disconnected", _SERVICE_TAG)
