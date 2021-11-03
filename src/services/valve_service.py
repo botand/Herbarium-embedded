@@ -36,7 +36,7 @@ class ValveService:
         GPIO.setup(self._valve_S2, GPIO.OUT)
         GPIO.setup(self._valve_S3, GPIO.OUT)
 
-        GPIO.setup(self._valve_pin, GPIO.OUT, pull_up_down=GPIO.PUD_DOWN)
+        GPIO.setup(self._valve_pin, GPIO.OUT)
         self._valve = GPIO.PWM(self._valve_pin, self._pwm_freq)
         self._valve.start(0)
 
