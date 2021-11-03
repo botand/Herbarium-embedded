@@ -34,7 +34,7 @@ def main():
     lightning_led.turn_off_all()
 
     valve = ValveService(config['valve'])
-    valve.close_valve()
+    valve.close_valve(0)
 
     prev = time_in_millisecond()
 
@@ -65,10 +65,10 @@ def main():
                 tile = tile + 1
 
                 if open_trig:
-                    valve.open_valve()
+                    valve.open_valve(0)
                     open_trig = False
                 else:
-                    valve.close_valve()
+                    valve.close_valve(0)
                     open_trig = True
 
 

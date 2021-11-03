@@ -24,6 +24,11 @@ led_strip:
   led_count: 144 # Total Lightning LED number in the whole herbarium
   led_by_tile: 8 # Number of LED by tile
 valve:
+  gpio_selector_pin_S0: 5 # Pin 29
+  gpio_selector_pin_S1: 6 # Pin 31
+  gpio_selector_pin_S2: 15 # Pin 35
+  gpio_selector_pin_S3: 26 # Pin 37
   gpio_position_out: 12 # Pin 32
-  position_off: 0
-  position_on: 1
+  pwm_freq: 50
+  position_off: 0.1 # To adjust by future
+  position_on: 10
