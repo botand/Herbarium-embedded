@@ -31,7 +31,7 @@ class ValveService:
         self._pos_on = config[_VALVE_POSITION_ON]
 
         # GPIO Assignation and configuration
-        GPIO.setmode(GPIO.BOARD)  # Using pin numbering instead of names (version proof)
+        # GPIO.setmode(GPIO.BOARD)  # Using pin numbering instead of names (version proof)
 
         GPIO.setup(self._valve_S0, GPIO.OUT)
         GPIO.setup(self._valve_S1, GPIO.OUT)
@@ -89,9 +89,8 @@ class ValveService:
         time.sleep(0.7)
         self._valve.ChangeDutyCycle(0)
 
-        # GPIO cleaning and debug logging
-        GPIO.cleanup()
-        logging.debug(f'Closing the valve #{tile_nb}()')
+        # debug logging
+        logging.debug(f'{_SERVICE_TAG}Closing the valve #{tile_nb}()')
 
     def open_valve(self, tile_nb):
         """
@@ -108,6 +107,5 @@ class ValveService:
         time.sleep(0.7)
         self._valve.ChangeDutyCycle(0)
 
-        # GPIO cleaning and debug logging
-        GPIO.cleanup()
-        logging.debug(f'Opening the valve #{tile_nb}()')
+        # debug logging
+        logging.debug(f'{_SERVICE_TAG}Opening the valve #{tile_nb}()')
