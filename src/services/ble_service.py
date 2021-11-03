@@ -20,17 +20,17 @@ class BleService:
         self._services_uuids = []
         self.device_name = device_name
 
-        self._bleno.on('advertisingStart', self._on_advertising_start)
-        self._bleno.on('stateChange', self._on_state_change)
+        self._bleno.on("advertisingStart", self._on_advertising_start)
+        self._bleno.on("stateChange", self._on_state_change)
 
     def _on_state_change(self, state):
         """
         Handle the change of state.
         :param state:
         """
-        logging.debug('%s on -> stateChange: %s', _SERVICE_TAG, state)
+        logging.debug("%s on -> stateChange: %s", _SERVICE_TAG, state)
 
-        if state == 'poweredOn':
+        if state == "poweredOn":
             self._bleno.startAdvertising(self.device_name, self._services_uuids)
         else:
             self._bleno.stopAdvertising()
@@ -48,16 +48,18 @@ class BleService:
             self._services_uuids.append(service.uuid)
 
         self._bleno.start()
-        logging.debug('%s starting', _SERVICE_TAG)
+        logging.debug("%s starting", _SERVICE_TAG)
 
     def _on_advertising_start(self, error):
         """
         Set the BLE services when advertising start
         :param error:
         """
-        logging.debug('%s on -> advertisingStart: %s',
-                      _SERVICE_TAG,
-                      ('error ' + error if error else 'success'))
+        logging.debug(
+            "%s on -> advertisingStart: %s",
+            _SERVICE_TAG,
+            ("error " + error if error else "success"),
+        )
 
         if not error:
             self._bleno.setServices(self._services)
@@ -69,4 +71,4 @@ class BleService:
         """
         self._bleno.stopAdvertising()
         self._bleno.disconnect()
-        logging.debug('%s disconnected', _SERVICE_TAG)
+        logging.debug("%s disconnected", _SERVICE_TAG)

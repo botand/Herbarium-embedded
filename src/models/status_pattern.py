@@ -1,10 +1,12 @@
 """Status pattern class"""
+
+
 class StatusPattern:
     """
     Pattern that represent a status of the greenhouse.
     """
 
-    def __init__(self, name, color, animation_type, max_brightness = 1.0):
+    def __init__(self, name, color, animation_type, max_brightness=1.0):
         """
         Status pattern that can be sent to the [StatusIndicatorService]
         :param name:
@@ -65,5 +67,7 @@ class StatusPattern:
         return self._max_brightness
 
     def __str__(self) -> str:
-        return f'LedAnimation[{self._name} {self._color} {self._animation_type} ' \
-               f'{self._max_brightness}]'
+        return (
+            f"LedAnimation[{self._name} {self._color} {self._animation_type} "
+            f"{self._max_brightness}]"
+        )
