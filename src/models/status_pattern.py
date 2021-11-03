@@ -1,11 +1,16 @@
+"""Status pattern class"""
 class StatusPattern:
+    """
+    Pattern that represent a status of the greenhouse.
+    """
 
     def __init__(self, name, color, animation_type, max_brightness = 1.0):
         """
         Status pattern that can be sent to the [StatusIndicatorService]
         :param name:
         :type name str
-        :param color: tuple that represent the color like (R, G, B) with each value between 0 and 255
+        :param color: tuple that represent the color like (R, G, B) with each
+        value between 0 and 255
         :type color tuple of int
         :param animation_type: name of the animation
         :type animation_type: int
@@ -30,21 +35,35 @@ class StatusPattern:
     def name(self):
         """
         Name of the status
-        :return: str
+        :rtype str
         """
         return self._name
 
     @property
     def color(self):
+        """
+        :return: tuple that represent the color like (R, G, B) with each
+        value between 0 and 255
+        :rtype tuple
+        """
         return self._color
 
     @property
     def animation_type(self):
+        """
+        Type of the animation
+        :rtype int
+        """
         return self._animation_type
 
     @property
     def max_brightness(self):
+        """
+        Maximum brightness of the pattern
+        :rtype float
+        """
         return self._max_brightness
 
     def __str__(self) -> str:
-        return f'LedAnimation[{self._name} {self._color} {self._animation_type} {self._max_brightness}]'
+        return f'LedAnimation[{self._name} {self._color} {self._animation_type} ' \
+               f'{self._max_brightness}]'

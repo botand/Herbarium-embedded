@@ -47,3 +47,20 @@ python3 -m src
 ```
 You can also write the `CONFIG_YAML_FILE` variable into the `/etc/environment` file.
 Note that you will have to logout and login to access the variable.
+
+## Hooks
+
+This project use hooks to ensure the quality of the code. To enable them use this command:
+
+```shell
+git config core.hooksPath githooks
+```
+
+### pre-commit
+
+This hook will format and lint your code before every commit.
+
+### pre-push
+
+Before every push, the unit test of the application will be executed.
+If you don't use the default SignalR server, don't forget to change it on the hook file (`.git/hooks/pre-push`)

@@ -1,10 +1,8 @@
-import board
-import time
+"""Service to interact with the status indicator"""
+import logging
 from neopixel import NeoPixel
-from rpi_ws281x import Adafruit_NeoPixel
 from src.utils import pin_number_to_digital_gpio, time_in_millisecond, led_utils
 from src.models import StatusPattern
-import logging
 
 _SERVICE_TAG = "StatusIndicatorService - "
 
@@ -19,33 +17,44 @@ _SECOND_TO_MILLISECONDS = 1000
 
 
 class StatusIndicatorService:
+    """
+    Service to interact with the status indicator
+    """
+    # pylint: disable=too-many-instance-attributes
+
+    # List of the animation to play
+    _animations_in_progress = []
+
+    # Number of milliseconds between each refresh
+    _interval_update = 0
+
+    # Last time the pattern was updated
+    _last_update = 0
+
+    # These variables are used by each animation as they see fit.
+    # Please reset them to 0 when changing animation
+    _current_brightness = 0
+    _current_token = 0
+    _current_offset = 0
 
     def __init__(self, config):
         """
-
         :param config: configuration file to use.
         :type config dict of str
         """
-        self._ring = NeoPixel(pin_number_to_digital_gpio(config[_LED_PIN_CONFIG_KEY]), config[_LED_COUNT_CONFIG_KEY],
+        self._ring = NeoPixel(pin_number_to_digital_gpio(config[_LED_PIN_CONFIG_KEY]),
+                              config[_LED_COUNT_CONFIG_KEY],
                               auto_write=False)
         self._led_count = config[_LED_COUNT_CONFIG_KEY]
-        self._maximum_time_in_display = config[_MULTI_ANIMATION_MAXIMUM_TIME] * _SECOND_TO_MILLISECONDS
+        self._maximum_time_in_display = \
+            config[_MULTI_ANIMATION_MAXIMUM_TIME] * _SECOND_TO_MILLISECONDS
 
-        # Dictionary of the animation to play
-        self._animations_in_progress = []
         # Index of the animation currently displayed
         self._current_animation_index = None
         self._current_animation_started_at = 0
 
-        # Number of milliseconds between each refresh
         self._interval_update = config[_INTERVAL_UPDATE]
-        # Last time the pattern was updated
         self._last_update = 0
-
-        # These variables are used by each animation as they see fit. Please reset them to 0 when changing animation
-        self._current_brightness = 0
-        self._current_token = 0
-        self._current_offset = 0
 
     def add_status(self, status):
         """
@@ -57,7 +66,7 @@ class StatusIndicatorService:
         if not isinstance(status, StatusPattern):
             raise TypeError("status type must be an StatusPattern")
         if status not in self._animations_in_progress:
-            logging.debug(f'{_SERVICE_TAG} adding pattern: {status}')
+            logging.debug('%s adding pattern: %s', _SERVICE_TAG, status)
             self._animations_in_progress.append(status)
             if len(self._animations_in_progress) == 1:
                 self._current_animation_index = 0
@@ -71,11 +80,12 @@ class StatusIndicatorService:
         """
         if not isinstance(status, StatusPattern):
             raise TypeError("status type must be an StatusPattern")
-        logging.debug(f'{_SERVICE_TAG} removing pattern: {status}')
+        logging.debug('%s removing pattern: %s', _SERVICE_TAG, status)
         index_removed = self._animations_in_progress.index(status)
         self._animations_in_progress.pop(index_removed)
 
-        # If the animation playing is the one that removed or is after the one removed, remove 1 to the current index
+        # If the animation playing is the one that removed or is after the one removed,
+        # remove 1 to the current index
         if self._current_animation_index >= index_removed:
             self._current_animation_index -= 1
 
@@ -90,20 +100,21 @@ class StatusIndicatorService:
 
         # No more animation to run but there is still one in play
         if len(self._animations_in_progress) == 0:
-            logging.debug(f'{_SERVICE_TAG} turning off ring')
-            self._turn_off()
+            logging.debug('%s turning off ring', _SERVICE_TAG)
+            self.turn_off()
             self._current_animation_index = None
 
         new_animation = False
 
         # Switch to the next animation if needed
-        if (time_in_millisecond() - self._current_animation_started_at) > self._maximum_time_in_display and \
+        time_passed = time_in_millisecond() - self._current_animation_started_at
+        if time_passed > self._maximum_time_in_display and \
                 len(self._animations_in_progress) > 1:
             if (self._current_animation_index + 1) < len(self._animations_in_progress):
                 self._current_animation_index += 1
             else:
                 self._current_animation_index = 0
-            logging.debug(f'{_SERVICE_TAG} starting next animation')
+            logging.debug('%s starting next animation', _SERVICE_TAG)
             self._current_animation_started_at = time_in_millisecond()
             self._current_brightness = 0
             self._current_token = 0
@@ -134,7 +145,7 @@ class StatusIndicatorService:
         # Update the pixels
         self._ring.show()
 
-    def _turn_off(self):
+    def turn_off(self):
         """
         Turn off all the led of the ring.
         :return: void

@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# Execute unit test
+pytest

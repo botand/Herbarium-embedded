@@ -1,6 +1,9 @@
+"""Load the configuration file"""
 import os
-import yaml
 import logging
+import yaml
+
+# pylint: disable=invalid-name
 
 _file_path = os.environ['CONFIG_YAML_FILE']
 
