@@ -56,9 +56,9 @@ jobs:
     - name: Execute linter
       run: |
         pylint-fail-under --fail_under 8.0 src
-    - name: Execute tests
-      run: |
-        pytest
+#    - name: Execute tests
+#      run: |
+#        pytest
   create_pre_release:
     name: Create Github pre-release
     if: ${{ github.event_name == 'push' }}
