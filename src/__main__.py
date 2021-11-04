@@ -46,7 +46,7 @@ def main():
         while True:
             status_indicator_service.update()
             valve.update()
-            if time_in_millisecond() - prev > 800:
+            if time_in_millisecond() - prev > 1000:
                 prev = time_in_millisecond()
 
                 if tile > 16:
