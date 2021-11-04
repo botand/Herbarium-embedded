@@ -1,5 +1,5 @@
 import time
-from src.utils import pin_number_to_digital_gpio
+from src.utils import time_in_millisecond
 import RPi.GPIO as GPIO
 import logging
 
@@ -12,6 +12,8 @@ _VALVE_PIN_CONFIG_KEY = "gpio_position_out"
 _PWM_FREQ = "pwm_freq"
 _VALVE_POSITION_OFF = "position_off"
 _VALVE_POSITION_ON = "position_on"
+_VALVE_OPENING_TIME = "opening_time"
+_VALVE_CLOSING_TIME = "closing_time"
 
 
 class ValveService:
@@ -27,12 +29,12 @@ class ValveService:
         self._valve_S2 = config[_VALVE_SELECTOR_PIN_S2]
         self._valve_S3 = config[_VALVE_SELECTOR_PIN_S3]
         self._pwm_freq = config[_PWM_FREQ]
-        self._pos_off = config[_VALVE_POSITION_OFF]
-        self._pos_on = config[_VALVE_POSITION_ON]
+        self._position = {"open": config[_VALVE_POSITION_ON],
+                          "close": config[_VALVE_POSITION_OFF]}
+        self._timing = {'open': config[_VALVE_OPENING_TIME],
+                        'close': config[_VALVE_CLOSING_TIME]}
 
         # GPIO Assignation and configuration
-        # GPIO.setmode(GPIO.BOARD)  # Using pin numbering instead of names (version proof)
-
         GPIO.setup(self._valve_S0, GPIO.OUT)
         GPIO.setup(self._valve_S1, GPIO.OUT)
         GPIO.setup(self._valve_S2, GPIO.OUT)
@@ -42,7 +44,18 @@ class ValveService:
         self._valve = GPIO.PWM(self._valve_pin, self._pwm_freq)
         self._valve.start(0)
 
-    def _select_valve(self, valve_nb):
+        # Valve position mechanism
+        self._valve_state = []  # actual position for all valves, will be fulled by initalizing process
+        self._asked_valve_state = []  # wait line of tuple (addr, asked_pos)
+        self._is_moving = False
+        self._previous_time = time_in_millisecond()
+
+        # Initiate valves
+        for i in range(16):
+            self._valve_state.append("close")
+        self.close_all()
+
+    def _select_addr(self, valve_nb):
         """
         :param valve_nb: decimal selected valve [0-15]
         Convert the decimal value into binary and update the GPIO selectors
@@ -74,38 +87,57 @@ class ValveService:
         else:
             GPIO.output(self._valve_S0, GPIO.LOW)
 
-    def close_valve(self, tile_nb):
+    def close(self, tile_nb):
         """
-        :param tile_nb : decimal selected valve [0-15]
-        Set the Valve to closed position.
-        Note the sleep needed to wait the valve moved to the right position.
-        Then deactivate the valve.
         """
-        # valve selection
-        self._select_valve(tile_nb)
+        self._asked_valve_state.insert(-1, (tile_nb, "close"))  # Add close request at tail
 
-        # update valve position
-        self._valve.ChangeDutyCycle(self._pos_off)
-        time.sleep(0.7)
-        self._valve.ChangeDutyCycle(0)
+    def close_all(self):
+        for i in range(16):
+            self.close(i)
 
-        # debug logging
-        logging.debug(f'{_SERVICE_TAG}Closing the valve #{tile_nb}()')
-
-    def open_valve(self, tile_nb):
+    def open(self, tile_nb):
         """
-        :param tile_nb : decimal selected valve [0-15]
-        Set the Valve to open position.
-        Note the sleep needed to wait the valve moved to the right position.
-        Then deactivate the valve.
         """
-        # valve selection
-        self._select_valve(tile_nb)
+        self._asked_valve_state.insert(-1, (tile_nb, "open"))  # Add open request at tail
 
-        # update valve position
-        self._valve.ChangeDutyCycle(self._pos_on)
-        time.sleep(0.7)
-        self._valve.ChangeDutyCycle(0)
+    def update(self):
 
-        # debug logging
-        logging.debug(f'{_SERVICE_TAG}Opening the valve #{tile_nb}()')
+        # is buffer is empty just pass
+        if len(self._asked_valve_state) == 0:
+            return
+
+        asked_addr = int(self._asked_valve_state[0][0])
+        asked_state = int(self._asked_valve_state[0][1])
+
+        # if the valve is already in the asked position just pass too
+        if asked_state == self._valve_state[asked_addr]:
+            return
+
+        # if we need to modify the valve position, check time and move !
+        actual_time = time_in_millisecond()
+
+        # if it's the first update for the actual movement request, then update previous
+        if not self._is_moving:
+            self._is_moving = True
+            self._previous_time = time_in_millisecond()
+
+        # So if the movement is incomplete
+        if actual_time - self._previous_time < self._timing[asked_state]:
+            self._select_addr(asked_addr)  # valve selection
+            self._valve.ChangeDutyCycle(self._position[asked_state])  # update valve movement
+            self._previous_time = actual_time
+
+        # if the movement is finished
+        else:
+            self._select_addr(asked_addr)  # valve selection
+            self._valve.ChangeDutyCycle(0)  # stop PWM
+            self._valve_state[asked_addr] = asked_state  # Update valve movement
+            self._asked_valve_state.remove(0)  # Remove the asked position
+            self._is_moving = False
+
+
+
+
+
+

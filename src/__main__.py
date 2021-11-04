@@ -34,7 +34,6 @@ def main():
     lightning_led.turn_off_all()
 
     valve = ValveService(config['valve'])
-    valve.close_valve(0)
 
     prev = time_in_millisecond()
 
@@ -46,6 +45,7 @@ def main():
     try:
         while True:
             status_indicator_service.update()
+            valve.update()
             if time_in_millisecond() - prev > 800:
                 prev = time_in_millisecond()
 
@@ -65,16 +65,17 @@ def main():
                 tile = tile + 1
 
                 if open_trig:
-                    valve.open_valve(0)
+                    valve.open(0)
                     open_trig = False
                 else:
-                    valve.close_valve(0)
+                    valve.close(0)
                     open_trig = True
 
 
     except KeyboardInterrupt:
         logging.debug(f'Stop de la boucle principal par Keyboard Interrupt')
         lightning_led.turn_off_all()
+
         GPIO.cleanup()
 
 
