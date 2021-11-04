@@ -37,5 +37,5 @@ valve:
 pump:
   gpio_speed_out: 13 # Pin 33
   pwm_freq: 1000
-  max_speed: 1000
-  min_speed: 500
+  max_speed: 100
+  min_speed: 50

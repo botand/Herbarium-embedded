@@ -28,7 +28,7 @@ class PumpService:
     def set_speed(self, speed):
         if speed == 0.0:
             self.stop()
-        elif speed == 1.0:
+        elif speed == 100:
             self.full_speed()
         else:
             self._pump.ChangeDutyCycle(self._speed_to_pwm(speed))

@@ -75,8 +75,8 @@ def main():
                     open_trig = True
 
                 pump.set_speed(pump_speed)
-                pump_speed += 0.2
-                if pump_speed > 1.0:
+                pump_speed += 20
+                if pump_speed > 100.0:
                     pump_speed = 0.0
 
     except KeyboardInterrupt:
