@@ -114,7 +114,7 @@ class ValveService:
 
         # if the valve is already in the asked position just pass too
         if asked_state == self._valve_state[asked_addr]:
-            self._asked_valve_state.remove(0)  # Remove the asked position
+            self._asked_valve_state.pop(0)  # Remove the asked position
             logging.debug(f"{_SERVICE_TAG} Valve {asked_addr} already in position {asked_state}")
             return
 
@@ -139,7 +139,7 @@ class ValveService:
             self._select_addr(asked_addr)  # valve selection
             self._valve.ChangeDutyCycle(0)  # stop PWM
             self._valve_state[asked_addr] = asked_state  # Update valve movement
-            self._asked_valve_state.remove(0)  # Remove the asked position
+            self._asked_valve_state.pop(0)  # Remove the asked position
             self._is_moving = False
             logging.debug(f"{_SERVICE_TAG} Valve {asked_addr} moved to position {asked_state}")
 
