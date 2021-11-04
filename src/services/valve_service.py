@@ -128,11 +128,9 @@ class ValveService:
             logging.debug(f"{_SERVICE_TAG} Valve {asked_addr} moving to position {asked_state}")
 
         # So if the movement is incomplete
-        if actual_time - self._previous_time > self._timing[asked_state]:
-
+        if actual_time - self._previous_time < self._timing[asked_state]:
             self._select_addr(asked_addr)  # valve selection
             self._valve.ChangeDutyCycle(self._position[asked_state])  # update valve movement
-            self._previous_time = actual_time
 
         # if the movement is finished
         else:
