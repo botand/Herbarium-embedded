@@ -2,7 +2,7 @@
 import requests
 from src.utils import logger
 
-_SERVICE_TAG = "InternetConnectionService"
+_SERVICE_TAG = "services.InternetConnectionService"
 
 _logger = logger.get_logger(_SERVICE_TAG)
 

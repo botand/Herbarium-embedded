@@ -1,23 +1,25 @@
 #!/usr/bin/env python3
 """Main program"""
-from src.bluetooth.services import DeviceInformationService
+from src.services.configuration import config, config_ble
 from src.services import (
-    config,
-    config_ble,
     BleService,
     StatusIndicatorService,
     InternetConnectionService,
 )
+from src.bluetooth.services import DeviceInformationService
 from src.models import StatusPattern
-from src.utils import led_utils
+from src.utils import led_utils, get_logger
 
 
 # pylint: disable=missing-function-docstring
 def main():
+    logger = get_logger("root")
+    logger.info("Version loaded: %s", config["version"])
+
     ble = BleService(config_ble["device_name"])
     ble.start_advertising([DeviceInformationService(config["device_uuid"])])
 
-    status_indicator_service = StatusIndicatorService(config["status_indicator"])
+    status_indicator_service = StatusIndicatorService.instance()
 
     status_indicator_service.add_status(
         StatusPattern(

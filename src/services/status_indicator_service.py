@@ -1,5 +1,6 @@
 """Service to interact with the status indicator"""
 from neopixel import NeoPixel
+from src.services.configuration import config
 from src.utils import (
     pin_number_to_digital_gpio,
     time_in_millisecond,
@@ -9,7 +10,6 @@ from src.utils import (
 from src.models import StatusPattern
 
 _SERVICE_TAG = "services.StatusIndicatorService"
-_logger = get_logger(_SERVICE_TAG)
 
 _LED_COUNT_CONFIG_KEY = "led_count"
 _LED_PIN_CONFIG_KEY = "gpio_data_in"
@@ -25,6 +25,10 @@ class StatusIndicatorService:
     """
     Service to interact with the status indicator
     """
+
+    __instance = None
+
+    _logger = get_logger(_SERVICE_TAG)
 
     # pylint: disable=too-many-instance-attributes
 
@@ -43,26 +47,34 @@ class StatusIndicatorService:
     _current_token = 0
     _current_offset = 0
 
-    def __init__(self, config):
+    @staticmethod
+    def instance():
         """
-        :param config: configuration file to use.
-        :type config dict of str
+        Get the service
+        :rtype: StatusIndicatorService
         """
+        if StatusIndicatorService.__instance is None:
+            StatusIndicatorService.__instance = StatusIndicatorService()
+        return StatusIndicatorService.__instance
+
+    def __init__(self):
+        """Initialize the service"""
+        ring_config = config["status_indicator"]
         self._ring = NeoPixel(
-            pin_number_to_digital_gpio(config[_LED_PIN_CONFIG_KEY]),
-            config[_LED_COUNT_CONFIG_KEY],
+            pin_number_to_digital_gpio(ring_config[_LED_PIN_CONFIG_KEY]),
+            ring_config[_LED_COUNT_CONFIG_KEY],
             auto_write=False,
         )
-        self._led_count = config[_LED_COUNT_CONFIG_KEY]
+        self._led_count = ring_config[_LED_COUNT_CONFIG_KEY]
         self._maximum_time_in_display = (
-            config[_MULTI_ANIMATION_MAXIMUM_TIME] * _SECOND_TO_MILLISECONDS
+            ring_config[_MULTI_ANIMATION_MAXIMUM_TIME] * _SECOND_TO_MILLISECONDS
         )
 
         # Index of the animation currently displayed
         self._current_animation_index = None
         self._current_animation_started_at = 0
 
-        self._interval_update = config[_INTERVAL_UPDATE]
+        self._interval_update = ring_config[_INTERVAL_UPDATE]
         self._last_update = 0
 
     def add_status(self, status):
@@ -75,7 +87,7 @@ class StatusIndicatorService:
         if not isinstance(status, StatusPattern):
             raise TypeError("status type must be an StatusPattern")
         if status not in self._animations_in_progress:
-            _logger.debug("adding pattern: %s", status)
+            self._logger.debug("adding pattern: %s", status)
             self._animations_in_progress.append(status)
             if len(self._animations_in_progress) == 1:
                 self._current_animation_index = 0
@@ -89,7 +101,7 @@ class StatusIndicatorService:
         """
         if not isinstance(status, StatusPattern):
             raise TypeError("status type must be an StatusPattern")
-        _logger.debug("removing pattern: %s", status)
+        self._logger.debug("removing pattern: %s", status)
         index_removed = self._animations_in_progress.index(status)
         self._animations_in_progress.pop(index_removed)
 
@@ -127,7 +139,7 @@ class StatusIndicatorService:
                 self._current_animation_index += 1
             else:
                 self._current_animation_index = 0
-            _logger.debug("starting next animation")
+            self._logger.debug("starting next animation")
             self._current_animation_started_at = time_in_millisecond()
             self._current_brightness = 0
             self._current_token = 0
@@ -165,7 +177,7 @@ class StatusIndicatorService:
         Turn off all the led of the ring.
         :return: void
         """
-        _logger.debug("turning off ring")
+        self._logger.debug("turning off ring")
         self._ring.brightness = 0.0
         self._ring.show()
 

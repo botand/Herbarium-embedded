@@ -1,7 +1,7 @@
 """BLE characteristic"""
 import array
 from pybleno import Characteristic, Descriptor
-from src.utils.logger import get_logger
+from src.utils import get_logger
 
 _CHARACTERISTIC_TAG = "bluetooth.characteristic.DeviceIdentityCharacteristic"
 
@@ -23,10 +23,13 @@ class DeviceIdentityCharacteristic(Characteristic):
         descriptors = []
         self._device_uuid = device_uuid
 
-        for descriptor in characteristic_config["descriptors"]:
-            descriptors.append(
-                Descriptor({"uuid": descriptor["uuid"], "value": descriptor["value"]})
-            )
+        if characteristic_config["descriptors"] is not None:
+            for descriptor in characteristic_config["descriptors"]:
+                descriptors.append(
+                    Descriptor(
+                        {"uuid": descriptor["uuid"], "value": descriptor["value"]}
+                    )
+                )
 
         Characteristic.__init__(
             self,
