@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from src.bluetooth.services.device_identity_service import DeviceIdentityService
 from src.services.configuration import config, config_ble
-from src.services import BleService, StatusIndicatorService, LightningLedService, ValveService
+from src.services import BleService, StatusIndicatorService, LightningLedService, ValveService, PumpService
 from src.models import StatusPattern
 from src.utils import led_utils, time_in_millisecond
 import RPi.GPIO as GPIO
@@ -34,6 +34,9 @@ def main():
     lightning_led.turn_off_all()
 
     valve = ValveService(config['valve'])
+    pump = PumpService(config['pump'])
+    pump.stop()
+    pump_speed = 0.0
 
     prev = time_in_millisecond()
 
@@ -71,6 +74,10 @@ def main():
                     valve.close(0)
                     open_trig = True
 
+                pump.set_speed(pump_speed)
+                pump_speed += 0.2
+                if pump_speed > 1.0:
+                    pump_speed = 0.0
 
     except KeyboardInterrupt:
         logging.debug(f'Stop de la boucle principal par Keyboard Interrupt')

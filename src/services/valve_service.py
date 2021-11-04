@@ -3,7 +3,7 @@ from src.utils import time_in_millisecond
 import RPi.GPIO as GPIO
 import logging
 
-_SERVICE_TAG = "valve - "
+_SERVICE_TAG = "Valve - "
 _VALVE_SELECTOR_PIN_S0 = "gpio_selector_pin_S0"
 _VALVE_SELECTOR_PIN_S1 = "gpio_selector_pin_S1"
 _VALVE_SELECTOR_PIN_S2 = "gpio_selector_pin_S2"
