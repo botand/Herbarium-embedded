@@ -82,6 +82,7 @@ def main():
     except KeyboardInterrupt:
         logging.debug(f'Stop de la boucle principal par Keyboard Interrupt')
         lightning_led.turn_off_all()
+        pump.stop()
 
         GPIO.cleanup()
 
