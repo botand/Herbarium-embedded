@@ -108,7 +108,7 @@ class ValveService:
             return
 
         asked_addr = int(self._asked_valve_state[0][0])
-        asked_state = int(self._asked_valve_state[0][1])
+        asked_state = self._asked_valve_state[0][1]
 
         # if the valve is already in the asked position just pass too
         if asked_state == self._valve_state[asked_addr]:
