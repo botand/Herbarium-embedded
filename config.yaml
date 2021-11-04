@@ -30,7 +30,7 @@ valve:
   gpio_selector_pin_S3: 26 # Pin 37
   gpio_position_out: 12 # Pin 32
   pwm_freq: 50
-  position_off: 7
-  position_on: 7
+  position_off: 8
+  position_on: 8
   opening_time: 500 # ms
   closing_time: 700 # ms
