@@ -7,7 +7,7 @@ device_uuid: '2222'
 ble:
   device_name: 'Herbarium'
   services:
-    device_identity:
+    device_information:
       uuid: '180a' # Device information
   characteristics:
     device_identity:

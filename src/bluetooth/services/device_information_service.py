@@ -4,12 +4,12 @@ from pybleno import BlenoPrimaryService
 from src.bluetooth.characteristics import DeviceIdentityCharacteristic
 from src.services.configuration import config_ble
 
-_SERVICE_NAME = "device_identity"
+_SERVICE_NAME = "device_information"
 
 
-class DeviceIdentityService(BlenoPrimaryService):
+class DeviceInformationService(BlenoPrimaryService):
     """
-    BLE Service that emit the DeviceIdentityCharacteristic
+    BLE Service that emit the DeviceIdentityCharacteristic and the ConnectionStatusCharacteristic
     """
 
     def __init__(self, device_uuid):
