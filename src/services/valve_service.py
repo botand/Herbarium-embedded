@@ -91,6 +91,7 @@ class ValveService:
         """
         """
         self._asked_valve_state.insert(-1, (tile_nb, "close"))  # Add close request at tail
+        logging.debug(f"{_SERVICE_TAG} Valve movement asked for {tile_nb} to position close")
 
     def close_all(self):
         for i in range(16):
@@ -100,6 +101,7 @@ class ValveService:
         """
         """
         self._asked_valve_state.insert(-1, (tile_nb, "open"))  # Add open request at tail
+        logging.debug(f"{_SERVICE_TAG} Valve movement asked for {tile_nb} to position open")
 
     def update(self):
 
@@ -112,6 +114,7 @@ class ValveService:
 
         # if the valve is already in the asked position just pass too
         if asked_state == self._valve_state[asked_addr]:
+            logging.debug(f"{_SERVICE_TAG} Valve {asked_addr} already in position {asked_state}")
             return
 
         # if we need to modify the valve position, check time and move !
@@ -121,9 +124,11 @@ class ValveService:
         if not self._is_moving:
             self._is_moving = True
             self._previous_time = time_in_millisecond()
+            logging.debug(f"{_SERVICE_TAG} Valve {asked_addr} moving to position {asked_state}")
 
         # So if the movement is incomplete
         if actual_time - self._previous_time < self._timing[asked_state]:
+
             self._select_addr(asked_addr)  # valve selection
             self._valve.ChangeDutyCycle(self._position[asked_state])  # update valve movement
             self._previous_time = actual_time
@@ -135,6 +140,7 @@ class ValveService:
             self._valve_state[asked_addr] = asked_state  # Update valve movement
             self._asked_valve_state.remove(0)  # Remove the asked position
             self._is_moving = False
+            logging.debug(f"{_SERVICE_TAG} Valve {asked_addr} moved to position {asked_state}")
 
 
 
