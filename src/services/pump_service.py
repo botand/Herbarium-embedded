@@ -23,7 +23,7 @@ class PumpService:
         logging.debug(f"{_SERVICE_TAG} Pump Initiated")
 
     def _speed_to_pwm(self, speed):
-        return speed * (self._max_speed - self._min_speed) + self._min_speed
+        return speed * ((self._max_speed - self._min_speed) / 100.0) + self._min_speed
 
     def set_speed(self, speed):
         if speed == 0.0:
