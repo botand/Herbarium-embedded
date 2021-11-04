@@ -1,10 +1,15 @@
 """Service to interact with the status indicator"""
 from neopixel import NeoPixel
-from src.utils import pin_number_to_digital_gpio, time_in_millisecond, led_utils, logger
+from src.utils import (
+    pin_number_to_digital_gpio,
+    time_in_millisecond,
+    led_utils,
+    get_logger,
+)
 from src.models import StatusPattern
 
 _SERVICE_TAG = "services.StatusIndicatorService"
-_logger = logger.get_logger(_SERVICE_TAG)
+_logger = get_logger(_SERVICE_TAG)
 
 _LED_COUNT_CONFIG_KEY = "led_count"
 _LED_PIN_CONFIG_KEY = "gpio_data_in"
