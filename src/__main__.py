@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 """Main program"""
-from src.services.configuration import config, config_ble
 from src.services import (
-    BleService,
+    config,
     StatusIndicatorService,
     InternetConnectionService,
 )
-from src.bluetooth.services import DeviceInformationService
+from src.controllers import InternetConnectionController
 from src.models import StatusPattern
 from src.utils import led_utils, get_logger
 
@@ -15,9 +14,6 @@ from src.utils import led_utils, get_logger
 def main():
     logger = get_logger("root")
     logger.info("Version loaded: %s", config["version"])
-
-    ble = BleService(config_ble["device_name"])
-    ble.start_advertising([DeviceInformationService(config["device_uuid"])])
 
     status_indicator_service = StatusIndicatorService.instance()
 
@@ -30,17 +26,22 @@ def main():
         )
     )
 
-    # Check the internet connection
-    InternetConnectionService.check_connection()
+    # Initializing all the controllers
+    logger.debug("Start initializing all the controllers and services")
+    internet_connection_controller = InternetConnectionController()
 
-    print("You can stop the program using Ctrl + C safely ;)")
     try:
+        logger.debug("Starting main loop")
+        logger.debug("You can stop the program using Ctrl + C safely ;)")
         while True:
             status_indicator_service.update()
+            internet_connection_controller.update()
 
     except KeyboardInterrupt:
+        # Stopping all the controllers and services
+        logger.debug("Turning off the program")
         status_indicator_service.turn_off()
-        ble.stop_advertising()
+        internet_connection_controller.stop()
 
 
 if __name__ == "__main__":

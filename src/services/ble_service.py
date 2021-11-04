@@ -73,3 +73,10 @@ class BleService:
         self._bleno.stopAdvertising()
         self._bleno.disconnect()
         self._logger.debug("disconnected")
+
+    def get_services(self):
+        """
+        :return: all the services currently advertised
+        :rtype list
+        """
+        return self._services

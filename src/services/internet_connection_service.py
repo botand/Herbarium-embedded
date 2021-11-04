@@ -3,7 +3,6 @@ import requests
 from src.utils import logger
 
 _SERVICE_TAG = "services.InternetConnectionService"
-
 _logger = logger.get_logger(_SERVICE_TAG)
 
 
@@ -19,12 +18,10 @@ class InternetConnectionService:
         :return: True if the device has access to internet
         :rtype bool
         """
-        url = "http://google.com"
-        timeout = 5
+        url = "https://httpbin.org/get"
+        timeout = 1
         try:
             requests.get(url, timeout=timeout)
-            _logger.debug("%s internet connection is healthy", _SERVICE_TAG)
             return True
         except (requests.ConnectionError, requests.Timeout):
-            _logger.error("%s internet connection is not working", _SERVICE_TAG)
             return False

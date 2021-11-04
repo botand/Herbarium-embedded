@@ -101,8 +101,11 @@ class StatusIndicatorService:
         """
         if not isinstance(status, StatusPattern):
             raise TypeError("status type must be an StatusPattern")
+        try:
+            index_removed = self._animations_in_progress.index(status)
+        except ValueError:
+            return
         self._logger.debug("removing pattern: %s", status)
-        index_removed = self._animations_in_progress.index(status)
         self._animations_in_progress.pop(index_removed)
 
         # If the animation playing is the one that removed or is after the one removed,
