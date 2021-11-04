@@ -1,7 +1,7 @@
 """Logger helpers"""
 import sys
 from logging import getLogger, handlers, StreamHandler, Formatter, debug
-from src.services.configuration import config
+from src.services import config
 
 _FORMATTER = Formatter("%(asctime)s — %(name)s — %(levelname)s — %(message)s")
 
