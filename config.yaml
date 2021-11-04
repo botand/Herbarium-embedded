@@ -32,5 +32,5 @@ valve:
   pwm_freq: 50
   position_off: 8
   position_on: 3
-  opening_time: 500 # ms
-  closing_time: 700 # ms
+  opening_time: 200 # ms
+  closing_time: 300 # ms
