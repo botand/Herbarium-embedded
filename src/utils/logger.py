@@ -1,9 +1,10 @@
 """Logger helpers"""
 import sys
 from logging import getLogger, handlers, StreamHandler, Formatter, debug
-from src.services import config
+from src.utils import config
 
 _FORMATTER = Formatter("%(asctime)s — %(name)s — %(levelname)s — %(message)s")
+_DEFAULT_LEVEL = config["logging"]["level"]
 
 
 def _get_console_handler():
@@ -28,15 +29,16 @@ def _get_file_handler():
     return file_handler
 
 
-def get_logger(logger_name):
+def get_logger(logger_name, logger_level=_DEFAULT_LEVEL):
     """
     Create a new logger.
     :param logger_name: name of the logger
     :type logger_name str
+    :param logger_level
     :return: logger
     """
     logger = getLogger(logger_name)
-    logger.setLevel(config["logging"]["level"])
+    logger.setLevel(logger_level)
     logger.addHandler(_get_console_handler())
     logger.addHandler(_get_file_handler())
     logger.propagate = False

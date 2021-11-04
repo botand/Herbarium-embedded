@@ -1,7 +1,7 @@
 """BLE characteristic"""
 import array
 from pybleno import Characteristic, Descriptor
-from src.utils import get_logger
+from src.utils.logger import get_logger
 
 _CHARACTERISTIC_TAG = "bluetooth.characteristic.DeviceIdentityCharacteristic"
 

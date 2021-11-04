@@ -1,9 +1,9 @@
 """Service to interact with wifi and check the internet"""
 import requests
-from src.utils import logger
+from src.utils.logger import get_logger
 
 _SERVICE_TAG = "services.InternetConnectionService"
-_logger = logger.get_logger(_SERVICE_TAG)
+_logger = get_logger(_SERVICE_TAG)
 
 
 class InternetConnectionService:

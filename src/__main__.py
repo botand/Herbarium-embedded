@@ -1,13 +1,9 @@
 #!/usr/bin/env python3
 """Main program"""
-from src.services import (
-    config,
-    StatusIndicatorService,
-    InternetConnectionService,
-)
+from src.utils import config, config_ble, led_utils, get_logger
+from src.services import StatusIndicatorService
 from src.controllers import InternetConnectionController
 from src.models import StatusPattern
-from src.utils import led_utils, get_logger
 
 
 # pylint: disable=missing-function-docstring
@@ -28,7 +24,7 @@ def main():
 
     # Initializing all the controllers
     logger.debug("Start initializing all the controllers and services")
-    internet_connection_controller = InternetConnectionController()
+    internet_connection_controller = InternetConnectionController(config, config_ble)
 
     try:
         logger.debug("Starting main loop")

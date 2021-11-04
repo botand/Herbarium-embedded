@@ -1,11 +1,11 @@
 """Service to interact with the status indicator"""
 from neopixel import NeoPixel
-from src.services.configuration import config
+from src.utils.configuration import config
+from src.utils.logger import get_logger
 from src.utils import (
     pin_number_to_digital_gpio,
     time_in_millisecond,
     led_utils,
-    get_logger,
 )
 from src.models import StatusPattern
 

@@ -49,7 +49,10 @@ class ConnectionStatusCharacteristic(Characteristic):
         :param is_connected: is the device connected to internet
         :type is_connected: bool
         """
-        self._logger.debug('broadcasting connection is %s', 'healthy' if is_connected is True else 'unhealthy')
+        self._logger.debug(
+            "broadcasting connection is %s",
+            "healthy" if is_connected is True else "unhealthy",
+        )
         self._is_connected = is_connected
         # Notify the subscribers of the change
         if self._update_value_callback is not None:

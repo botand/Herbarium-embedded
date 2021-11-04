@@ -1,6 +1,6 @@
 """Service to interact with the BLE"""
 from pybleno import Bleno
-from src.utils import get_logger
+from src.utils.logger import get_logger
 
 _SERVICE_TAG = "services.BleService"
 

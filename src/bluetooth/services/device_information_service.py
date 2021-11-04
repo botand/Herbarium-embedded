@@ -5,7 +5,6 @@ from src.bluetooth.characteristics import (
     DeviceIdentityCharacteristic,
     ConnectionStatusCharacteristic,
 )
-from src.services.configuration import config_ble
 
 _SERVICE_NAME = "device_information"
 
@@ -15,7 +14,7 @@ class DeviceInformationService(BlenoPrimaryService):
     BLE Service that emit the DeviceIdentityCharacteristic and the ConnectionStatusCharacteristic
     """
 
-    def __init__(self, device_uuid):
+    def __init__(self, device_uuid, config_ble):
         """
         :param device_uuid: UUID of the device
         :type device_uuid str
