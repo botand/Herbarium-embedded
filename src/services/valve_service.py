@@ -91,8 +91,6 @@ class ValveService:
         """
         """
         self._asked_valve_state.insert(-1, (tile_nb, "close"))  # Add close request at tail
-        logging.debug(f"{_SERVICE_TAG} Valve movement asked for {tile_nb} to position close")
-
     def close_all(self):
         for i in range(16):
             self.close(i)
@@ -101,7 +99,6 @@ class ValveService:
         """
         """
         self._asked_valve_state.insert(-1, (tile_nb, "open"))  # Add open request at tail
-        logging.debug(f"{_SERVICE_TAG} Valve movement asked for {tile_nb} to position open")
 
     def update(self):
 
@@ -125,7 +122,6 @@ class ValveService:
         if not self._is_moving:
             self._is_moving = True
             self._previous_time = time_in_millisecond()
-            logging.debug(f"{_SERVICE_TAG} Valve {asked_addr} moving to position {asked_state}")
 
         # So if the movement is incomplete
         if actual_time - self._previous_time < self._timing[asked_state]:
