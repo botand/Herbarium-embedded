@@ -7,10 +7,11 @@ from src.utils import led_utils, time_in_millisecond
 import RPi.GPIO as GPIO
 import logging
 import keyboard
+import board
 import busio
 import adafruit_ads1x15.ads1115 as ADS
 from adafruit_ads1x15.analog_in import AnalogIn
-i2c = busio.I2C(28, 27)
+i2c = busio.I2C(board.SCL, board.SDA)
 ads = ADS.ADS1115(i2c)
 
 
