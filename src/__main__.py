@@ -7,6 +7,13 @@ from src.utils import led_utils, time_in_millisecond
 import RPi.GPIO as GPIO
 import logging
 import keyboard
+import busio
+import adafruit_ads1x15.ads1115 as ADS
+from adafruit_ads1x15.analog_in import AnalogIn
+i2c = busio.I2C(28, 27)
+ads = ADS.ADS1115(i2c)
+
+
 
 
 def main():
@@ -51,6 +58,9 @@ def main():
             valve.update()
             if time_in_millisecond() - prev > 500:
                 prev = time_in_millisecond()
+
+                chan = AnalogIn(ads, ADS.P0)
+                print(chan.value, chan.voltage)
 
                 if tile > 16:
                     if on:

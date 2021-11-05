@@ -5,3 +5,5 @@ Adafruit-Blinka==6.15.0
 rpi-ws281x==4.3.0
 adafruit-circuitpython-neopixel==6.2.2
 keyboard==0.13.5
+adafruit-circuitpython-ads1x15==2.2.9
+adafruit-circuitpython-busdevice==5.1.0
