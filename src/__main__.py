@@ -52,6 +52,11 @@ def main():
     open_trig = True
     tile = 1
 
+    chan0 = AnalogIn(ads, ADS.P0)
+    chan1 = AnalogIn(ads, ADS.P1)
+    chan2 = AnalogIn(ads, ADS.P2)
+
+
     print('You can stop the program using Ctrl + C safely ;)')
     try:
         while True:
@@ -60,8 +65,10 @@ def main():
             if time_in_millisecond() - prev > 500:
                 prev = time_in_millisecond()
 
-                chan = AnalogIn(ads, ADS.P0)
-                print(chan.value, chan.voltage)
+
+                print("{:>5}\t{:>5.3f}".format(chan0.value, chan0.voltage))
+                print("{:>5}\t{:>5.3f}".format(chan1.value, chan1.voltage))
+                print("{:>5}\t{:>5.3f}".format(chan2.value, chan2.voltage))
 
                 if tile > 16:
                     if on:
