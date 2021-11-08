@@ -50,8 +50,7 @@ The first one should be composed like this: `ssid:<YOUR_SSID>` and the second on
 ### Run the code
 
 First you will need to declare the environment variable `CONFIG_YAML_FILE`,
-which redirect to the `config.yaml` file. The file given in this repository is
-**NOT FOR PRODUCTION USE**. So to start the code, execute the following:
+which redirect to the `config.yaml` file. So to start the code, execute the following:
 
 ```shell
 sudo su
