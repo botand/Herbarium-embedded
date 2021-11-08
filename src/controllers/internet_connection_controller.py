@@ -1,4 +1,5 @@
 """InternetConnectionController"""
+import os
 import yaml
 
 from src.bluetooth import DeviceInformationService, SetupDeviceService
@@ -12,7 +13,6 @@ from src.utils import (
     time_in_millisecond,
     INTERNET_CONNECTION_UNHEALTHY_PATTERN,
 )
-import os
 
 _CONTROLLER_TAG = "controllers.InternetConnectionController"
 _TICK_HEALTHY = 10 * 60 * 1000  # wait 10min between each update
@@ -109,9 +109,10 @@ class InternetConnectionController:
         if result:
             self._logger.info("Connection to %s is successful", ssid)
             self._last_update = 0
-            with open(_WIFI_CREDENTIALS_FILE_PATH, "w") as f:
-                f.write(yaml.dump({"ssid": ssid, "psk": password}))
-                f.close()
+            if save:
+                with open(_WIFI_CREDENTIALS_FILE_PATH, "w") as file:
+                    file.write(yaml.dump({"ssid": ssid, "psk": password}))
+                    file.close()
 
     def stop(self):
         """Discard the controller"""

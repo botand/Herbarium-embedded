@@ -32,6 +32,8 @@ pip3 install -r requirements.txt
 
 ### Local setup
 
+#### Wi-Fi
+
 If you don't want to set up the Wi-Fi of your device using bluetooth you can create a file `.wifi_credentials.yaml`
 with the following content:
 
@@ -40,7 +42,10 @@ ssid: <YOUR_SSID_AKA_WIFI_NAME>
 psk: <YOUR_WIFI_PASSWORD>
 ```
 
-This will connect your device to the Wi-Fi when the program start.
+This will connect your device to the Wi-Fi when the program starts.
+
+To set up the Wi-Fi using BLE, you will need to sent two (2) packet on the `setup_wifi` characteristic.
+The first one should be composed like this: `ssid:<YOUR_SSID>` and the second one: `psk:<YOUR_WIFI_PASSWORD>`
 
 ### Run the code
 

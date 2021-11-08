@@ -1,5 +1,4 @@
 """BLE characteristic"""
-import array
 from pybleno import Characteristic, Descriptor
 from src.utils import get_logger
 
@@ -71,7 +70,7 @@ class SetupWifiCharacteristic(Characteristic):
                 self._ssid = data_decoded.split(_SSID_PREFIX)[1]
                 self._psk = None
                 return
-            elif data_decoded.startswith(_PASSWORD_PREFIX):
+            if data_decoded.startswith(_PASSWORD_PREFIX):
                 self._psk = data_decoded.split(_PASSWORD_PREFIX)[1]
                 if self._psk.endswith(_MORE_DATA_SUFFIX):
                     return
