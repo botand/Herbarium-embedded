@@ -32,7 +32,15 @@ pip3 install -r requirements.txt
 
 ### Local setup
 
-TODO
+If you don't want to set up the Wi-Fi of your device using bluetooth you can create a file `.wifi_credentials.yaml`
+with the following content:
+
+```yaml
+ssid: <YOUR_SSID_AKA_WIFI_NAME>
+psk: <YOUR_WIFI_PASSWORD>
+```
+
+This will connect your device to the Wi-Fi when the program start.
 
 ### Run the code
 

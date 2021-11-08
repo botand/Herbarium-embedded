@@ -28,15 +28,15 @@ class DeviceInformationService(BlenoPrimaryService):
             ),
         ]
 
+        self.uuid = config_ble["services"][_SERVICE_NAME]["uuid"].replace("-", "")
+
         BlenoPrimaryService.__init__(
             self,
             {
-                "uuid": config_ble["services"][_SERVICE_NAME]["uuid"],
+                "uuid": self.uuid,
                 "characteristics": self._characteristics,
             },
         )
-
-        self.uuid = config_ble["services"][_SERVICE_NAME]["uuid"]
 
     def update_connection_status(self, connection_status):
         """

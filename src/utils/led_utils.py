@@ -20,5 +20,5 @@ THEATRE_CHASE_ANIMATION = 4
 
 # Defined patterns
 INTERNET_CONNECTION_UNHEALTHY_PATTERN = StatusPattern(
-    "internet_connection_unhealthy", COLOR_ORANGE, BREATHING_ANIMATION
+    "internet_connection_unhealthy", COLOR_ORANGE, BREATHING_ANIMATION, 0.1
 )

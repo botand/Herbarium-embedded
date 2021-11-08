@@ -25,14 +25,17 @@ class ConnectionStatusCharacteristic(Characteristic):
             for descriptor in characteristic_config["descriptors"]:
                 descriptors.append(
                     Descriptor(
-                        {"uuid": descriptor["uuid"], "value": descriptor["value"]}
+                        {
+                            "uuid": descriptor["uuid"].replace("-", ""),
+                            "value": descriptor["value"],
+                        }
                     )
                 )
 
         Characteristic.__init__(
             self,
             {
-                "uuid": characteristic_config["uuid"],
+                "uuid": characteristic_config["uuid"].replace("-", ""),
                 "properties": ["read", "notify"],
                 "descriptors": descriptors,
                 "value": None,
