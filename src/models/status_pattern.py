@@ -68,6 +68,6 @@ class StatusPattern:
 
     def __str__(self) -> str:
         return (
-            f"LedAnimation[{self._name} {self._color} {self._animation_type} "
+            f"LedAnimation[{self._name},{self._color},{self._animation_type},"
             f"{self._max_brightness}]"
         )

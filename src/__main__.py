@@ -1,66 +1,43 @@
 #!/usr/bin/env python3
 """Main program"""
-import logging
-from src.bluetooth.services.device_identity_service import DeviceIdentityService
-from src.services.configuration import config, config_ble
-from src.services import BleService, StatusIndicatorService
+from src.utils import config, config_ble, led_utils, get_logger
+from src.services import StatusIndicatorService
+from src.controllers import InternetConnectionController
 from src.models import StatusPattern
-from src.utils import led_utils
 
 
 # pylint: disable=missing-function-docstring
 def main():
-    logging.getLogger().setLevel(level=config["logging_level"])
-    logging.info("Version: %s", config["version"])
+    logger = get_logger("root")
+    logger.info("Version loaded: %s", config["version"])
 
-    ble = BleService(config_ble["device_name"])
-    ble.start_advertising([DeviceIdentityService(config["device_uuid"])])
-
-    status_indicator_service = StatusIndicatorService(config["status_indicator"])
+    status_indicator_service = StatusIndicatorService.instance()
 
     status_indicator_service.add_status(
         StatusPattern(
-            "Breathing pattern",
-            led_utils.COLOR_VIOLET,
-            led_utils.BREATHING_ANIMATION,
-            0.7,
-        )
-    )
-    status_indicator_service.add_status(
-        StatusPattern(
-            "Solid pattern", led_utils.COLOR_GREEN, led_utils.SOLID_ANIMATION, 0.1
-        )
-    )
-    status_indicator_service.add_status(
-        StatusPattern(
-            "Blinking pattern", led_utils.COLOR_RED, led_utils.BLINKING_ANIMATION
-        )
-    )
-    status_indicator_service.add_status(
-        StatusPattern(
-            "Spinning pattern",
-            led_utils.COLOR_LEAF_GREEN,
-            led_utils.SPINNING_ANIMATION,
-            0.7,
-        )
-    )
-    status_indicator_service.add_status(
-        StatusPattern(
-            "Theathre chase pattern",
+            "Theatre chase pattern",
             led_utils.COLOR_ORANGE,
             led_utils.THEATRE_CHASE_ANIMATION,
             0.1,
         )
     )
 
-    print("You can stop the program using Ctrl + C safely ;)")
+    # Initializing all the controllers
+    logger.debug("Start initializing all the controllers and services")
+    internet_connection_controller = InternetConnectionController(config, config_ble)
+
     try:
+        logger.debug("Starting main loop")
+        logger.debug("You can stop the program using Ctrl + C safely ;)")
         while True:
             status_indicator_service.update()
+            internet_connection_controller.update()
 
     except KeyboardInterrupt:
+        # Stopping all the controllers and services
+        logger.debug("Turning off the program")
         status_indicator_service.turn_off()
-        ble.stop_advertising()
+        internet_connection_controller.stop()
 
 
 if __name__ == "__main__":

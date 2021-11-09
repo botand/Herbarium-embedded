@@ -1,15 +1,17 @@
 """BLE characteristic"""
 import array
-import logging
 from pybleno import Characteristic, Descriptor
+from src.utils.logger import get_logger
 
-_DEVICE_IDENTITY_CHARACTERISTIC = "DeviceIdentityCharacteristic"
+_CHARACTERISTIC_TAG = "bluetooth.characteristic.DeviceIdentityCharacteristic"
 
 
 class DeviceIdentityCharacteristic(Characteristic):
     """
     READ BLE characteristic that emit the UUID of the device.
     """
+
+    _logger = get_logger(_CHARACTERISTIC_TAG)
 
     def __init__(self, characteristic_config, device_uuid):
         """
@@ -21,15 +23,21 @@ class DeviceIdentityCharacteristic(Characteristic):
         descriptors = []
         self._device_uuid = device_uuid
 
-        for descriptor in characteristic_config["descriptors"]:
-            descriptors.append(
-                Descriptor({"uuid": descriptor["uuid"], "value": descriptor["value"]})
-            )
+        if characteristic_config["descriptors"] is not None:
+            for descriptor in characteristic_config["descriptors"]:
+                descriptors.append(
+                    Descriptor(
+                        {
+                            "uuid": descriptor["uuid"].replace("-", ""),
+                            "value": descriptor["value"],
+                        }
+                    )
+                )
 
         Characteristic.__init__(
             self,
             {
-                "uuid": characteristic_config["uuid"],
+                "uuid": characteristic_config["uuid"].replace("-", ""),
                 "properties": ["read"],
                 "descriptors": descriptors,
                 "value": None,
@@ -49,5 +57,5 @@ class DeviceIdentityCharacteristic(Characteristic):
             data = array.array("b")
             data.frombytes(self._device_uuid.encode())
 
-            logging.debug("%s onReadRequest", _DEVICE_IDENTITY_CHARACTERISTIC)
+            self._logger.debug("onReadRequest received")
             callback(Characteristic.RESULT_SUCCESS, data)

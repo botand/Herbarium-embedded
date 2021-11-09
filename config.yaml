@@ -1,17 +1,28 @@
-version: 0.1.0
-logging_level: 'DEBUG'
+version: 0.2.0
+logging:
+  level: 'DEBUG'
+  path: 'logs'
+  filename_suffix: '.log'
 device_uuid: '2222'
 ble:
   device_name: 'Herbarium'
   services:
-    device_identity:
+    device_information:
       uuid: '180a' # Device information
+    setup_device:
+      uuid: 'f08a607d-bb1f-4fd3-adb1-2c3d580c6d0c'
   characteristics:
     device_identity:
-        uuid: '2a25' # Serial number string
-        descriptors:
-          - uuid: '2901'
-            value: 'Get the device uuid'
+      uuid: '2a25' # Serial number string
+      descriptors:
+        - uuid: '2901'
+          value: 'Get the device uuid'
+    connection_status:
+      uuid: '47f46eb3-0777-48ba-9c2b-66303b21a167'
+      descriptors:
+    setup_wifi:
+      uuid: 'ddb4c99c-d127-4314-bb6f-597c4cb1859d'
+      descriptors:
 status_indicator:
   led_count: 16
   gpio_data_in: 18 # According to the documentation, should be one of GPIO10, GPIO12, GPIO18 or GPIO21. Ref: https://learn.adafruit.com/neopixels-on-raspberry-pi/raspberry-pi-wiring
