@@ -1,8 +1,5 @@
 #!/bin/sh
 
-# Install dev dependencies
-pip install -r dev-requirements.txt
-
 # Execute formatting
 black .
 

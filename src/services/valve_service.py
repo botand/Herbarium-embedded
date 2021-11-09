@@ -1,6 +1,6 @@
 """Service to interact with the valves"""
-from src.utils import time_in_millisecond, get_logger
 from RPi import GPIO
+from src.utils import time_in_millisecond, get_logger
 
 _SERVICE_TAG = "service.ValveService"
 _VALVE_SELECTOR_PIN_S0 = "gpio_selector_pin_S0"

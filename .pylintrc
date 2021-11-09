@@ -1,8 +1,8 @@
 [TYPECHECK]
-ignored-classes=optparse.Values,thread._local,_thread._local,Bleno,GPIO
+ignored-classes=optparse.Values,thread._local,_thread._local,Bleno,RPi.GPIO
 
 [MESSAGES CONTROL]
-disable=logging-fstring-interpolation
+disable=logging-fstring-interpolation,unspecified-encoding
 
 [SIMILARITIES]
 

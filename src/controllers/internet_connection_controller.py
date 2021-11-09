@@ -56,11 +56,12 @@ class InternetConnectionController:
             self._logger.debug("Not connected to wifi. Searching for wifi credentials")
             if os.path.isfile(_WIFI_CREDENTIALS_FILE_PATH) is True:
                 self._logger.debug("Wifi credentials found.")
-                with open(_WIFI_CREDENTIALS_FILE_PATH, "r") as f:
-                    credentials = yaml.safe_load(f)
+                with open(_WIFI_CREDENTIALS_FILE_PATH, "r") as file:
+                    credentials = yaml.safe_load(file)
                     self.connect_to_wifi(
                         credentials["ssid"], credentials["psk"], save=False
                     )
+                    file.close()
 
         self._logger.debug("Initialization finished")
 
