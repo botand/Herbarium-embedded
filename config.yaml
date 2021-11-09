@@ -36,6 +36,6 @@ valve:
   closing_time: 300 # ms
 pump:
   gpio_speed_out: 13 # Pin 33
-  pwm_freq: 100
-  max_speed: 100
-  min_speed: 50
+  pwm_freq: 50
+  max_speed: 50
+  min_speed: 25
