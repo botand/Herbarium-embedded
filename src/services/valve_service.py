@@ -1,9 +1,8 @@
 import time
-from src.utils import time_in_millisecond
+from src.utils import time_in_millisecond, get_logger
 import RPi.GPIO as GPIO
-import logging
 
-_SERVICE_TAG = "Valve - "
+_SERVICE_TAG = "service.ValveService"
 _VALVE_SELECTOR_PIN_S0 = "gpio_selector_pin_S0"
 _VALVE_SELECTOR_PIN_S1 = "gpio_selector_pin_S1"
 _VALVE_SELECTOR_PIN_S2 = "gpio_selector_pin_S2"
@@ -17,6 +16,7 @@ _VALVE_CLOSING_TIME = "closing_time"
 
 
 class ValveService:
+    _logger = get_logger(_SERVICE_TAG)
     def __init__(self, config):
         """
         :param config: configuration file to use.
@@ -112,7 +112,7 @@ class ValveService:
         # if the valve is already in the asked position just pass too
         if asked_state == self._valve_state[asked_addr]:
             self._asked_valve_state.pop(0)  # Remove the asked position
-            logging.debug(f"{_SERVICE_TAG} Valve {asked_addr} already in position {asked_state}")
+            self._logger.debug(f"{_SERVICE_TAG} Valve {asked_addr} already in position {asked_state}")
             return
 
         # if we need to modify the valve position, check time and move !
@@ -135,7 +135,7 @@ class ValveService:
             self._valve_state[asked_addr] = asked_state  # Update valve movement
             self._asked_valve_state.pop(0)  # Remove the asked position
             self._is_moving = False
-            logging.debug(f"{_SERVICE_TAG} Valve {asked_addr} moved to position {asked_state}")
+            self._logger.debug(f"{_SERVICE_TAG} Valve {asked_addr} moved to position {asked_state}")
 
 
 

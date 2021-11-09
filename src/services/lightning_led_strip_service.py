@@ -1,14 +1,15 @@
 from neopixel import NeoPixel
-from src.utils import pin_number_to_digital_gpio, led_utils
-import logging
+from src.utils import pin_number_to_digital_gpio, led_utils, get_logger
 
-_SERVICE_TAG = "LightningLedStripService - "
+_SERVICE_TAG = "services.LightningLedStripService"
 _LED_COUNT_CONFIG_KEY = "led_count"
 _LED_PIN_CONFIG_KEY = "gpio_data_in"
 _LED_BY_TILE_KEY = "led_by_tile"
 
 
 class LightningLedService:
+    _logger = get_logger(_SERVICE_TAG)
+    
     def __init__(self, config):
         """
         :param config: configuration file to use.
@@ -38,7 +39,7 @@ class LightningLedService:
         :param tile_nb: tile number [0-15]
         """
         self._update_segment(tile_nb, led_utils.COLOR_WHITE, 1)
-        logging.debug(f"{_SERVICE_TAG} Turn ON Tile {tile_nb} Lightning")
+        self._logger.debug(f"{_SERVICE_TAG} Turn ON Tile {tile_nb} Lightning")
 
     def turn_off(self, tile_nb):
         """
@@ -46,7 +47,7 @@ class LightningLedService:
         :param tile_nb: tile number [0-15]
         """
         self._update_segment(tile_nb, led_utils.COLOR_WHITE, 0)
-        logging.debug(f"{_SERVICE_TAG} Turn OFF Tile {tile_nb} Lightning")
+        self._logger.debug(f"{_SERVICE_TAG} Turn OFF Tile {tile_nb} Lightning")
 
     def turn_off_all(self):
         """
@@ -55,5 +56,5 @@ class LightningLedService:
         for i in range(self._led_count):
             self._strip[i] = led_utils.COLOR_BLACK
         self._strip.show()
-        logging.debug(f"{_SERVICE_TAG} Turn OFF All Tiles Lightning")
+        self._logger.debug(f"{_SERVICE_TAG} Turn OFF All Tiles Lightning")
 

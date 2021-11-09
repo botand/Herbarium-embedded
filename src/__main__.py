@@ -1,21 +1,13 @@
 #!/usr/bin/env python3
 """Main program"""
 from src.utils import config, config_ble, led_utils, get_logger, time_in_millisecond
-from src.services import StatusIndicatorService
 from src.controllers import InternetConnectionController
-from src.bluetooth.services.device_identity_service import DeviceIdentityService
-from src.services.configuration import config, config_ble
-from src.services import BleService, StatusIndicatorService, LightningLedService, ValveService, PumpService
+from src.services import StatusIndicatorService, LightningLedService, ValveService, PumpService
 from src.models import StatusPattern
 import RPi.GPIO as GPIO
 import keyboard
 import board
 import busio
-import adafruit_ads1x15.ads1115 as ADS
-from adafruit_ads1x15.analog_in import AnalogIn
-
-
-
 
 # pylint: disable=missing-function-docstring
 def main():

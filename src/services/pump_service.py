@@ -1,7 +1,7 @@
 import RPi.GPIO as GPIO
-import logging
+from src.utils import get_logger
 
-_SERVICE_TAG = "Pump - "
+_SERVICE_TAG = "services.PumpService"
 _PUMP_PIN_CONFIG_KEY = "gpio_speed_out"
 _PWM_FREQ = "pwm_freq"
 _MAX_SPEED = "max_speed"
@@ -9,6 +9,8 @@ _MIN_SPEED = "min_speed"
 
 
 class PumpService:
+    _logger = get_logger(_SERVICE_TAG)
+    
     def __init__(self, config):
         self._pump_pin = config[_PUMP_PIN_CONFIG_KEY]
         self._pwm_freq = config[_PWM_FREQ]
@@ -20,7 +22,7 @@ class PumpService:
         self._pump.start(0)
 
         self._pwm_val = 0.0
-        logging.debug(f"{_SERVICE_TAG} Pump Initiated")
+        self._logger.debug(f"{_SERVICE_TAG} Pump Initiated")
 
     def _speed_to_pwm(self, speed):
         return speed * ((self._max_speed - self._min_speed) / 100.0) + self._min_speed
@@ -35,8 +37,8 @@ class PumpService:
 
     def stop(self):
         self._pump.ChangeDutyCycle(0)
-        logging.debug(f"{_SERVICE_TAG} Pump stopped")
+        self._logger.debug(f"{_SERVICE_TAG} Pump stopped")
 
     def full_speed(self):
         self._pump.ChangeDutyCycle(self._max_speed)
-        logging.debug(f"{_SERVICE_TAG} Pump at full speed")
+        self._logger.debug(f"{_SERVICE_TAG} Pump at full speed")
