@@ -1,0 +1,12 @@
+#!/bin/sh
+
+# Install dev dependencies
+pip install -r dev-requirements.txt
+
+# Execute formatting
+black .
+
+git add -u .
+
+# Execute linting
+pylint-fail-under --fail_under 8.0 src

@@ -1,9 +1,16 @@
 pybleno==0.11
 PyYAML==6.0
-RPi.GPIO==0.7.1a4
 Adafruit-Blinka==6.15.0
 rpi-ws281x==4.3.0
 adafruit-circuitpython-neopixel==6.2.2
 keyboard==0.13.5
+requests~=2.25.1
+pyftdi~=0.53.3
+packaging~=21.2
+keyring~=22.2.0
+pyserial~=3.5
+setuptools~=52.0.0
+wireless~=0.3.3
 adafruit-circuitpython-ads1x15==2.2.9
 adafruit-circuitpython-busdevice==5.1.0
+RPi.GPIO==0.7.1a4

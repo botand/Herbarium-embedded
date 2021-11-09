@@ -32,13 +32,25 @@ pip3 install -r requirements.txt
 
 ### Local setup
 
-TODO
+#### Wi-Fi
+
+If you don't want to set up the Wi-Fi of your device using bluetooth you can create a file `.wifi_credentials.yaml`
+with the following content:
+
+```yaml
+ssid: <YOUR_SSID_AKA_WIFI_NAME>
+psk: <YOUR_WIFI_PASSWORD>
+```
+
+This will connect your device to the Wi-Fi when the program starts.
+
+To set up the Wi-Fi using BLE, you will need to sent two (2) packet on the `setup_wifi` characteristic.
+The first one should be composed like this: `ssid:<YOUR_SSID>` and the second one: `psk:<YOUR_WIFI_PASSWORD>`
 
 ### Run the code
 
 First you will need to declare the environment variable `CONFIG_YAML_FILE`,
-which redirect to the `config.yaml` file. The file given in this repository is
-**NOT FOR PRODUCTION USE**. So to start the code, execute the following:
+which redirect to the `config.yaml` file. So to start the code, execute the following:
 
 ```shell
 sudo su
@@ -47,3 +59,20 @@ sudo python3 -m src
 ```
 You can also write the `CONFIG_YAML_FILE` variable into the `/etc/environment` file.
 Note that you will have to logout and login to access the variable.
+
+## Hooks
+
+This project use hooks to ensure the quality of the code. To enable them use this command:
+
+```shell
+git config core.hooksPath githooks
+```
+
+### pre-commit
+
+This hook will format and lint your code before every commit.
+
+### pre-push
+
+Before every push, the unit test of the application will be executed.
+If you don't use the default SignalR server, don't forget to change it on the hook file (`.git/hooks/pre-push`)
