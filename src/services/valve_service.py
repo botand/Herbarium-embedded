@@ -94,20 +94,29 @@ class ValveService:
 
     def close(self, tile_nb):
         """
+        Close selected Valve
+        :param tile_nb : tile number [0-15]
         """
         self._asked_valve_state.insert(-1, (tile_nb, "close"))  # Add close request at tail
 
     def close_all(self):
+        """
+        Close all valves
+        """
         for i in range(16):
             self.close(i)
 
     def open(self, tile_nb):
         """
+        Open Selected Valves
+        :param tile_nb : tile number [0-15]
         """
         self._asked_valve_state.insert(-1, (tile_nb, "open"))  # Add open request at tail
 
     def update(self):
-
+        """
+        Update the valves status and apply PWM control
+        """
         # is buffer is empty just pass
         if len(self._asked_valve_state) == 0:
             return
