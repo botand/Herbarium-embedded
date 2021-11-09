@@ -1,6 +1,6 @@
-import time
+"""Service to interact with the valves"""
 from src.utils import time_in_millisecond, get_logger
-import RPi.GPIO as GPIO
+from RPi import GPIO
 
 _SERVICE_TAG = "service.ValveService"
 _VALVE_SELECTOR_PIN_S0 = "gpio_selector_pin_S0"
@@ -16,7 +16,12 @@ _VALVE_CLOSING_TIME = "closing_time"
 
 
 class ValveService:
+    """
+    Service to interact with the valves
+    """
+
     _logger = get_logger(_SERVICE_TAG)
+
     def __init__(self, config):
         """
         :param config: configuration file to use.
@@ -24,10 +29,10 @@ class ValveService:
         """
 
         self._valve_pin = config[_VALVE_PIN_CONFIG_KEY]
-        self._valve_S0 = config[_VALVE_SELECTOR_PIN_S0]
-        self._valve_S1 = config[_VALVE_SELECTOR_PIN_S1]
-        self._valve_S2 = config[_VALVE_SELECTOR_PIN_S2]
-        self._valve_S3 = config[_VALVE_SELECTOR_PIN_S3]
+        self._valve_s0 = config[_VALVE_SELECTOR_PIN_S0]
+        self._valve_s1 = config[_VALVE_SELECTOR_PIN_S1]
+        self._valve_s2 = config[_VALVE_SELECTOR_PIN_S2]
+        self._valve_s3 = config[_VALVE_SELECTOR_PIN_S3]
         self._pwm_freq = config[_PWM_FREQ]
         self._position = {"open": config[_VALVE_POSITION_ON],
                           "close": config[_VALVE_POSITION_OFF]}
@@ -35,25 +40,25 @@ class ValveService:
                         'close': config[_VALVE_CLOSING_TIME]}
 
         # GPIO Assignation and configuration
-        GPIO.setup(self._valve_S0, GPIO.OUT)
-        GPIO.setup(self._valve_S1, GPIO.OUT)
-        GPIO.setup(self._valve_S2, GPIO.OUT)
-        GPIO.setup(self._valve_S3, GPIO.OUT)
+        GPIO.setup(self._valve_s0, GPIO.OUT)
+        GPIO.setup(self._valve_s1, GPIO.OUT)
+        GPIO.setup(self._valve_s2, GPIO.OUT)
+        GPIO.setup(self._valve_s3, GPIO.OUT)
 
         GPIO.setup(self._valve_pin, GPIO.OUT)
         self._valve = GPIO.PWM(self._valve_pin, self._pwm_freq)
         self._valve.start(0)
 
         # Valve position mechanism
-        self._valve_state = []  # actual position for all valves, will be fulled by initalizing process
+        self._valve_state = []  # actual position for all valves, will be fulled by initializing process
         self._asked_valve_state = []  # wait line of tuple (addr, asked_pos)
         self._is_moving = False
         self._previous_time = time_in_millisecond()
 
         # Initiate valves
-        for i in range(16):
-            self._valve_state.append("close")
         self.close_all()
+        for i in range(16):
+            self._valve_state.append("open")
 
     def _select_addr(self, valve_nb):
         """
@@ -68,29 +73,30 @@ class ValveService:
             bin_valve_nb = zero + bin_valve_nb
 
         if bin_valve_nb[0] == '1':
-            GPIO.output(self._valve_S3, GPIO.HIGH)
+            GPIO.output(self._valve_s3, GPIO.HIGH)
         else:
-            GPIO.output(self._valve_S3, GPIO.LOW)
+            GPIO.output(self._valve_s3, GPIO.LOW)
 
         if bin_valve_nb[1] == '1':
-            GPIO.output(self._valve_S2, GPIO.HIGH)
+            GPIO.output(self._valve_s2, GPIO.HIGH)
         else:
-            GPIO.output(self._valve_S2, GPIO.LOW)
+            GPIO.output(self._valve_s2, GPIO.LOW)
 
         if bin_valve_nb[2] == '1':
-            GPIO.output(self._valve_S1, GPIO.HIGH)
+            GPIO.output(self._valve_s1, GPIO.HIGH)
         else:
-            GPIO.output(self._valve_S1, GPIO.LOW)
+            GPIO.output(self._valve_s1, GPIO.LOW)
 
         if bin_valve_nb[3] == '1':
-            GPIO.output(self._valve_S0, GPIO.HIGH)
+            GPIO.output(self._valve_s0, GPIO.HIGH)
         else:
-            GPIO.output(self._valve_S0, GPIO.LOW)
+            GPIO.output(self._valve_s0, GPIO.LOW)
 
     def close(self, tile_nb):
         """
         """
         self._asked_valve_state.insert(-1, (tile_nb, "close"))  # Add close request at tail
+
     def close_all(self):
         for i in range(16):
             self.close(i)
@@ -136,9 +142,3 @@ class ValveService:
             self._asked_valve_state.pop(0)  # Remove the asked position
             self._is_moving = False
             self._logger.debug(f"{_SERVICE_TAG} Valve {asked_addr} moved to position {asked_state}")
-
-
-
-
-
-

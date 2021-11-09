@@ -1,3 +1,4 @@
+"""Service to interact with the LED Lightning"""
 from neopixel import NeoPixel
 from src.utils import pin_number_to_digital_gpio, led_utils, get_logger
 
@@ -8,8 +9,12 @@ _LED_BY_TILE_KEY = "led_by_tile"
 
 
 class LightningLedService:
+    """
+    Service to interact with the LED Lightning
+    """
+
     _logger = get_logger(_SERVICE_TAG)
-    
+
     def __init__(self, config):
         """
         :param config: configuration file to use.
@@ -57,4 +62,3 @@ class LightningLedService:
             self._strip[i] = led_utils.COLOR_BLACK
         self._strip.show()
         self._logger.debug(f"{_SERVICE_TAG} Turn OFF All Tiles Lightning")
-

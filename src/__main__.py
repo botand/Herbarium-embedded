@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
 """Main program"""
+import RPi.GPIO as GPIO
 from src.utils import config, config_ble, led_utils, get_logger, time_in_millisecond
 from src.controllers import InternetConnectionController
 from src.services import StatusIndicatorService, LightningLedService, ValveService, PumpService
 from src.models import StatusPattern
-import RPi.GPIO as GPIO
-import keyboard
-import board
-import busio
+
 
 # pylint: disable=missing-function-docstring
+
+
 def main():
+    """
+    Main loop
+    """
     logger = get_logger("root")
     logger.info("Version loaded: %s", config["version"])
 
@@ -18,7 +21,7 @@ def main():
 
     status_indicator_service.add_status(
         StatusPattern(
-    "Theatre chase pattern",
+            "Theatre chase pattern",
             led_utils.COLOR_ORANGE,
             led_utils.THEATRE_CHASE_ANIMATION,
             0.1,
@@ -40,6 +43,11 @@ def main():
     try:
         logger.debug("Starting main loop")
         logger.debug("You can stop the program using Ctrl + C safely ;)")
+        prev = time_in_millisecond()
+        tile = 0
+        tile_on = False
+        open_trig = False
+        pump_speed = 0
         while True:
             status_indicator_service.update()
             internet_connection_controller.update()
@@ -48,13 +56,13 @@ def main():
                 prev = time_in_millisecond()
 
                 if tile > 16:
-                    if on:
-                        on = False
+                    if tile_on:
+                        tile_on = False
                     else:
-                        on = True
+                        tile_on = True
                     tile = 1
 
-                if on:
+                if tile_on:
                     lightning_led.turn_on(tile)
 
                 else:
