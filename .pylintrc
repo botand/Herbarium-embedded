@@ -1,3 +1,9 @@
+[TYPECHECK]
+ignored-classes=optparse.Values,thread._local,_thread._local,Bleno,GPIO
+
+[MESSAGES CONTROL]
+disable=logging-fstring-interpolation
+
 [SIMILARITIES]
 
 # Minimum lines number of a similarity.

@@ -34,10 +34,14 @@ class ValveService:
         self._valve_s2 = config[_VALVE_SELECTOR_PIN_S2]
         self._valve_s3 = config[_VALVE_SELECTOR_PIN_S3]
         self._pwm_freq = config[_PWM_FREQ]
-        self._position = {"open": config[_VALVE_POSITION_ON],
-                          "close": config[_VALVE_POSITION_OFF]}
-        self._timing = {'open': config[_VALVE_OPENING_TIME],
-                        'close': config[_VALVE_CLOSING_TIME]}
+        self._position = {
+            "open": config[_VALVE_POSITION_ON],
+            "close": config[_VALVE_POSITION_OFF],
+        }
+        self._timing = {
+            "open": config[_VALVE_OPENING_TIME],
+            "close": config[_VALVE_CLOSING_TIME],
+        }
 
         # GPIO Assignation and configuration
         GPIO.setup(self._valve_s0, GPIO.OUT)
@@ -50,7 +54,9 @@ class ValveService:
         self._valve.start(0)
 
         # Valve position mechanism
-        self._valve_state = []  # actual position for all valves, will be fulled by initializing process
+        self._valve_state = (
+            []
+        )  # actual position for all valves, will be fulled by initializing process
         self._asked_valve_state = []  # wait line of tuple (addr, asked_pos)
         self._is_moving = False
         self._previous_time = time_in_millisecond()
@@ -69,25 +75,25 @@ class ValveService:
 
         # number of 0 correction, all number must be on 4 digit
         zero = "0"
-        for i in range(4-len(bin_valve_nb)):
+        for i in range(4 - len(bin_valve_nb)):
             bin_valve_nb = zero + bin_valve_nb
 
-        if bin_valve_nb[0] == '1':
+        if bin_valve_nb[0] == "1":
             GPIO.output(self._valve_s3, GPIO.HIGH)
         else:
             GPIO.output(self._valve_s3, GPIO.LOW)
 
-        if bin_valve_nb[1] == '1':
+        if bin_valve_nb[1] == "1":
             GPIO.output(self._valve_s2, GPIO.HIGH)
         else:
             GPIO.output(self._valve_s2, GPIO.LOW)
 
-        if bin_valve_nb[2] == '1':
+        if bin_valve_nb[2] == "1":
             GPIO.output(self._valve_s1, GPIO.HIGH)
         else:
             GPIO.output(self._valve_s1, GPIO.LOW)
 
-        if bin_valve_nb[3] == '1':
+        if bin_valve_nb[3] == "1":
             GPIO.output(self._valve_s0, GPIO.HIGH)
         else:
             GPIO.output(self._valve_s0, GPIO.LOW)
@@ -97,7 +103,9 @@ class ValveService:
         Close selected Valve
         :param tile_nb : tile number [0-15]
         """
-        self._asked_valve_state.insert(-1, (tile_nb, "close"))  # Add close request at tail
+        self._asked_valve_state.insert(
+            -1, (tile_nb, "close")
+        )  # Add close request at tail
 
     def close_all(self):
         """
@@ -111,7 +119,9 @@ class ValveService:
         Open Selected Valves
         :param tile_nb : tile number [0-15]
         """
-        self._asked_valve_state.insert(-1, (tile_nb, "open"))  # Add open request at tail
+        self._asked_valve_state.insert(
+            -1, (tile_nb, "open")
+        )  # Add open request at tail
 
     def update(self):
         """
@@ -127,7 +137,9 @@ class ValveService:
         # if the valve is already in the asked position just pass too
         if asked_state == self._valve_state[asked_addr]:
             self._asked_valve_state.pop(0)  # Remove the asked position
-            self._logger.debug(f"{_SERVICE_TAG} Valve {asked_addr} already in position {asked_state}")
+            self._logger.debug(
+                f"{_SERVICE_TAG} Valve {asked_addr} already in position {asked_state}"
+            )
             return
 
         # if we need to modify the valve position, check time and move !
@@ -141,7 +153,9 @@ class ValveService:
         # So if the movement is incomplete
         if actual_time - self._previous_time < self._timing[asked_state]:
             self._select_addr(asked_addr)  # valve selection
-            self._valve.ChangeDutyCycle(self._position[asked_state])  # update valve movement
+            self._valve.ChangeDutyCycle(
+                self._position[asked_state]
+            )  # update valve movement
 
         # if the movement is finished
         else:
@@ -150,4 +164,6 @@ class ValveService:
             self._valve_state[asked_addr] = asked_state  # Update valve movement
             self._asked_valve_state.pop(0)  # Remove the asked position
             self._is_moving = False
-            self._logger.debug(f"{_SERVICE_TAG} Valve {asked_addr} moved to position {asked_state}")
+            self._logger.debug(
+                f"{_SERVICE_TAG} Valve {asked_addr} moved to position {asked_state}"
+            )

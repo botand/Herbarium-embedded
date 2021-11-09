@@ -9,4 +9,4 @@ black .
 git add -u .
 
 # Execute linting
-pylint-fail-under --fail_under 8.0 src
+pylint --fail-under 8.0 src
