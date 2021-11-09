@@ -55,7 +55,7 @@ jobs:
         pip3 install --no-cache-dir -r dev-requirements.txt
     - name: Execute linter
       run: |
-        pylint-fail-under --fail_under 8.0 src
+        pylint --fail-under 8.0 src
 #    - name: Execute tests
 #      run: |
 #        pytest
