@@ -24,7 +24,7 @@ class ValveService:
 
     def __init__(self, config):
         """
-        :param config: configuration file to use.
+        :param config: configuration to use.
         :type config : dict of str
         """
 
