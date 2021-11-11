@@ -17,6 +17,10 @@ from src.services import (
 )
 from src.models import StatusPattern
 
+import busio
+import adafruit_ads1x15.ads1115 as ADS
+from adafruit_ads1x15.analog_in import AnalogIn
+
 
 # pylint: disable=missing-function-docstring
 # pylint: disable=too-many-statements
@@ -59,12 +63,22 @@ def main():
         open_trig = False
         pump_speed = 0
         valve_count = 0
+        pot_count = 0
+        plant_s0 = config["plant"]["gpio_selector_pin_S0"]
+        plant_s1 = config["plant"]["gpio_selector_pin_S1"]
+        plant_s2 = config["plant"]["gpio_selector_pin_S2"]
+        plant_s3 = config["plant"]["gpio_selector_pin_S3"]
+        i2c = busio.I2C(5, 3)
+        ads = ADS.ADS1115(i2c)
+        chan = AnalogIn(ads, ADS.P2)
+
+
         while True:
             status_indicator_service.update()
             internet_connection_controller.update()
             valve.update()
 
-            if time_in_millisecond() - prev > 500:
+            if time_in_millisecond() - prev > 1000:
                 prev = time_in_millisecond()
 
                 if tile > 16:
@@ -97,6 +111,44 @@ def main():
                 pump_speed += 20
                 if pump_speed > 100.0:
                     pump_speed = 0.0
+
+                # Check des valves
+
+                pot_count += 1
+                if pot_count % 16 == 0:
+                    pot_count = 0
+
+                pot_count_str = "{0:b}".format(pot_count)
+
+                # number of 0 correction, all number must be on 4 digit
+                zero = "0"
+                for i in range(4 - len(pot_count_str)):
+                    bin_valve_nb = zero + pot_count_str
+
+                if pot_count_str[0] == "1":
+                    GPIO.output(plant_s3, GPIO.HIGH)
+                else:
+                    GPIO.output(plant_s3, GPIO.LOW)
+
+                if pot_count_str[1] == "1":
+                    GPIO.output(plant_s2, GPIO.HIGH)
+                else:
+                    GPIO.output(plant_s2, GPIO.LOW)
+
+                if pot_count_str[2] == "1":
+                    GPIO.output(plant_s1, GPIO.HIGH)
+                else:
+                    GPIO.output(plant_s1, GPIO.LOW)
+
+                if pot_count_str[3] == "1":
+                    GPIO.output(plant_s0, GPIO.HIGH)
+                else:
+                    GPIO.output(plant_s0, GPIO.LOW)
+
+                logger.debug(
+                    f"ADC TESTING : Line {pot_count} : Voltage Value : {chan.voltage} !"
+                )
+
 
     except KeyboardInterrupt:
         # Stopping all the controllers and services

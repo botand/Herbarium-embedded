@@ -50,3 +50,11 @@ pump:
   pwm_freq: 50
   max_speed: 100
   min_speed: 50
+plant:
+  gpio_selector_pin_S0: 24 # Pin 29
+  gpio_selector_pin_S1: 26 # Pin 31
+  gpio_selector_pin_S2: 36 # Pin 35
+  gpio_selector_pin_S3: 38 # Pin 37
+i2c_analog_value:
+  i2c_sda: SDA1
+  i2c_scl: SCL1
