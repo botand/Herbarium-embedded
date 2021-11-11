@@ -18,7 +18,7 @@ class PumpService:
 
     def __init__(self, config):
         """
-        :param config: configuration file to use.
+        :param config: configuration to use.
         :type config : dict of str
         """
         self._pump_pin = config[_PUMP_PIN_CONFIG_KEY]
