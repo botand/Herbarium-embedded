@@ -37,6 +37,7 @@ class PumpService:
         """
         Convert speed into pwm percentage
         :param speed: in percentage [0.0-100.0]
+        :type speed: double
         """
         return speed * ((self._max_speed - self._min_speed) / 100.0) + self._min_speed
 
