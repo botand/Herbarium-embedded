@@ -64,7 +64,7 @@ class ValveService:
         # Initiate valves
         self.close_all()
         for i in range(16):
-            self._valve_state.append("open")
+            self._valve_state.append("close")
 
     def _select_addr(self, valve_nb):
         """
@@ -106,7 +106,8 @@ class ValveService:
         :type tile_nb: int
         """
         self._asked_valve_state.insert(
-            -1, (tile_nb, "close")
+            len(self._asked_valve_state),
+            (tile_nb, "close")
         )  # Add close request at tail
 
     def close_all(self):
@@ -122,7 +123,8 @@ class ValveService:
         :param tile_nb : tile number [0-15]
         """
         self._asked_valve_state.insert(
-            -1, (tile_nb, "open")
+            len(self._asked_valve_state),
+            (tile_nb, "open")
         )  # Add open request at tail
 
     def update(self):
