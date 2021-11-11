@@ -101,3 +101,33 @@ Enter ".help" for usage hints.
 sqlite> .exit
 pi@:~ $
 ```
+##Auto-Run Python Program on Raspberry Pi Startup
+The latest Raspbian have some of its boot sequences will lead some problems in running your python script using Cron or rc.local. so  “Systemd” is recommended to overcome such issues.  
+Create a configuration file and edit it. This file will tell systemd which program needs to be executed :
+```shell
+sudo nano /lib/systemd/system/myscript.service
+```
+Add the following lines in the file:
+```shell
+[Unit]
+Description=PiCube Pattern
+After=multi-user.target
+[Service]
+Type=idle
+ExecStart=/usr/bin/python3  /home/pi/myscript.py
+[Install]
+WantedBy=multi-user.target
+```
+Change the permissions on the configuration file to 644:
+```shell
+sudo chmod 644 /lib/systemd/system/myscript.service
+```
+Now tell the systemd to start the process on boot up :
+```shell
+sudo systemctl daemon-reload
+sudo systemctl enable myscript.service
+```
+Now reboot your Pi and the process should run:
+```shell
+sudo reboot
+```
