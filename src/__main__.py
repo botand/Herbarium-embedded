@@ -68,7 +68,7 @@ def main():
         plant_s1 = config["plant"]["gpio_selector_pin_S1"]
         plant_s2 = config["plant"]["gpio_selector_pin_S2"]
         plant_s3 = config["plant"]["gpio_selector_pin_S3"]
-        i2c = busio.I2C(5, 3)
+        i2c = busio.I2C(board.SCL, board.SDA)
         ads = ADS.ADS1115(i2c)
         chan = AnalogIn(ads, ADS.P2)
 
