@@ -1,13 +1,7 @@
 #!/usr/bin/env python3
 """Main program"""
 import RPi.GPIO as GPIO
-from src.utils import (
-    config, 
-    config_ble,
-    led_utils, 
-    get_logger, 
-    time_in_millisecond
-)
+from src.utils import config, config_ble, led_utils, get_logger, time_in_millisecond
 from src.controllers import InternetConnectionController
 from src.services import (
     StatusIndicatorService,
