@@ -58,7 +58,7 @@ def main():
         tile_on = False
         open_trig = False
         pump_speed = 0
-        valve_count = 0
+        valve_count = 4
         while True:
             status_indicator_service.update()
             internet_connection_controller.update()
@@ -87,7 +87,7 @@ def main():
                 if open_trig:
                     valve.open(valve_count)
                     open_trig = False
-                    valve_count += 1
+                    # valve_count += 1
                     if valve_count % 16 == 0:
                         valve_count = 0
 
