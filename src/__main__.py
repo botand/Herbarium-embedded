@@ -128,7 +128,7 @@ def main():
                 # number of 0 correction, all number must be on 4 digit
                 zero = "0"
                 for i in range(4 - len(pot_count_str)):
-                    bin_valve_nb = zero + pot_count_str
+                    pot_count_str = zero + pot_count_str
 
                 if pot_count_str[0] == "1":
                     GPIO.output(plant_s3, GPIO.HIGH)
