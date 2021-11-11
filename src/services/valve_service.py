@@ -62,9 +62,18 @@ class ValveService:
         self._previous_time = time_in_millisecond()
 
         # Initiate valves
+        self._logger.debug(
+            f"{_SERVICE_TAG} Valve Initialisation - Closing all the vales"
+        )
         self.close_all()
         for i in range(16):
-            self._valve_state.append("close")
+            self._valve_state.append("open")
+        ref_time = time_in_millisecond()
+        while time_in_millisecond() < (ref_time + 16*self._timing["close"]):
+            self.update()
+        self._logger.debug(
+            f"{_SERVICE_TAG} Valve Initialisation - Done !"
+        )
 
     def _select_addr(self, valve_nb):
         """
