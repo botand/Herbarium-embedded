@@ -64,25 +64,23 @@ def main():
             internet_connection_controller.update()
             valve.update()
 
-
-
             if time_in_millisecond() - prev > 500:
                 prev = time_in_millisecond()
-            #
-            #     if tile > 16:
-            #         if tile_on:
-            #             tile_on = False
-            #         else:
-            #             tile_on = True
-            #         tile = 1
-            #
-            #     if tile_on:
-            #         lightning_led.turn_on(tile)
-            #
-            #     else:
-            #         lightning_led.turn_off(tile)
-            #
-            #     tile = tile + 1
+
+                if tile > 16:
+                    if tile_on:
+                        tile_on = False
+                    else:
+                        tile_on = True
+                    tile = 1
+
+                if tile_on:
+                    lightning_led.turn_on(tile)
+
+                else:
+                    lightning_led.turn_off(tile)
+
+                tile = tile + 1
 
                 if open_trig:
                     valve.open(valve_count)
@@ -94,11 +92,11 @@ def main():
                 else:
                     valve.close(valve_count)
                     open_trig = True
-            #
-            #     pump.set_speed(pump_speed)
-            #     pump_speed += 20
-            #     if pump_speed > 100.0:
-            #         pump_speed = 0.0
+
+                pump.set_speed(pump_speed)
+                pump_speed += 20
+                if pump_speed > 100.0:
+                    pump_speed = 0.0
 
     except KeyboardInterrupt:
         # Stopping all the controllers and services
