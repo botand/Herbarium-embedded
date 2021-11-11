@@ -102,6 +102,7 @@ class ValveService:
         """
         Close selected Valve
         :param tile_nb : tile number [0-15]
+        :type tile_nb: int
         """
         self._asked_valve_state.insert(
             -1, (tile_nb, "close")
