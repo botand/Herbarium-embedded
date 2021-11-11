@@ -58,7 +58,7 @@ def main():
         tile_on = False
         open_trig = False
         pump_speed = 0
-        valve_count = 4
+        valve_count = 0
         while True:
             status_indicator_service.update()
             internet_connection_controller.update()
