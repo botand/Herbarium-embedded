@@ -66,7 +66,7 @@ def main():
 
 
 
-            if time_in_millisecond() - prev > 1000:
+            if time_in_millisecond() - prev > 3000:
                 prev = time_in_millisecond()
             #
             #     if tile > 16:
