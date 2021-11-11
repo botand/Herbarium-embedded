@@ -52,39 +52,45 @@ def main():
         tile_on = False
         open_trig = False
         pump_speed = 0
+        valve_count = 0
         while True:
             status_indicator_service.update()
             internet_connection_controller.update()
             valve.update()
+
+
+
             if time_in_millisecond() - prev > 500:
                 prev = time_in_millisecond()
-
-                if tile > 16:
-                    if tile_on:
-                        tile_on = False
-                    else:
-                        tile_on = True
-                    tile = 1
-
-                if tile_on:
-                    lightning_led.turn_on(tile)
-
-                else:
-                    lightning_led.turn_off(tile)
-
-                tile = tile + 1
+            #
+            #     if tile > 16:
+            #         if tile_on:
+            #             tile_on = False
+            #         else:
+            #             tile_on = True
+            #         tile = 1
+            #
+            #     if tile_on:
+            #         lightning_led.turn_on(tile)
+            #
+            #     else:
+            #         lightning_led.turn_off(tile)
+            #
+            #     tile = tile + 1
 
                 if open_trig:
-                    valve.open(0)
+                    valve.open(valve_count)
                     open_trig = False
-                else:
-                    valve.close(0)
-                    open_trig = True
+                    valve_count += 1
 
-                pump.set_speed(pump_speed)
-                pump_speed += 20
-                if pump_speed > 100.0:
-                    pump_speed = 0.0
+                else:
+                    valve.close(valve_count)
+                    open_trig = True
+            #
+            #     pump.set_speed(pump_speed)
+            #     pump_speed += 20
+            #     if pump_speed > 100.0:
+            #         pump_speed = 0.0
 
     except KeyboardInterrupt:
         # Stopping all the controllers and services
