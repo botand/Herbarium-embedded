@@ -37,7 +37,7 @@ led_strip:
 valve:
   gpio_selector_pin_S0: 5 # Pin 29
   gpio_selector_pin_S1: 6 # Pin 31
-  gpio_selector_pin_S2: 15 # Pin 35
+  gpio_selector_pin_S2: 19 # Pin 35
   gpio_selector_pin_S3: 26 # Pin 37
   gpio_position_out: 12 # Pin 32
   pwm_freq: 50
