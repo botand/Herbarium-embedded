@@ -45,6 +45,7 @@ class PumpService:
         """
         Define the speed of the pump and applies it.
         :param speed: in percentage [0.0-100.0]
+        :type speed: double
         """
         if speed == 0.0:
             self.stop()
