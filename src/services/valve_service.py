@@ -68,8 +68,7 @@ class ValveService:
         self.close_all()
         for i in range(16):
             self._valve_state.append("open")
-        ref_time = time_in_millisecond()
-        while time_in_millisecond() < (ref_time + 16*self._timing["close"]):
+        while self._valve_state[15] != "close":
             self.update()
         self._logger.debug(
             f"{_SERVICE_TAG} Valve Initialisation - Done !"
@@ -114,8 +113,7 @@ class ValveService:
         :param tile_nb : tile number [0-15]
         :type tile_nb: int
         """
-        self._asked_valve_state.insert(
-            len(self._asked_valve_state),
+        self._asked_valve_state.append(
             (tile_nb, "close")
         )  # Add close request at tail
 
@@ -131,8 +129,7 @@ class ValveService:
         Open Selected Valves
         :param tile_nb : tile number [0-15]
         """
-        self._asked_valve_state.insert(
-            len(self._asked_valve_state),
+        self._asked_valve_state.append(
             (tile_nb, "open")
         )  # Add open request at tail
 
