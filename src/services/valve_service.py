@@ -69,6 +69,7 @@ class ValveService:
     def _select_addr(self, valve_nb):
         """
         :param valve_nb: decimal selected valve [0-15]
+        :type valve_nb: int
         Convert the decimal value into binary and update the GPIO selectors
         """
         bin_valve_nb = "{0:b}".format(valve_nb)
