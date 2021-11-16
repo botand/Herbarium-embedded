@@ -6,8 +6,25 @@ name: Python application
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - '.gitignore'
+      - 'README.md'
+      - 'logs/**'
+      - '.github/**'
+      - '.pylintrc'
+      - '.githooks/**'
+      - 'database/**'
+      - 'Docs/**'
   pull_request:
-
+    paths-ignore:
+      - '.gitignore'
+      - 'README.md'
+      - 'logs/**'
+      - '.github/**'
+      - '.pylintrc'
+      - '.githooks/**'
+      - 'database/**'
+      - 'Docs/**'
 
 
 jobs:
