@@ -22,7 +22,7 @@ class Greenhouse(object):
     SOIL = 26
     LIGHT = 18
 
-    def __init__(self, db_path='/home/pi/.greenhouse/greenhouse.db'):
+    def __init__(self, db_path="/home/pi/.greenhouse/greenhouse.db"):
         """
         db_path defaults to /home/pi/.greenhouse/greenhouse.db
         """
@@ -50,19 +50,16 @@ class Greenhouse(object):
 
     def _get_humidity(self):
         humidity = Adafruit_DHT.read_retry(
-            sensor=self.DHT_SENSOR,
-            pin=self.DHT,
-            retries=5
+            sensor=self.DHT_SENSOR, pin=self.DHT, retries=5
         )
-        return (humidity)
+        return humidity
 
     def _get_soil_moisture(self):
         time_taken = self._time_charging_soil_capacitor()
-        totally_wet_time = 4E-3
+        totally_wet_time = 4e-3
         totally_dry_time = 0.9
-        moisture = (
-            math.log(time_taken / totally_dry_time) /
-            math.log(totally_wet_time / totally_dry_time)
+        moisture = math.log(time_taken / totally_dry_time) / math.log(
+            totally_wet_time / totally_dry_time
         )
         return max(0, min(1, moisture)) * 100
 
@@ -93,10 +90,7 @@ class Greenhouse(object):
         GPIO.setup(pin, GPIO.IN)
         start_time = time()
         end_time = time()
-        while (
-            GPIO.input(pin) == GPIO.LOW and
-            time() - start_time < self.darkness_level
-        ):
+        while GPIO.input(pin) == GPIO.LOW and time() - start_time < self.darkness_level:
             end_time = time()
         time_taken = end_time - start_time
         return min(time_taken, self.darkness_level)
@@ -123,16 +117,16 @@ class Greenhouse(object):
         Save sensor readings to database
         """
         timestamp = self._get_timestamp()
-        tank_level  = self.tank_level
+        tank_level = self.tank_level
         humidity = self.humidity
         soil = self.soil
         light = self.light
 
-        values = (timestamp, tank_level , humidity, soil, light)
+        values = (timestamp, tank_level, humidity, soil, light)
 
         self.db.record_sensor_values(values)
 
-    def export_to_csv(self, file_path='/home/pi/greenhouse.csv'):
+    def export_to_csv(self, file_path="/home/pi/greenhouse.csv"):
         """
         Export sensor data from database and save as CSV file in file_path
         Defaults to /home/pi/greenhouse.csv
@@ -153,5 +147,6 @@ def main():
     print("Light:")
     print(greenhouse.light)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
