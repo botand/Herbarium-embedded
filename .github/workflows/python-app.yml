@@ -6,8 +6,25 @@ name: Python application
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - '.gitignore'
+      - 'README.md'
+      - 'logs/**'
+      - '.github/**'
+      - '.pylintrc'
+      - '.githooks/**'
+      - 'database/**'
+      - 'Docs/**'
   pull_request:
-
+    paths-ignore:
+      - '.gitignore'
+      - 'README.md'
+      - 'logs/**'
+      - '.github/**'
+      - '.pylintrc'
+      - '.githooks/**'
+      - 'database/**'
+      - 'Docs/**'
 
 
 jobs:
@@ -55,7 +72,7 @@ jobs:
         pip3 install --no-cache-dir -r dev-requirements.txt
     - name: Execute linter
       run: |
-        pylint-fail-under --fail_under 8.0 src
+        pylint --fail-under 8.0 src
 #    - name: Execute tests
 #      run: |
 #        pytest
