@@ -30,13 +30,6 @@ class DatabaseService:
     def __init__(self):
         """Initialize the service"""
         self._db = sqlite.connect(_db_path)
-        self._logger.debug("Run the initialization scripts")
-
-        files = os.listdir(_db_init_scripts_dir)
-        for file_path in files:
-            with open(file_path, "r") as file:
-                self._logger.debug("executing %s file", file_path)
-                self._db.executescript(file.read())
 
         self._logger.info("initialized")
 
@@ -64,3 +57,13 @@ class DatabaseService:
         self._logger.debug("Closing database connection")
         self._db.close()
         self._logger.info("Database connection closed")
+
+    def run_init_scripts(self):
+        """Run all the scripts contained in the database/upgrades folder."""
+        self._logger.debug("Run the initialization scripts")
+
+        files = os.listdir(_db_init_scripts_dir)
+        for file_path in files:
+            with open(file_path, "r") as file:
+                self._logger.debug("executing %s file", file_path)
+                self._db.executescript(file.read())

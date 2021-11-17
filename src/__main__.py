@@ -8,6 +8,7 @@ from src.services import (
     LightningLedService,
     ValveService,
     PumpService,
+    DatabaseService,
 )
 from src.models import StatusPattern
 
@@ -42,6 +43,8 @@ def main():
     valve = ValveService(config["valve"])
     pump = PumpService(config["pump"])
     pump.stop()
+
+    DatabaseService.instance().run_init_scripts()
 
     print("You can stop the program using Ctrl + C safely ;)")
     try:
