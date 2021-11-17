@@ -1,10 +1,13 @@
 """Service to interact with the database"""
-from src.utils.logger import get_logger
-import sqlite3 as sqlite
 import os
+import sqlite3 as sqlite
+from src.utils.logger import get_logger
 
 _SERVICE_TAG = "services.DatabaseService"
 _db_path = os.getenv("DB_FILE", ".database.db")
+_db_init_scripts_dir = os.path.join(
+    os.path.dirname(__file__), "../../database/upgrades"
+)
 
 
 class DatabaseService:
@@ -27,6 +30,14 @@ class DatabaseService:
     def __init__(self):
         """Initialize the service"""
         self._db = sqlite.connect(_db_path)
+        self._logger.debug("Run the initialization scripts")
+
+        files = os.listdir(_db_init_scripts_dir)
+        for file_path in files:
+            with open(file_path, "r") as file:
+                self._logger.debug("executing %s file", file_path)
+                self._db.executescript(file.read())
+
         self._logger.info("initialized")
 
     def execute(self, query, parameters=None):

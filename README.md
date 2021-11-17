@@ -61,10 +61,12 @@ which redirect to the `config.yaml` file. So to start the code, execute the foll
 ```shell
 sudo su
 sudo export CONFIG_YAML_FILE='<YOUR-CONFIG-FILE>'
+sudo export DB_FILE='<YOUR-SQLITE-DB-FILE>'
+sudo export DB_INIT_SCRIPTS_DIR='<DATABASE-FOLDER>' # Path to the 
 sudo python3 -m src
 ```
-You can also write the `CONFIG_YAML_FILE` variable into the `/etc/environment` file.
-Note that you will have to logout and login to access the variable.
+You can also write the `CONFIG_YAML_FILE` and `DB_FILE` variables into the `/etc/environment` file.
+Note that you will have to logout and login to access the variables.
 
 ### Auto-Run Python Program on Raspberry Pi Startup
 
