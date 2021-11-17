@@ -21,7 +21,7 @@ This project should run on a Raspberry Pi with bluetooth. For `Ubuntu/Debian/Ras
 install the following packages:
 
 ```shell
-sudo apt-get install bluetooth bluez libbluetooth-dev libudev-dev
+sudo apt-get install bluetooth bluez libbluetooth-dev libudev-dev sqlite3
 ```
 
 Install the python requirements:
@@ -31,6 +31,12 @@ pip3 install -r requirements.txt
 ```
 
 ### Local setup
+
+Make sure to install the dev dependencies, using the following command:
+
+```shell
+pip3 install -r dev-requirements.txt
+```
 
 #### Wi-Fi
 
@@ -60,6 +66,43 @@ sudo python3 -m src
 You can also write the `CONFIG_YAML_FILE` variable into the `/etc/environment` file.
 Note that you will have to logout and login to access the variable.
 
+### Auto-Run Python Program on Raspberry Pi Startup
+
+We recommend using `systemd` to run the python program after the raspberry pi is started. 
+Create a configuration file and edit it. This file will tell systemd which program needs to be executed:
+
+```shell
+sudo nano /lib/systemd/system/herbarium.service
+```
+
+Add the following lines in the file:
+```shell
+[Unit]
+Description=PiCube Pattern
+After=multi-user.target
+[Service]
+Type=idle
+ExecStart=/usr/bin/python3  /<PATH-TO-THE-PROJECT>/__main__.py
+[Install]
+WantedBy=multi-user.target
+```
+
+Change the permissions on the configuration file to 644:
+```shell
+sudo chmod 644 /lib/systemd/system/herbarium.service
+```
+
+Now tell the systemd to start the process on boot up :
+```shell
+sudo systemctl daemon-reload
+sudo systemctl enable herbarium.service
+```
+
+Now reboot your Pi and the process should run:
+```shell
+sudo reboot
+```
+
 ## Hooks
 
 This project use hooks to ensure the quality of the code. To enable them use this command:
@@ -76,58 +119,3 @@ This hook will format and lint your code before every commit.
 
 Before every push, the unit test of the application will be executed.
 If you don't use the default SignalR server, don't forget to change it on the hook file (`.git/hooks/pre-push`)
-
-##Installing SQLite to the Raspberry Pi
-1. To make sure we don’t run into any issues when installing SQLite, we should first update the operating system.
-You can update your Raspberry Pi’s operating system by running the following two commands>
-```shell
-sudo apt update
-sudo apt full-upgrade
-```
-These commands will update the list of packages on your device and then upgrade any out-of-date packages.
-
-2. Once the update process finishes, you can install SQLite to your Raspberry Pi.
-All you need to do to install SQLite is to run the following command.
-
-```shell
-sudo apt install sqlite3
-```
-You will notice that we are using SQLite 3  which is the latest major version at the time of publishing.
-The exact version the Raspbian repository provides is, at the time of publishing, “3.27.2“.
-```shell
-pi@:~ $ sqlite3 my_DB
-SQLite version 3.27.2 2019-02-25 16:06:06
-Enter ".help" for usage hints.
-sqlite> .exit
-pi@:~ $
-```
-##Auto-Run Python Program on Raspberry Pi Startup
-The latest Raspbian have some of its boot sequences will lead some problems in running your python script using Cron or rc.local. so  “Systemd” is recommended to overcome such issues.  
-Create a configuration file and edit it. This file will tell systemd which program needs to be executed :
-```shell
-sudo nano /lib/systemd/system/myscript.service
-```
-Add the following lines in the file:
-```shell
-[Unit]
-Description=PiCube Pattern
-After=multi-user.target
-[Service]
-Type=idle
-ExecStart=/usr/bin/python3  /home/pi/myscript.py
-[Install]
-WantedBy=multi-user.target
-```
-Change the permissions on the configuration file to 644:
-```shell
-sudo chmod 644 /lib/systemd/system/myscript.service
-```
-Now tell the systemd to start the process on boot up :
-```shell
-sudo systemctl daemon-reload
-sudo systemctl enable myscript.service
-```
-Now reboot your Pi and the process should run:
-```shell
-sudo reboot
-```
