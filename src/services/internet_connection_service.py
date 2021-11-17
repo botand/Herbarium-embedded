@@ -15,6 +15,7 @@ class InternetConnectionService:
 
     def __init__(self):
         self._wireless = Wireless()
+        self._logger.info("initialized")
 
     def check_connection(self):
         """

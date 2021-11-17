@@ -25,17 +25,23 @@ class DatabaseService:
 
     def __init__(self):
         self._db = sqlite.connect(_db_path)
+        self._cursor = self._db.cursor()
 
-    def execute(self, sql, parameters=None):
+    def execute(self, query, parameters=None):
         """
-        Execute a SQL request.
-        :param sql:
-        :type sql: str
-        :param parameters:
-        :type parameters Iterable
-        :return:
+        Execute a SQL request. This function doesn't return the result of the query
+        :param query: SQL query to execute.
+        :type query: str
+        :param parameters: all the parameters for the query.
+        :type parameters Iterable|dict
+        :return the results of the query
+        :rtype list
         """
 
         if parameters is None:
             parameters = []
-        self._db.execute(sql, parameters)
+        self._cursor.execute(query, parameters)
+        result = self._cursor.fetchall()
+        self._cursor.commit()
+
+        return result

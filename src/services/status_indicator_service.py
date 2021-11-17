@@ -76,6 +76,7 @@ class StatusIndicatorService:
 
         self._interval_update = ring_config[_INTERVAL_UPDATE]
         self._last_update = 0
+        self._logger.info("initialized")
 
     def add_status(self, status):
         """
