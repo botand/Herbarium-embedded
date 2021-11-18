@@ -55,8 +55,8 @@ plant:
 adc_config:
   i2c_sda: 2
   i2c_scl: 3
-  adc_channel_water_level: 0
-  adc_channel_ambient_luminosity: 1
+  adc_channel_ambient_luminosity: 0
+  adc_channel_water_level: 1
   adc_channel_plant_hygrometry: 2
   gpio_selector_pin_S0: 8 # Pin 24
   gpio_selector_pin_S1: 7 # Pin 26
