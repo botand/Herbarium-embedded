@@ -53,8 +53,8 @@ pump:
 plant:
 
 adc_config:
-  i2c_sda: 3
-  i2c_scl: 5
+  i2c_sda: 2
+  i2c_scl: 3
   adc_channel_water_level: 0
   adc_channel_ambient_luminosity: 1
   adc_channel_plant_hygrometry: 2
