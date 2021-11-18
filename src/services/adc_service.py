@@ -34,12 +34,12 @@ class ADCService:
         return ADCService.__instance
 
     def __init__(self):
-        adc_config = config["status_indicator"]
+        adc_config = config["adc_config"]
         self._i2c = busio.I2C(adc_config[_I2C_PIN_SCL], adc_config[_I2C_PIN_SDA])
         self._adc = ads.ADS1115(self._i2c)
-        self._water_level_channel = AnalogIn(self._adc, int(adc_config[_ADC_CHANNEL_WATER_LEVEL]))
-        self._ambient_luminosity_channel = AnalogIn(self._adc, int(adc_config[_ADC_CHANNEL_AMBIENT_LUMINOSITY]))
-        self._plant_hygrometry_channel = AnalogIn(self._adc, int(adc_config[_ADC_CHANNEL_PLANT_HYGROMETRY]))
+        self._water_level_channel = AnalogIn(self._adc, adc_config[_ADC_CHANNEL_WATER_LEVEL])
+        self._ambient_luminosity_channel = AnalogIn(self._adc, adc_config[_ADC_CHANNEL_AMBIENT_LUMINOSITY])
+        self._plant_hygrometry_channel = AnalogIn(self._adc, adc_config[_ADC_CHANNEL_PLANT_HYGROMETRY])
 
         self._plant_s0 = adc_config[_PLANT_HYGROMETRY_SELECTOR_PIN_S0]
         self._plant_s1 = adc_config[_PLANT_HYGROMETRY_SELECTOR_PIN_S1]
