@@ -50,7 +50,7 @@ def main():
     pump = PumpService(config["pump"])
     pump.stop()
 
-    adc = ADCService(config["adc_config"])
+    adc = ADCService()
 
     print("You can stop the program using Ctrl + C safely ;)")
     try:
