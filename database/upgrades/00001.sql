@@ -14,7 +14,7 @@ create table if not exists plant
     check (position >= 0)
 );
 
-create table if not exists actions
+create table if not exists actuators
 (
     type        TEXT    not null,
     timestamp   INTEGER default (time('now')) not null,
