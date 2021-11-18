@@ -111,11 +111,6 @@ def main():
 
                 adc.get_water_level_value()
 
-                logger.debug(
-                    f"ADC TESTING : Line {pot_count} : Voltage Value : {chan.voltage} !"
-                )
-
-
     except KeyboardInterrupt:
         # Stopping all the controllers and services
         logger.debug("Turning off the program")
