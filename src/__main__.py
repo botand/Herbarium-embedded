@@ -109,7 +109,9 @@ def main():
                 if pot_count % 16 == 0:
                     pot_count = 0
 
+                adc.get_ambient_luminosity_value()
                 adc.get_water_level_value()
+                adc.get_plant_hygrometry_value(15)
 
     except KeyboardInterrupt:
         # Stopping all the controllers and services
