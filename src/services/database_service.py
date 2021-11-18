@@ -64,6 +64,6 @@ class DatabaseService:
 
         files = os.listdir(_db_init_scripts_dir)
         for file_path in files:
-            with open(file_path, "r") as file:
+            with open(f"{_db_init_scripts_dir}/{file_path}", "r") as file:
                 self._logger.debug("executing %s file", file_path)
                 self._db.executescript(file.read())
