@@ -63,7 +63,7 @@ class ValveService:
 
         # Initiate valves
         self._logger.debug(
-            f"{_SERVICE_TAG} Valve Initialisation - Closing all the vales"
+            f"Valve Initialisation - Closing all the vales"
         )
         self.close_all()
         for i in range(16):
@@ -71,7 +71,7 @@ class ValveService:
         while self._valve_state[15] != "close":
             self.update()
         self._logger.debug(
-            f"{_SERVICE_TAG} Valve Initialisation - Done !"
+            f"Valve Initialisation - Done !"
         )
 
     def _select_addr(self, valve_nb):
@@ -148,7 +148,7 @@ class ValveService:
         if asked_state == self._valve_state[asked_addr]:
             self._asked_valve_state.pop(0)  # Remove the asked position
             self._logger.debug(
-                f"{_SERVICE_TAG} Valve {asked_addr} already in position {asked_state}"
+                f"Valve {asked_addr} already in position {asked_state}"
             )
             return
 
@@ -175,5 +175,5 @@ class ValveService:
             self._asked_valve_state.pop(0)  # Remove the asked position
             self._is_moving = False
             self._logger.debug(
-                f"{_SERVICE_TAG} Valve {asked_addr} moved to position {asked_state}"
+                f"Valve {asked_addr} moved to position {asked_state}"
             )

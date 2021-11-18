@@ -14,13 +14,9 @@ from src.services import (
     LightningLedService,
     ValveService,
     PumpService,
+    ADCService
 )
 from src.models import StatusPattern
-
-import board
-import busio
-import adafruit_ads1x15.ads1115 as ADS
-from adafruit_ads1x15.analog_in import AnalogIn
 
 
 # pylint: disable=missing-function-docstring
@@ -54,6 +50,8 @@ def main():
     pump = PumpService(config["pump"])
     pump.stop()
 
+    adc = ADCService(config["adc_config"])
+
     print("You can stop the program using Ctrl + C safely ;)")
     try:
         logger.debug("Starting main loop")
@@ -65,18 +63,6 @@ def main():
         pump_speed = 0
         valve_count = 0
         pot_count = 0
-        plant_s0 = config["plant"]["gpio_selector_pin_S0"]
-        plant_s1 = config["plant"]["gpio_selector_pin_S1"]
-        plant_s2 = config["plant"]["gpio_selector_pin_S2"]
-        plant_s3 = config["plant"]["gpio_selector_pin_S3"]
-        GPIO.setup(plant_s0, GPIO.OUT)
-        GPIO.setup(plant_s1, GPIO.OUT)
-        GPIO.setup(plant_s2, GPIO.OUT)
-        GPIO.setup(plant_s3, GPIO.OUT)
-        i2c = busio.I2C(board.SCL, board.SDA)
-        ads = ADS.ADS1115(i2c)
-        chan = AnalogIn(ads, ADS.P2)
-
 
         while True:
             status_indicator_service.update()
@@ -123,32 +109,7 @@ def main():
                 if pot_count % 16 == 0:
                     pot_count = 0
 
-                pot_count_str = "{0:b}".format(pot_count)
-
-                # number of 0 correction, all number must be on 4 digit
-                zero = "0"
-                for i in range(4 - len(pot_count_str)):
-                    pot_count_str = zero + pot_count_str
-
-                if pot_count_str[0] == "1":
-                    GPIO.output(plant_s3, GPIO.HIGH)
-                else:
-                    GPIO.output(plant_s3, GPIO.LOW)
-
-                if pot_count_str[1] == "1":
-                    GPIO.output(plant_s2, GPIO.HIGH)
-                else:
-                    GPIO.output(plant_s2, GPIO.LOW)
-
-                if pot_count_str[2] == "1":
-                    GPIO.output(plant_s1, GPIO.HIGH)
-                else:
-                    GPIO.output(plant_s1, GPIO.LOW)
-
-                if pot_count_str[3] == "1":
-                    GPIO.output(plant_s0, GPIO.HIGH)
-                else:
-                    GPIO.output(plant_s0, GPIO.LOW)
+                adc.get_water_level_value()
 
                 logger.debug(
                     f"ADC TESTING : Line {pot_count} : Voltage Value : {chan.voltage} !"
