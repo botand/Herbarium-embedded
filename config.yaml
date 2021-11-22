@@ -32,7 +32,7 @@ status_indicator:
   interval_update: 10
 led_strip:
   gpio_data_in: 21 # Pin 40
-  led_count: 80 # Total Lightning LED number in the whole herbarium
+  led_count: 83 # Total Lightning LED number in the whole herbarium
   led_by_tile: 20 # Number of LED by tile
 valve:
   gpio_selector_pin_S0: 5 # Pin 29
