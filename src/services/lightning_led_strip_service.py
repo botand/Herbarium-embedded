@@ -51,7 +51,7 @@ class LightningLedService:
         :param tile_nb: tile number [0-15]
         """
         self._update_segment(tile_nb, led_utils.COLOR_WHITE, 1)
-        self._logger.debug(f"{_SERVICE_TAG} Turn ON Tile {tile_nb} Lightning")
+        self._logger.debug(f"Turn ON Tile {tile_nb} Lightning")
 
     def turn_off(self, tile_nb):
         """
@@ -59,7 +59,7 @@ class LightningLedService:
         :param tile_nb: tile number [0-15]
         """
         self._update_segment(tile_nb, led_utils.COLOR_WHITE, 0)
-        self._logger.debug(f"{_SERVICE_TAG} Turn OFF Tile {tile_nb} Lightning")
+        self._logger.debug(f"Turn OFF Tile {tile_nb} Lightning")
 
     def turn_off_all(self):
         """
@@ -68,4 +68,4 @@ class LightningLedService:
         for i in range(self._led_count):
             self._strip[i] = led_utils.COLOR_BLACK
         self._strip.show()
-        self._logger.debug(f"{_SERVICE_TAG} Turn OFF All Tiles Lightning")
+        self._logger.debug(f"Turn OFF All Tiles Lightning")
