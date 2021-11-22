@@ -36,7 +36,7 @@ class LightningLedService:
         :param brightness: [0.0-1.0]
         """
         for i in range(
-            tile_nb * self._led_by_tile - self._led_by_tile, tile_nb * self._led_by_tile
+            tile_nb * self._led_by_tile, tile_nb * self._led_by_tile + self._led_by_tile
         ):
             self._strip[i] = (
                 round(color[0] * brightness),

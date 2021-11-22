@@ -72,12 +72,12 @@ def main():
             if time_in_millisecond() - prev > 1000:
                 prev = time_in_millisecond()
 
-                if tile > 16:
+                if tile > 15:
                     if tile_on:
                         tile_on = False
                     else:
                         tile_on = True
-                    tile = 1
+                    tile = 0
 
                 if tile_on:
                     lightning_led.turn_on(tile)
