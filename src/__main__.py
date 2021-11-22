@@ -111,7 +111,7 @@ def main():
 
                 adc.get_ambient_luminosity_value()
                 adc.get_water_level_value()
-                adc.get_plant_hygrometry_value(15)
+                adc.get_plant_hygrometry_value(pot_count)
 
     except KeyboardInterrupt:
         # Stopping all the controllers and services

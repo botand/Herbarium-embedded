@@ -1,3 +1,4 @@
+"""Service to interact with the ADC in order to get Analog Values"""
 from RPi import GPIO
 import busio
 import adafruit_ads1x15.ads1115 as ads
@@ -18,6 +19,9 @@ _PLANT_HYGROMETRY_SELECTOR_PIN_S3 = "gpio_selector_pin_S3"
 
 
 class ADCService:
+    """
+    Service to interact with the ADC in order to get Analog Values
+    """
 
     __instance = None
 
@@ -34,6 +38,7 @@ class ADCService:
         return ADCService.__instance
 
     def __init__(self):
+        """Initialize the service"""
         adc_config = config["adc_config"]
         self._i2c = busio.I2C(adc_config[_I2C_PIN_SCL], adc_config[_I2C_PIN_SDA])
         self._adc = ads.ADS1115(self._i2c)
@@ -51,6 +56,10 @@ class ADCService:
         GPIO.setup(self._plant_s3, GPIO.OUT)
 
     def get_water_level_value(self):
+        """
+        Get water level in percentage
+        :return: water level [0-100]
+        """
         value = self._water_level_channel.voltage
         self._logger.debug(
             f"Water Level : {value} V"
@@ -58,6 +67,10 @@ class ADCService:
         return value
 
     def get_ambient_luminosity_value(self):
+        """
+        Get ambient luminosity in percentage
+        :return: ambient luminosity [0-100]
+        """
         value = self._ambient_luminosity_channel.voltage
         self._logger.debug(
             f"Amb. Lum. : {value} V"
@@ -65,6 +78,12 @@ class ADCService:
         return value
 
     def get_plant_hygrometry_value(self, plant_nb):
+        """
+        Get plant hygrometry in percentage
+        :param plant_nb: plant number [0-15]
+        :type plant_nb: int
+        :return: void
+        """
 
         bin_plant_nb = "{0:b}".format(plant_nb)
 

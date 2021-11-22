@@ -128,6 +128,7 @@ class ValveService:
         """
         Open Selected Valves
         :param tile_nb : tile number [0-15]
+        :type tile_nb: int
         """
         self._asked_valve_state.append(
             (tile_nb, "open")
