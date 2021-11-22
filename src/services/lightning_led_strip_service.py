@@ -36,14 +36,16 @@ class LightningLedService:
         :param brightness: [0.0-1.0]
         """
         for i in range(
-            tile_nb * self._led_by_tile, (tile_nb + 1) * self._led_by_tile - 1
+            tile_nb * self._led_by_tile, (tile_nb + 1) * self._led_by_tile
         ):
             self._strip[i] = (
                 round(color[0] * brightness),
                 round(color[1] * brightness),
                 round(color[2] * brightness),
             )
+            self._logger.debug(f"Modifying LED {i} status")
         self._strip.show()
+
 
     def turn_on(self, tile_nb):
         """
