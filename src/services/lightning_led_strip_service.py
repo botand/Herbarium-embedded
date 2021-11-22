@@ -43,9 +43,7 @@ class LightningLedService:
                 round(color[1] * brightness),
                 round(color[2] * brightness),
             )
-            self._logger.debug(f"Modifying LED {i} status")
         self._strip.show()
-
 
     def turn_on(self, tile_nb):
         """
