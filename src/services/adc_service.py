@@ -78,7 +78,7 @@ class ADCService:
 
         """
         value = self._ambient_luminosity_channel.voltage
-        value = 2.62e-6 * exp(5.78 * value) * 100
+        value = 2.62e-6 * exp(5.78 * value)
         self._logger.debug(
             f"Amb. Lum. : {value} %"
         )
