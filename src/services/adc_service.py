@@ -5,6 +5,7 @@ import adafruit_ads1x15.ads1115 as ads
 from adafruit_ads1x15.analog_in import AnalogIn
 from src.utils import get_logger
 from src.utils.configuration import config
+from math import exp
 
 _SERVICE_TAG = "service.AdcService"
 _I2C_PIN_SDA = "i2c_sda"
@@ -59,6 +60,7 @@ class ADCService:
         """
         Get water level in percentage
         :return: water level [0-100]
+        :rtype float
         """
         value = self._water_level_channel.voltage
         self._logger.debug(
@@ -70,10 +72,15 @@ class ADCService:
         """
         Get ambient luminosity in percentage
         :return: ambient luminosity [0-100]
+        :rtype float
+        In the report we have indicate the luminosity expression.
+        Considering the 0% is 0 lux and 100% is 1000 lux
+
         """
         value = self._ambient_luminosity_channel.voltage
+        value = 2.62e-6 * exp(5.78 * value) * 100
         self._logger.debug(
-            f"Amb. Lum. : {value} V"
+            f"Amb. Lum. : {value} %"
         )
         return value
 
@@ -82,7 +89,8 @@ class ADCService:
         Get plant hygrometry in percentage
         :param plant_nb: plant number [0-15]
         :type plant_nb: int
-        :return: void
+        :return: relative hygrometry [0-100]
+        :rtype float
         """
 
         bin_plant_nb = "{0:b}".format(plant_nb)
