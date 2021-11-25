@@ -1,12 +1,11 @@
 """Service to interact with the API"""
+import os
 import sys
 import json
 
 import requests
 import requests_cache
 import pandas as pd
-
-
 from src.services import (
     StatusIndicatorService,
     LightningLedService,
@@ -15,6 +14,9 @@ from src.services import (
     DatabaseService, status_indicator_service,
 )
 from src.utils.logger import get_logger
+from src.utils import sql_queries
+
+
 
 _SERVICE_TAG = "services.APIService"
 "GET = Retrieve an existing resource."
@@ -47,6 +49,7 @@ class DatabaseService:
          r_df = pd.DataFrame(r_plants)
          response = r_df.head()
          self._logger.debug("All greenhouses was retrieved")
+         DatabaseService.excute(UPDATE_PLANT "response")
          return response
 
 
@@ -60,13 +63,13 @@ class DatabaseService:
          # Add API key and format to the payload
          payload['api_key'] = _API_KEY
          payload['format'] = 'json'
-         #todo = status_indicator_service.update()
+         todo = status_indicator_service.update()
          response = requests.put(api_url, json=todo)
-        self._logger.debug("multiple sensors and actuators  are readed")
-         #response.json()
+         self._logger.debug("multiple sensors and actuators  are readed")
+         response.json()
 
 
-    def api_put_added_plant(payload):
+    def api_put_added_plant(self, payload):
         """
         Notify the API a when plant have been added to a greenhouse
         """
@@ -75,12 +78,12 @@ class DatabaseService:
         # Add API key and format to the payload
         payload['api_key'] = API_KEY
         payload['format'] = 'json'
-        # todo = status_indicator_service.update()
+        todo = status_indicator_service.update()
         response = requests.put(api_url, json=todo)
         self._logger.debug("Plant has added successfully to a greenhouse")
-        # response.json()
+        response.json()
 
-    def api_post_plant_details(payload):
+    def api_post_plant_details(self, payload):
         """
         Update the details of a plant
         """
@@ -89,12 +92,12 @@ class DatabaseService:
         # Add API key and format to the payload
         payload['api_key'] = API_KEY
         payload['format'] = 'json'
-        # todo = status_indicator_service.update()
-        response = requests.post()t(api_url, json=todo)
+        todo = status_indicator_service.update()
+        response = requests.post(api_url, json=todo)
         self._logger.debug("Plant has added successfully to a greenhouse")
-        # response.json()
+        response.json()
 
-    def api_delete_plant(payload):
+    def api_delete_plant(self, payload):
         """
         Notify the API when a plant have been removed
         """
@@ -103,7 +106,7 @@ class DatabaseService:
         # Add API key and format to the payload
         payload['api_key'] = API_KEY
         payload['format'] = 'json'
-        # todo = status_indicator_service.update()
+        todo = status_indicator_service.update()
         response = requests.delete(api_url, json=todo)
         self._logger.debug("Plant has been successfully removed from greenhouse")
-        # response.json()
+        response.json()
