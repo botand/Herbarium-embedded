@@ -25,7 +25,7 @@ _SERVICE_TAG = "services.APIService"
 "PATCH = Partially update an existing resource."
 "DELETE = Delete a resource."
 
-class DatabaseService:
+class pi_service:
     """Service to interact with the API"""
     __instance = None
     _logger = get_logger(_SERVICE_TAG)
