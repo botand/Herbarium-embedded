@@ -13,7 +13,7 @@ UPDATE_SENSORS_TRANSMITTED_FROM_DATE = (
 DELETE_SENSORS_TRANSMITTED = "delete from sensors_data where transmitted=1"
 
 # Actuators orders
-GET_UNTRANSMITTED_ACTUATORS_ORDER = "select * from actuactors where transmitted=0"
+GET_UNTRANSMITTED_ACTUATORS_ORDERS = "select * from actuactors where transmitted=0"
 INSERT_VALVE_ORDER = (
     "insert into actuactors(type, status, plant_uuid) values ('V', ?, ?)"
 )

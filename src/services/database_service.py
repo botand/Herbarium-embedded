@@ -39,7 +39,7 @@ class DatabaseService:
         :param query: SQL query to execute.
         :type query: str
         :param parameters: all the parameters for the query.
-        :type parameters Iterable|dict
+        :type parameters Iterable
         :return the results of the query
         :rtype list
         """

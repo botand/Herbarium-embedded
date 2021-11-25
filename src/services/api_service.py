@@ -1,112 +1,94 @@
 """Service to interact with the API"""
-import os
-import sys
 import json
 
 import requests
-import requests_cache
-import pandas as pd
-from src.services import (
-    StatusIndicatorService,
-    LightningLedService,
-    ValveService,
-    PumpService,
-    DatabaseService, status_indicator_service,
-)
+
+from src.constants.api_endpoints import get_greenhouse_url
+from src.errors.http_error import HttpError
+from src.utils.configuration import config
 from src.utils.logger import get_logger
-from src.utils import sql_queries
-
-
+from src.utils import HTTP_GET
 
 _SERVICE_TAG = "services.APIService"
-"GET = Retrieve an existing resource."
-"POST = Create a new resource."
-"PUT = Update an existing resource."
-"PATCH = Partially update an existing resource."
-"DELETE = Delete a resource."
+
 
 class ApiService:
     """Service to interact with the API"""
+
     __instance = None
+
     _logger = get_logger(_SERVICE_TAG)
 
-    _API_KEY=""
-    baseUrl = ""
-
     @staticmethod
-    def api_get_greenhouses(self, payload):
+    def instance():
         """
-         Retrieve every greenhouses linked to the connected user
+        Get the service
+        :rtype: ApiService
         """
-         # define headers and URL
-         url = 'baseUrl/api/'
-         # Add API key and format to the payload
-         payload['api_key'] = _API_KEY
-         payload['format'] = 'json'
-         r = requests.get(url, params=payload)
-         r_json = r.json()
-         r_plants = r_json['plants']
-         r_df = pd.DataFrame(r_plants)
-         response = r_df.head()
-         self._logger.debug("All greenhouses was retrieved")
-         DatabaseService.excute(UPDATE_PLANT "response")
-         return response
+        if ApiService.__instance is None:
+            ApiService.__instance = ApiService()
+        return ApiService.__instance
 
+    def __init__(self):
+        self._base_url = ""  # TODO Load from config: key=api.base_url
+        self._api_key = ""  # TODO Load from config: key=api.api_key
 
+    async def _request(self, method, endpoint, payload=None):
+        """
 
-    def api_put_sensors_actuators(self, payload):
-        """
-        Log the reading of one or multiple sensors and actuators
-        """
-        # define headers and URL
-         url = 'baseUrl/api/'
-         # Add API key and format to the payload
-         payload['api_key'] = _API_KEY
-         payload['format'] = 'json'
-         todo = status_indicator_service.update()
-         response = requests.put(api_url, json=todo)
-         self._logger.debug("multiple sensors and actuators  are readed")
-         response.json()
+        Args:
+            method: HTTP method of the request e.g. 'GET'
+            endpoint: url of the endpoint to call (without the baseUrl)
+            payload: serialization object to send.
 
+        Returns:
+            Decoded JSON received
 
-    def api_put_added_plant(self, payload):
+        Raises:
+            HttpError when the responses code is
         """
-        Notify the API a when plant have been added to a greenhouse
-        """
-        # define headers and URL
-        url = 'baseUrl/api/'
-        # Add API key and format to the payload
-        payload['api_key'] = API_KEY
-        payload['format'] = 'json'
-        todo = status_indicator_service.update()
-        response = requests.put(api_url, json=todo)
-        self._logger.debug("Plant has added successfully to a greenhouse")
-        response.json()
+        answer = requests.request(
+            method,
+            self._base_url + endpoint,
+            headers={"X-API-Key": self._api_key},
+            json=payload,
+        )
 
-    def api_post_plant_details(self, payload):
-        """
-        Update the details of a plant
-        """
-        # define headers and URL
-        url = 'baseUrl/api/'
-        # Add API key and format to the payload
-        payload['api_key'] = API_KEY
-        payload['format'] = 'json'
-        todo = status_indicator_service.update()
-        response = requests.post(api_url, json=todo)
-        self._logger.debug("Plant has added successfully to a greenhouse")
-        response.json()
+        if answer.status_code >= 400:
+            self._logger.error(
+                "Request: %s %s - Response: %d %s",
+                method,
+                endpoint,
+                answer.status_code,
+                answer.json(),
+            )
+            raise HttpError(answer.status_code)
 
-    def api_delete_plant(self, payload):
+        self._logger.info(
+            "Request: %s %s - Response: %d %s",
+            method,
+            endpoint,
+            answer.status_code,
+            answer.json(),
+        )
+        return answer.json()
+
+    async def api_get_greenhouse(self):
         """
-        Notify the API when a plant have been removed
+        Retrieve the greenhouse details
+
+        :rtype: Iterable<Plant>
         """
-        # define headers and URL
-        url = 'baseUrl/api/'
-        # Add API key and format to the payload
-        payload['api_key'] = API_KEY
-        payload['format'] = 'json'
-        todo = status_indicator_service.update()
-        response = requests.delete(api_url, json=todo)
-        self._logger.debug("Plant has been successfully removed from greenhouse")
-        response.json()
+        plants = []
+
+        # TODO handle error
+        try:
+            response = await self._request(
+                HTTP_GET, get_greenhouse_url(config["device_uuid"])
+            )
+
+            # TODO load plants from the JSON
+
+            return plants
+        except HttpError:
+            return False

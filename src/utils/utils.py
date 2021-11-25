@@ -65,3 +65,13 @@ def generate_uuid_string():
     :rtype str
     """
     return str(uuid.uuid4())
+
+
+"GET = Retrieve an existing resource."
+HTTP_GET = "GET"
+"POST = Create a new resource."
+HTTP_POST = "POST"
+"PUT = Update an existing resource."
+HTTP_PUT = "PUT"
+"DELETE = Delete a resource."
+HTTP_DELETE = "DELETE"
