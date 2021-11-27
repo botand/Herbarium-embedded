@@ -72,7 +72,7 @@ def main():
             if time_in_millisecond() - prev > 1000:
                 prev = time_in_millisecond()
 
-                if tile > 3:  # Since There is 4 tiles installed yet
+                if tile > 15:
                     if tile_on:
                         tile_on = False
                     else:
