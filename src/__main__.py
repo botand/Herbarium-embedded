@@ -88,7 +88,9 @@ def main():
                 tile = tile + 1
 
                 if open_trig:
-                    valve.open(valve_count)
+                    # valve.open(valve_count)
+                    valve.close(valve_count)
+
                     open_trig = False
                     valve_count += 1
                     if valve_count % 16 == 0:
