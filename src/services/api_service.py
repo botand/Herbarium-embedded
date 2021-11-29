@@ -1,13 +1,17 @@
 """Service to interact with the API"""
 import json
+import uuid
 
 import requests
 
-from src.constants.api_endpoints import get_greenhouse_url
+from src.constants.api_endpoints import get_greenhouse_url, greenhouse_send_data_url, greenhouse_notify_added_plant_url, \
+    greenhouse_update_plant_detail_url, greenhouse_remove_plant_url
 from src.errors.http_error import HttpError
-from src.utils.configuration import config
+from src.services import DatabaseService
 from src.utils.logger import get_logger
-from src.utils import HTTP_GET
+from src.utils import HTTP_GET, HTTP_PUT, GET_UNTRANSMITTED_SENSORS_DATA, GET_UNTRANSMITTED_ACTUATORS_ORDERS, \
+    INSERT_NEW_PLANT, HTTP_POST, UPDATE_PLANT_INFO, DELETE_PLANT
+from src.utils import config
 
 _SERVICE_TAG = "services.APIService"
 
@@ -30,8 +34,10 @@ class ApiService:
         return ApiService.__instance
 
     def __init__(self):
-        self._base_url = ""  # TODO Load from config: key=api.base_url
-        self._api_key = ""  # TODO Load from config: key=api.api_key
+        self._base_url = config["base_url"]  # TODO Load from config: key=api.base_url
+        self._api_key = config["api_key"]  # TODO Load from config: key=api.api_key
+
+        self._logger.info("initialized")
 
     async def _request(self, method, endpoint, payload=None):
         """
@@ -82,13 +88,66 @@ class ApiService:
         plants = []
 
         # TODO handle error
+        self._request(HTTP_GET, get_greenhouse_url((config["device_uuid"])), payload=None)
         try:
             response = await self._request(
                 HTTP_GET, get_greenhouse_url(config["device_uuid"])
             )
 
             # TODO load plants from the JSON
-
+            plants = response['plants']
             return plants
         except HttpError:
             return False
+
+    async def api_put_greenhouse_send_data(self):
+        """
+        Send logs of the reading of one or multiple sensors and actuators
+
+        :rtype:Decoded JSON received
+        """
+        # TODO handle error
+        self._request(HTTP_PUT, greenhouse_send_data_url((config["device_uuid"])), payload=None)
+        ApiService.instance()._request(HTTP_PUT, greenhouse_send_data_url((config["device_uuid"]),
+            {
+                "sensors":DatabaseService.instance().excute(GET_UNTRANSMITTED_SENSORS_DATA),
+                "actuators":DatabaseService.instance().excute(GET_UNTRANSMITTED_ACTUATORS_ORDERS)
+            })
+    def api_put_greenhouse_notify_added_plant(self):
+        """
+        Notify the API a when plant have been added to a greenhouse
+
+        :rtype:Decoded JSON received
+        """
+        # TODO handle error
+        self._request(HTTP_PUT, greenhouse_notify_added_plant_url((config["device_uuid"])), payload=None)
+
+        ApiService.instance()._request(HTTP_PUT, greenhouse_notify_added_plant_url((config["device_uuid"]),
+           {  "plant":DatabaseService.instance().excute(INSERT_NEW_PLANT)
+            })
+
+    def api_post_greenhouse_update_plant_detail_url(self)
+        """
+        Update the details of a plant
+
+        :rtype:Decoded JSON received
+        """
+        # TODO handle error
+        self._request(HTTP_POST, greenhouse_update_plant_detail_url((config["plant_uuid"])), payload=None)
+
+        ApiService.instance()._request(HTTP_POST, greenhouse_update_plant_detail_url((config["plant_uuid"]),
+        {
+          "plant":DatabaseService.instance().excute(UPDATE_PLANT_INFO)
+        })
+
+    def api_delete_greenhouse_remove_plant_url(self):
+            """
+            Update the details of a plant
+
+            :rtype:Decoded JSON received
+            """
+            # TODO handle error
+            self._request(HTTP_POST, greenhouse_remove_plant_url((config["plant_uuid"])), payload=None)
+
+            ApiService.instance()._request(HTTP_POST, greenhouse_update_plant_detail_url((config["plant_uuid"]),
+                   {"plant": DatabaseService.instance().excute(DELETE_PLANT)})
