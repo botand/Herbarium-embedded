@@ -44,7 +44,7 @@ valve:
   position_off: 8
   position_on: 3
   opening_time: 200 # ms
-  closing_time: 300 # ms
+  closing_time: 500 # ms
 pump:
   gpio_speed_out: 13 # Pin 33
   pwm_freq: 50
