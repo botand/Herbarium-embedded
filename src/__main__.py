@@ -88,14 +88,14 @@ def main():
                 tile = tile + 1
 
                 if open_trig:
-                    valve.close(valve_count)
+                    valve.open(valve_count)
                     open_trig = False
                     valve_count += 1
                     if valve_count % 16 == 0:
                         valve_count = 0
 
                 else:
-                    valve.open(valve_count)
+                    valve.close(valve_count)
                     open_trig = True
 
                 pump.set_speed(pump_speed)
