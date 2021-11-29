@@ -79,7 +79,7 @@ class ApiService:
         )
         return answer.json()
 
-    async def api_get_greenhouse(self):
+    async def get_greenhouse(self):
         """
         Retrieve the greenhouse details
 
@@ -88,7 +88,7 @@ class ApiService:
         plants = []
 
         # TODO handle error
-        self._request(HTTP_GET, get_greenhouse_url((config["device_uuid"])), payload=None)
+        await self._request(HTTP_GET, get_greenhouse_url((config["device_uuid"])), payload=None)
         try:
             response = await self._request(
                 HTTP_GET, get_greenhouse_url(config["device_uuid"])
@@ -100,19 +100,22 @@ class ApiService:
         except HttpError:
             return False
 
-    async def api_put_greenhouse_send_data(self):
+    async def api_put_greenhouse_send_data(self, sensors_data, actuactors_data):
         """
         Send logs of the reading of one or multiple sensors and actuators
 
-        :rtype:Decoded JSON received
+        :rtype boolean
         """
-        # TODO handle error
-        self._request(HTTP_PUT, greenhouse_send_data_url((config["device_uuid"])), payload=None)
-        ApiService.instance()._request(HTTP_PUT, greenhouse_send_data_url((config["device_uuid"]),
-            {
-                "sensors":DatabaseService.instance().excute(GET_UNTRANSMITTED_SENSORS_DATA),
-                "actuators":DatabaseService.instance().excute(GET_UNTRANSMITTED_ACTUATORS_ORDERS)
-            })
+        try:
+            await self._request(HTTP_PUT, greenhouse_send_data_url(config["device_uuid"]),
+                                payload={
+                                    "sensors": sensors_data,
+                                    "actuators": actuactors_data
+                                })
+        except HttpError:
+            return False
+        return True
+
     def api_put_greenhouse_notify_added_plant(self):
         """
         Notify the API a when plant have been added to a greenhouse
@@ -123,8 +126,10 @@ class ApiService:
         self._request(HTTP_PUT, greenhouse_notify_added_plant_url((config["device_uuid"])), payload=None)
 
         ApiService.instance()._request(HTTP_PUT, greenhouse_notify_added_plant_url((config["device_uuid"]),
-           {  "plant":DatabaseService.instance().excute(INSERT_NEW_PLANT)
-            })
+                                                                                   {
+                                                                                       "plant": DatabaseService.instance().excute(
+                                                                                           INSERT_NEW_PLANT)
+                                                                                   })
 
     def api_post_greenhouse_update_plant_detail_url(self)
         """
@@ -136,18 +141,21 @@ class ApiService:
         self._request(HTTP_POST, greenhouse_update_plant_detail_url((config["plant_uuid"])), payload=None)
 
         ApiService.instance()._request(HTTP_POST, greenhouse_update_plant_detail_url((config["plant_uuid"]),
-        {
-          "plant":DatabaseService.instance().excute(UPDATE_PLANT_INFO)
-        })
+                                                                                     {
+                                                                                         "plant": DatabaseService.instance().excute(
+                                                                                             UPDATE_PLANT_INFO)
+                                                                                     })
 
     def api_delete_greenhouse_remove_plant_url(self):
-            """
-            Update the details of a plant
+        """
+        Update the details of a plant
 
-            :rtype:Decoded JSON received
-            """
-            # TODO handle error
-            self._request(HTTP_POST, greenhouse_remove_plant_url((config["plant_uuid"])), payload=None)
+        :rtype:Decoded JSON received
+        """
+        # TODO handle error
+        self._request(HTTP_POST, greenhouse_remove_plant_url((config["plant_uuid"])), payload=None)
 
-            ApiService.instance()._request(HTTP_POST, greenhouse_update_plant_detail_url((config["plant_uuid"]),
-                   {"plant": DatabaseService.instance().excute(DELETE_PLANT)})
+        ApiService.instance()._request(HTTP_POST, greenhouse_update_plant_detail_url((config["plant_uuid"]),
+                                                                                     {
+                                                                                         "plant": DatabaseService.instance().excute(
+                                                                                             DELETE_PLANT)})

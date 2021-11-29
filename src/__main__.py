@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Main program"""
+import asyncio
+
 import RPi.GPIO as GPIO
+
+from src.services.api_service import ApiService
 from src.utils import config, config_ble, led_utils, get_logger, time_in_millisecond
 from src.controllers import InternetConnectionController
 from src.services import (
@@ -15,7 +19,7 @@ from src.models import StatusPattern
 
 # pylint: disable=missing-function-docstring
 # pylint: disable=too-many-statements
-def main():
+async def main():
     """
     Main loop
     """
@@ -45,6 +49,8 @@ def main():
     pump.stop()
 
     DatabaseService.instance().run_init_scripts()
+
+    asyncio.get_event_loop().create_task(ApiService.instance().get_greenhouse())
 
     print("You can stop the program using Ctrl + C safely ;)")
     try:
