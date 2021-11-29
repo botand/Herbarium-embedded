@@ -1,7 +1,7 @@
 import json
 from collections import namedtuple
 from json import JSONEncoder
-from src.services import api_service
+from src.services import ApiService
 
 
 class Plant:
@@ -10,11 +10,8 @@ class Plant:
         # TODO complete
 
     @staticmethod
-    def create_from_json(data):
-        json_dictionary = json.loads(data)
-        return Plant(**json_dictionary)
+    def create_from_dict(data):
+        return Plant(data["last_uuid"], data["uuid"])
 
     def __str__(self):
         return "<Plant {0}>".format(self._last_uuid)
-
-    plant = Plant.create_from_json(api_service.get_greenhouse_url())

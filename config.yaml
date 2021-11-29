@@ -53,3 +53,6 @@ pump:
 api:
   api_key: ''
   base_url: 'https://botand-herbarium-api.herokuapp.com/api'
+data_synchronization_task:
+  # In minutes
+  send_logs: 10

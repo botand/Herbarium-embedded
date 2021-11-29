@@ -8,7 +8,7 @@ INSERT_MOISTURE_LEVEL_FOR_PLANT = (
 )
 INSERT_AMBIANT_LIGHT = "insert into sensors_data(type, value) values ('L', ?)"
 UPDATE_SENSORS_TRANSMITTED_FROM_DATE = (
-    "update sensors_data set transmitted=? where timestamp > ?"
+    "update sensors_data set transmitted=1 where timestamp > ? and timestamp < ?"
 )
 DELETE_SENSORS_TRANSMITTED = "delete from sensors_data where transmitted=1"
 
@@ -22,7 +22,7 @@ INSERT_LIGHT_STRIP_ORDER = (
 )
 INSERT_PUMP_ORDER = "insert into actuactors(type, status) values ('P', ?)"
 UPDATE_ACTUATORS_TRANSMITTED_FROM_DATE = (
-    "update actuators set transmitted=? where timestamp > ?"
+    "update actuators set transmitted=1 where timestamp > ? and timestamp < ?"
 )
 DELETE_ACTUATORS_TRANSMITTED = "delete from actuators where transmitted=1"
 

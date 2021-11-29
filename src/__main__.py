@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 """Main program"""
-import asyncio
-
 import RPi.GPIO as GPIO
 
 from src.services.api_service import ApiService
 from src.utils import config, config_ble, led_utils, get_logger, time_in_millisecond
-from src.controllers import InternetConnectionController
+from src.controllers import InternetConnectionController, DataSynchronizationController
 from src.services import (
     StatusIndicatorService,
     LightningLedService,
@@ -40,6 +38,7 @@ async def main():
     # Initializing all the controllers
     logger.debug("Start initializing all the controllers and services")
     internet_connection_controller = InternetConnectionController(config, config_ble)
+    data_synchronization_controller = DataSynchronizationController()
 
     lightning_led = LightningLedService(config["led_strip"])
     lightning_led.turn_off_all()
@@ -49,8 +48,6 @@ async def main():
     pump.stop()
 
     DatabaseService.instance().run_init_scripts()
-
-    asyncio.get_event_loop().create_task(ApiService.instance().get_greenhouse())
 
     print("You can stop the program using Ctrl + C safely ;)")
     try:
@@ -65,6 +62,8 @@ async def main():
         while True:
             status_indicator_service.update()
             internet_connection_controller.update()
+            data_synchronization_controller.update()
+
             valve.update()
 
             if time_in_millisecond() - prev > 500:
