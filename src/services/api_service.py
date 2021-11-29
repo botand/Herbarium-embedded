@@ -4,13 +4,26 @@ import uuid
 
 import requests
 
-from src.constants.api_endpoints import get_greenhouse_url, greenhouse_send_data_url, greenhouse_notify_added_plant_url, \
-    greenhouse_update_plant_detail_url, greenhouse_remove_plant_url
+from src.constants.api_endpoints import (
+    get_greenhouse_url,
+    greenhouse_send_data_url,
+    greenhouse_notify_added_plant_url,
+    greenhouse_update_plant_detail_url,
+    greenhouse_remove_plant_url,
+)
 from src.errors.http_error import HttpError
 from src.services import DatabaseService
 from src.utils.logger import get_logger
-from src.utils import HTTP_GET, HTTP_PUT, GET_UNTRANSMITTED_SENSORS_DATA, GET_UNTRANSMITTED_ACTUATORS_ORDERS, \
-    INSERT_NEW_PLANT, HTTP_POST, UPDATE_PLANT_INFO, DELETE_PLANT
+from src.utils import (
+    HTTP_GET,
+    HTTP_PUT,
+    GET_UNTRANSMITTED_SENSORS_DATA,
+    GET_UNTRANSMITTED_ACTUATORS_ORDERS,
+    INSERT_NEW_PLANT,
+    HTTP_POST,
+    UPDATE_PLANT_INFO,
+    DELETE_PLANT,
+)
 from src.utils import config
 
 _SERVICE_TAG = "services.APIService"
@@ -88,14 +101,16 @@ class ApiService:
         plants = []
 
         # TODO handle error
-        await self._request(HTTP_GET, get_greenhouse_url((config["device_uuid"])), payload=None)
+        await self._request(
+            HTTP_GET, get_greenhouse_url((config["device_uuid"])), payload=None
+        )
         try:
             response = await self._request(
                 HTTP_GET, get_greenhouse_url(config["device_uuid"])
             )
 
             # TODO load plants from the JSON
-            plants = response['plants']
+            plants = response["plants"]
             return plants
         except HttpError:
             return False
@@ -107,11 +122,11 @@ class ApiService:
         :rtype boolean
         """
         try:
-            await self._request(HTTP_PUT, greenhouse_send_data_url(config["device_uuid"]),
-                                payload={
-                                    "sensors": sensors_data,
-                                    "actuators": actuactors_data
-                                })
+            await self._request(
+                HTTP_PUT,
+                greenhouse_send_data_url(config["device_uuid"]),
+                payload={"sensors": sensors_data, "actuators": actuactors_data},
+            )
         except HttpError:
             return False
         return True
@@ -123,28 +138,11 @@ class ApiService:
         :rtype:Decoded JSON received
         """
         # TODO handle error
-        self._request(HTTP_PUT, greenhouse_notify_added_plant_url((config["device_uuid"])), payload=None)
-
-        ApiService.instance()._request(HTTP_PUT, greenhouse_notify_added_plant_url((config["device_uuid"]),
-                                                                                   {
-                                                                                       "plant": DatabaseService.instance().excute(
-                                                                                           INSERT_NEW_PLANT)
-                                                                                   })
-
-    def api_post_greenhouse_update_plant_detail_url(self)
-        """
-        Update the details of a plant
-
-        :rtype:Decoded JSON received
-        """
-        # TODO handle error
-        self._request(HTTP_POST, greenhouse_update_plant_detail_url((config["plant_uuid"])), payload=None)
-
-        ApiService.instance()._request(HTTP_POST, greenhouse_update_plant_detail_url((config["plant_uuid"]),
-                                                                                     {
-                                                                                         "plant": DatabaseService.instance().excute(
-                                                                                             UPDATE_PLANT_INFO)
-                                                                                     })
+        self._request(
+            HTTP_PUT,
+            greenhouse_notify_added_plant_url(config["device_uuid"]),
+            {"plant": DatabaseService.instance().execute(INSERT_NEW_PLANT)},
+        )
 
     def api_delete_greenhouse_remove_plant_url(self):
         """
@@ -153,9 +151,4 @@ class ApiService:
         :rtype:Decoded JSON received
         """
         # TODO handle error
-        self._request(HTTP_POST, greenhouse_remove_plant_url((config["plant_uuid"])), payload=None)
-
-        ApiService.instance()._request(HTTP_POST, greenhouse_update_plant_detail_url((config["plant_uuid"]),
-                                                                                     {
-                                                                                         "plant": DatabaseService.instance().excute(
-                                                                                             DELETE_PLANT)})
+        self._request(HTTP_POST, greenhouse_remove_plant_url((config["plant_uuid"])))
