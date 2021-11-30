@@ -63,6 +63,7 @@ class ADCService:
         :rtype float
         """
         value = self._water_level_channel.voltage
+        value = 3469 * value ** -2.91
         self._logger.debug(
             f"Water Level : {value} V"
         )
@@ -70,15 +71,21 @@ class ADCService:
 
     def get_ambient_luminosity_value(self):
         """
-        Get ambient luminosity in percentage
-        :return: ambient luminosity [0-100]
+        Get water level in percentage
+        :return: water level [0-100]
         :rtype float
-        In the report we have indicate the luminosity expression.
-        Considering the 0% is 0 lux and 100% is 1000 lux
+        In the report we have indicate the water level expression.
+        Considering the 0% is 200mL lux and 100% is 1000 mL.
+        The absolute minimum is -5% (160mL) and maximum absolute is 120% (1150mL).
 
+        We use a double conversion. First in order to get the water volume.
+        Since we use a power serie, it is impossible to have negative number.
+        Also the minimum is 200mL but its not the absolute minimum. 
+        In that way we can technicaly go below 0% and conserve a better R^2 in the expression.
         """
         value = self._ambient_luminosity_channel.voltage
         value = 2.62e-6 * exp(5.78 * value)
+        value = 0.125 * value - 25
         self._logger.debug(
             f"Amb. Lum. : {value} %"
         )
