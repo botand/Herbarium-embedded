@@ -116,7 +116,7 @@ def main():
                 # adc.get_water_level_value()
 
 
-                pot_vals(pot_idx) = adc.get_plant_hygrometry_value(0);
+                pot_vals[pot_idx] = adc.get_plant_hygrometry_value(0);
                 pot_idx = pot_idx+1
                 if pot_idx == 10 : pot_idx = 0
                 pot_mean = sum(pot_vals)/len(pot_vals)
