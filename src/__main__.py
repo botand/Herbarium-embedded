@@ -79,11 +79,11 @@ def main():
                         tile_on = True
                     tile = 0
 
-                if tile_on:
-                    lightning_led.turn_on(tile)
+                # if tile_on:
+                #    lightning_led.turn_on(tile)
 
-                else:
-                    lightning_led.turn_off(tile)
+                # else:
+                #    lightning_led.turn_off(tile)
 
                 tile = tile + 1
 
@@ -109,7 +109,7 @@ def main():
                 if pot_count % 16 == 0:
                     pot_count = 0
 
-                # adc.get_ambient_luminosity_value()
+                adc.get_ambient_luminosity_value()
                 adc.get_water_level_value()
                 # adc.get_plant_hygrometry_value(pot_count)
 
