@@ -130,7 +130,7 @@ class ADCService:
             GPIO.output(self._plant_s0, GPIO.LOW)
 
         value = self._plant_hygrometry_channel.voltage
-        self._logger.debug(
-            f"Plant Hygro. ({plant_nb}) : {value} V"
-        )
+        #self._logger.debug(
+        #    f"Plant Hygro. ({plant_nb}) : {value} V"
+        #)
         return value
