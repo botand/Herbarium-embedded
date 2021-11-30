@@ -63,7 +63,7 @@ def main():
         pump_speed = 0
         valve_count = 0
         pot_count = 0
-        pot_vals = [10]
+        pot_vals = [0.0]*10
         pot_idx = 0
         pot_mean = 0
 
