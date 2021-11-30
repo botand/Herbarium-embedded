@@ -87,21 +87,21 @@ def main():
 
                 tile = tile + 1
 
-                if open_trig:
-                    valve.open(valve_count)
-                    open_trig = False
-                    valve_count += 1
-                    if valve_count % 16 == 0:
-                        valve_count = 0
+                #if open_trig:
+                #    valve.open(valve_count)
+                #    open_trig = False
+                #    valve_count += 1
+                #    if valve_count % 16 == 0:
+                #        valve_count = 0
 
-                else:
-                    valve.close(valve_count)
-                    open_trig = True
+                #else:
+                #    valve.close(valve_count)
+                #    open_trig = True
 
-                pump.set_speed(pump_speed)
-                pump_speed += 20
-                if pump_speed > 100.0:
-                    pump_speed = 0.0
+                #pump.set_speed(pump_speed)
+                #pump_speed += 20
+                #if pump_speed > 100.0:
+                #    pump_speed = 0.0
 
                 # Check des valves
 
@@ -109,9 +109,9 @@ def main():
                 if pot_count % 16 == 0:
                     pot_count = 0
 
-                adc.get_ambient_luminosity_value()
+                # adc.get_ambient_luminosity_value()
                 adc.get_water_level_value()
-                adc.get_plant_hygrometry_value(pot_count)
+                # adc.get_plant_hygrometry_value(pot_count)
 
     except KeyboardInterrupt:
         # Stopping all the controllers and services
