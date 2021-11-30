@@ -63,7 +63,7 @@ def main():
         pump_speed = 0
         valve_count = 0
         pot_count = 0
-        pot_vals = [0.0]*10
+        pot_vals = [0.0]*40
         pot_idx = 0
         pot_mean = 0
 
@@ -72,7 +72,7 @@ def main():
             internet_connection_controller.update()
             valve.update()
 
-            if time_in_millisecond() - prev > 100:
+            if time_in_millisecond() - prev > 50:
                 prev = time_in_millisecond()
 
                 """ if tile > 15:
@@ -118,9 +118,10 @@ def main():
 
                 pot_vals[pot_idx] = adc.get_plant_hygrometry_value(0);
                 pot_idx = pot_idx+1
-                if pot_idx == 10 : pot_idx = 0
-                pot_mean = sum(pot_vals)/len(pot_vals)
-                logger.debug(f"Plant Hygro : {pot_mean} V")
+                if pot_idx == 40 : 
+                    pot_idx = 0
+                    pot_mean = sum(pot_vals)/len(pot_vals)
+                    logger.debug(f"Plant Hygro : {pot_mean} V")
 
     except KeyboardInterrupt:
         # Stopping all the controllers and services
