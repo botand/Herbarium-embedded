@@ -131,24 +131,32 @@ class ApiService:
             return False
         return True
 
-    def api_put_greenhouse_notify_added_plant(self):
+    def api_put_greenhouse_notify_added_plant(self, planted_at, position):
         """
         Notify the API a when plant have been added to a greenhouse
 
-        :rtype:Decoded JSON received
+        :rtype:boolean
         """
         # TODO handle error
-        self._request(
-            HTTP_PUT,
-            greenhouse_notify_added_plant_url(config["device_uuid"]),
-            {"plant": DatabaseService.instance().execute(INSERT_NEW_PLANT)},
-        )
+        try:
+            await self._request(
+                HTTP_PUT,
+                greenhouse_notify_added_plant_url(config["device_uuid"]),
+                payload={"planted_at": planted_at, "position": position},
+            )
+        except HttpError:
+            return False
+        return True
 
     def api_delete_greenhouse_remove_plant_url(self):
         """
         Update the details of a plant
 
-        :rtype:Decoded JSON received
+        :rtype:boolean
         """
         # TODO handle error
-        self._request(HTTP_POST, greenhouse_remove_plant_url((config["plant_uuid"])))
+        try:
+            await self._request(HTTP_POST, greenhouse_remove_plant_url((config["plant_uuid"])))
+        except HttpError:
+            return False
+        return True
