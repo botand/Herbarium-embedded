@@ -72,56 +72,50 @@ def main():
             internet_connection_controller.update()
             valve.update()
 
-            if time_in_millisecond() - prev > 50:
+            if time_in_millisecond() - prev > 1000:
                 prev = time_in_millisecond()
 
-                """ if tile > 15:
+                # test LED
+
+                if tile > 15:
                     if tile_on:
                         tile_on = False
                     else:
                         tile_on = True
-                    tile = 0 """
+                    tile = 0 
 
-                # if tile_on:
-                #    lightning_led.turn_on(tile)
+                if tile_on:
+                    lightning_led.turn_on(tile)
+                else:
+                    lightning_led.turn_off(tile)
+                tile = tile + 1
 
-                # else:
-                #    lightning_led.turn_off(tile)
+                # test valves
+                if open_trig:
+                    valve.open(valve_count)
+                    open_trig = False
+                    valve_count += 1
+                    if valve_count % 16 == 0:
+                        valve_count = 0
+                else:
+                    valve.close(valve_count)
+                    open_trig = True
 
-                # tile = tile + 1
+                # Test pompe
+                pump.set_speed(pump_speed)
+                pump_speed += 20
+                if pump_speed > 100.0:
+                   pump_speed = 0.0
 
-                #if open_trig:
-                #    valve.open(valve_count)
-                #    open_trig = False
-                #    valve_count += 1
-                #    if valve_count % 16 == 0:
-                #        valve_count = 0
+                # test adc
+                adc.get_ambient_luminosity_value()
+                adc.get_water_level_value()
+                adc.get_plant_hygrometry_value(pot_count);
 
-                #else:
-                #    valve.close(valve_count)
-                #    open_trig = True
+                pot_count += 1
+                if pot_count % 16 == 0:
+                    pot_count = 0
 
-                #pump.set_speed(pump_speed)
-                #pump_speed += 20
-                #if pump_speed > 100.0:
-                #    pump_speed = 0.0
-
-                # Check des valves
-
-                #pot_count += 1
-                #if pot_count % 16 == 0:
-                #    pot_count = 0
-
-                # adc.get_ambient_luminosity_value()
-                # adc.get_water_level_value()
-
-
-                pot_vals[pot_idx] = adc.get_plant_hygrometry_value(0);
-                pot_idx = pot_idx+1
-                if pot_idx == 40 : 
-                    pot_idx = 0
-                    pot_mean = sum(pot_vals)/len(pot_vals)
-                    logger.debug(f"Plant Hygro : {pot_mean} V")
 
     except KeyboardInterrupt:
         # Stopping all the controllers and services

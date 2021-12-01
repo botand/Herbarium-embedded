@@ -95,7 +95,8 @@ class ADCService:
 
     def get_plant_hygrometry_value(self, plant_nb):
         """
-        Get plant hygrometry in percentage
+        Get plant hygrometry in percentage.
+        If negative, there is no plant hanged.
         :param plant_nb: plant number [0-15]
         :type plant_nb: int
         :return: relative hygrometry [0-100]
@@ -130,7 +131,8 @@ class ADCService:
             GPIO.output(self._plant_s0, GPIO.LOW)
 
         value = self._plant_hygrometry_channel.voltage
-        #self._logger.debug(
-        #    f"Plant Hygro. ({plant_nb}) : {value} V"
-        #)
+        value = -38.3 * value + 140
+        self._logger.debug(
+            f"Plant Hygro. ({plant_nb}) : {value} %"
+        )
         return value
