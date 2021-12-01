@@ -13,6 +13,8 @@ class InternetConnectionService:
 
     _logger = get_logger(_SERVICE_TAG)
 
+    _connection_is_healthy = False
+
     def __init__(self):
         """Initialize the service"""
         self._wireless = Wireless()
@@ -30,8 +32,10 @@ class InternetConnectionService:
         timeout = 1
         try:
             requests.get(url, timeout=timeout)
+            _connection_is_healthy = True
             return True
         except (requests.ConnectionError, requests.Timeout):
+            _connection_is_healthy = False
             return False
 
     def check_wifi(self):
@@ -55,3 +59,12 @@ class InternetConnectionService:
             "Connection is successful" if successful else "Connection failed"
         )
         return successful
+
+    @property
+    def last_connection_check(self):
+        """
+        Return the result of the last connection check
+        :return: True if during the last check, the connection was healthy
+        :rtype: bool
+        """
+        return self._connection_is_healthy

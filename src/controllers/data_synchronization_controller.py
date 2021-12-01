@@ -1,17 +1,28 @@
 from src.bluetooth import DeviceInformationService
 from src.constants import greenhouse_send_data_url
-from src.services import ApiService, DatabaseService, StatusIndicatorService, InternetConnectionService
-from src.utils import get_logger, time_in_millisecond, INTERNET_CONNECTION_UNHEALTHY_PATTERN, HTTP_PUT, \
-    GET_UNTRANSMITTED_SENSORS_DATA, GET_UNTRANSMITTED_ACTUATORS_ORDERS, UPDATE_SENSORS_TRANSMITTED_FROM_DATE, \
-    UPDATE_ACTUATORS_TRANSMITTED_FROM_DATE, UPDATE_PLANT_INFO
+from src.services import (
+    ApiService,
+    DatabaseService,
+    StatusIndicatorService,
+    InternetConnectionService,
+)
+from src.utils import (
+    get_logger,
+    time_in_millisecond,
+    INTERNET_CONNECTION_UNHEALTHY_PATTERN,
+    HTTP_PUT,
+    GET_UNTRANSMITTED_SENSORS_DATA,
+    GET_UNTRANSMITTED_ACTUATORS_ORDERS,
+    UPDATE_SENSORS_TRANSMITTED_FROM_DATE,
+    UPDATE_ACTUATORS_TRANSMITTED_FROM_DATE,
+    UPDATE_PLANT_INFO,
+)
 from src.models import Plant
 from src.utils import config
 
 _CONTROLLER_TAG = "controllers.DataSynchronizationController"
 _TICK_HEALTHY = 10 * 60 * 1000  # wait 10min between each update
-_TICK_UNHEALTHY = (
-        60 * 1000
-)
+_TICK_UNHEALTHY = 60 * 1000
 
 
 class DataSynchronizationController:
@@ -65,16 +76,24 @@ class DataSynchronizationController:
             self._last_update = time_in_millisecond()
 
         # TODO If YES: get data to send from the DB -> GET_UNTRANSMITTED_SENSORS_DATA, GET_UNTRANSMITTED_ACTUATORS_ORDERS
-        _sensors_data = DatabaseService.instance().execute(GET_UNTRANSMITTED_SENSORS_DATA),
-        _actuators_data = DatabaseService.instance().execute(GET_UNTRANSMITTED_ACTUATORS_ORDERS),
+        _sensors_data = (
+            DatabaseService.instance().execute(GET_UNTRANSMITTED_SENSORS_DATA),
+        )
+        _actuators_data = (
+            DatabaseService.instance().execute(GET_UNTRANSMITTED_ACTUATORS_ORDERS),
+        )
         # TODO THEN: Send data to the API
         self._api_service.api_put_greenhouse_send_data(_sensors_data, _actuators_data)
 
         # TODO THEN: Validate the data have been successfully sent
         # TODO THEN: if YES: Mark "transmitted" the data sent in the DB -> UPDATE_SENSORS_TRANSMITTED_FROM_DATE, UPDATE_ACTUATORS_TRANSMITTED_FROM_DATE
-        if self._api_service.api_put_greenhouse_send_data(_sensors_data, _actuators_data):
-            DatabaseService.instance().execute(UPDATE_SENSORS_TRANSMITTED_FROM_DATE,
-                                               UPDATE_ACTUATORS_TRANSMITTED_FROM_DATE)
+        if self._api_service.api_put_greenhouse_send_data(
+            _sensors_data, _actuators_data
+        ):
+            DatabaseService.instance().execute(
+                UPDATE_SENSORS_TRANSMITTED_FROM_DATE,
+                UPDATE_ACTUATORS_TRANSMITTED_FROM_DATE,
+            )
             self._logger.info("the data have been successfully sent to api")
             return True
         else:
@@ -85,8 +104,8 @@ class DataSynchronizationController:
         self._update_local_plants()
         # TODO check if there is new plants to send to the API
         # a check sql-queries ne contient pas GET_PLANT_BY_PLANTED_AT
-        _planted_at = DatabaseService.instance().execute(),
-        _position = DatabaseService.instance().execute(GET_PLANT_BY_POSITION),
+        _planted_at = (DatabaseService.instance().execute(),)
+        _position = (DatabaseService.instance().execute(GET_PLANT_BY_POSITION),)
         self._api_service.api_put_greenhouse_notify_added_plant(_planted_at, _position)
         # TODO check if there if some plants have been removed
         self._api_service.api_delete_greenhouse_remove_plant_url()

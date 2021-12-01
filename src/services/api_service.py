@@ -156,7 +156,9 @@ class ApiService:
         """
         # TODO handle error
         try:
-            await self._request(HTTP_POST, greenhouse_remove_plant_url((config["plant_uuid"])))
+            await self._request(
+                HTTP_POST, greenhouse_remove_plant_url((config["plant_uuid"]))
+            )
         except HttpError:
             return False
         return True
