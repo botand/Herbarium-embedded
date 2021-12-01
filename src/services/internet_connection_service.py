@@ -15,6 +15,18 @@ class InternetConnectionService:
 
     _connection_is_healthy = False
 
+    __instance = None
+
+    @staticmethod
+    def instance():
+        """
+        Get the service
+        :rtype: InternetConnectionService
+        """
+        if InternetConnectionService.__instance is None:
+            InternetConnectionService.__instance = InternetConnectionService()
+        return InternetConnectionService.__instance
+
     def __init__(self):
         """Initialize the service"""
         self._wireless = Wireless()
