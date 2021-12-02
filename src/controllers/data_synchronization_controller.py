@@ -50,9 +50,9 @@ class DataSynchronizationController:
 
         functions = {
             "send_logs": self._send_logs,
-            # "update_data": self._update_local_plants,
-            # "check_new_plant": self._notify_new_plant,
-            # "check_removed_plant": self._notify_removed_plant
+            "update_data": self._update_local_plants,
+            "check_new_plant": self._notify_new_plant,
+            "check_removed_plant": self._notify_removed_plant
         }
 
         for key, value in functions.items():
@@ -91,23 +91,23 @@ class DataSynchronizationController:
             GET_UNTRANSMITTED_ACTUATORS_ORDERS, commit=False
         )
 
-        is_success = self._api_service.send_logs(_sensors_data, _actuators_data)
-
-        if is_success:
-            self._db_service.execute(
-                UPDATE_SENSORS_TRANSMITTED_FROM_DATE,
-                parameters=[
-                    _sensors_data[0]["timestamp"],
-                    _sensors_data[-1]["timestamp"],
-                ],
-            )
-            self._db_service.execute(
-                UPDATE_ACTUATORS_TRANSMITTED_FROM_DATE,
-                parameters=[
-                    _actuators_data[0]["timestamp"],
-                    _actuators_data[-1]["timestamp"],
-                ],
-            )
+        if self._api_service.send_logs(_sensors_data, _actuators_data):
+            if len(_sensors_data) > 0:
+                self._db_service.execute(
+                    UPDATE_SENSORS_TRANSMITTED_FROM_DATE,
+                    parameters=[
+                        _sensors_data[0]["timestamp"],
+                        _sensors_data[-1]["timestamp"],
+                    ],
+                )
+            if len(_actuators_data) > 0:
+                self._db_service.execute(
+                    UPDATE_ACTUATORS_TRANSMITTED_FROM_DATE,
+                    parameters=[
+                        _actuators_data[0]["timestamp"],
+                        _actuators_data[-1]["timestamp"],
+                    ],
+                )
             self._logger.info("Logs successfully transmitted to the API.")
         else:
             self._logger.info("Logs unsuccessfully transmitted to the API.")

@@ -42,6 +42,8 @@ class ApiService:
         self._base_url = config[_CONFIG_TAG]["base_url"]
         self._api_key = config[_CONFIG_TAG]["api_key"]
 
+        self._session = requests.sessions.Session()
+
         self._logger.info("initialized")
 
     def _request(self, method, endpoint, payload=None):
@@ -58,7 +60,12 @@ class ApiService:
         Raises:
             HttpError when the responses code is superior or equals to 400
         """
-        answer = requests.request(
+        self._logger.debug(
+            "Sending: %s %s",
+            method,
+            endpoint,
+        )
+        answer = self._session.request(
             method,
             self._base_url + endpoint,
             headers={"X-API-Key": self._api_key},
