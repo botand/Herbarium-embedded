@@ -55,6 +55,7 @@ class ADCService:
         GPIO.setup(self._plant_s1, GPIO.OUT)
         GPIO.setup(self._plant_s2, GPIO.OUT)
         GPIO.setup(self._plant_s3, GPIO.OUT)
+        self._logger.info("initialized")
 
     def get_water_level_value(self):
         """
