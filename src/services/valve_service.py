@@ -63,7 +63,7 @@ class ValveService:
 
         # Initiate valves
         self._logger.debug(
-            f"Valve Initialisation - Closing all the vales"
+            "Valve Initialisation - Closing all the vales"
         )
         self.close_all()
         for i in range(16):
