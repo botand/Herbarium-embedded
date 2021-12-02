@@ -40,7 +40,9 @@ GET_PLANT_BY_UUID = "select * from plant where uuid=?"
 INSERT_NEW_PLANT = "insert into plant(uuid, position) values (?, ?)"
 UPDATE_PLANT_TRANSMITTED_UUID = "update plant set uuid=?, transmitted=1 where uuid=?"
 UPDATE_PLANT = "update plant set uuid=?, moisture_goal=?, light_exposure_min_duration=?, transmitted=? where uuid=?"
-UPDATE_PLANT_INFO = "update plant set uuid=?, moisture_goal=?, light_exposure_min_duration=? where uuid=?"
+UPDATE_PLANT_INFO = (
+    "update plant set moisture_goal=?, light_exposure_min_duration=? where uuid=?"
+)
 UPDATE_PLANT_LEVELS = (
     "update plant set moisture_goal=?, light_exposure_min_duration=? where uuid=?"
 )

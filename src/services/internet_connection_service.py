@@ -36,7 +36,7 @@ class InternetConnectionService:
         """
         Check if the device has a internet access
         :return: True if the device has access to internet
-        :rtype bool
+        :rtype: bool
         """
         if self._wireless.current() is None:
             return False
@@ -53,7 +53,7 @@ class InternetConnectionService:
     def check_wifi(self):
         """
         Check if the device is connected to a wifi
-        :rtype bool
+        :rtype: bool
         """
         return self._wireless.current() is not None
 
@@ -63,7 +63,7 @@ class InternetConnectionService:
         :type ssid str
         :param password: Password of this wifi
         :type password str
-        :rtype bool
+        :rtype: bool
         """
         self._logger.debug("Trying to connect to %s", ssid)
         successful = self._wireless.connect(ssid, password)

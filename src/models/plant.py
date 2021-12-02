@@ -41,7 +41,7 @@ class Plant:
         :param data all the information about the plant
         :type data dict
         :return instance of the plant
-        :rtype Plant
+        :rtype: Plant
         """
         return Plant(
             data["uuid"],

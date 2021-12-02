@@ -83,11 +83,11 @@ class ApiService:
         )
         return answer.json()
 
-    async def get_greenhouse(self):
+    def get_greenhouse(self):
         """
-        Retrieve the greenhouse details
+        Retrieve the greenhouse plants
 
-        :rtype: Iterable<Plant>
+        :rtype: list[Plant]
         """
         plants = []
 
@@ -107,7 +107,7 @@ class ApiService:
         """
         Send logs of the reading of one or multiple sensors and actuators
 
-        :rtype boolean
+        :rtype: boolean
         """
         try:
             await self._request(
@@ -124,7 +124,7 @@ class ApiService:
         Notify the API a when plant have been added to a greenhouse
 
         :return UUID of the new plant
-        :rtype string
+        :rtype: string
         """
         try:
             result = await self._request(

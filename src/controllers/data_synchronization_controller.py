@@ -1,16 +1,10 @@
-from src.bluetooth import DeviceInformationService
-from src.constants import greenhouse_send_data_url
 from src.services import (
     ApiService,
     DatabaseService,
-    StatusIndicatorService,
     InternetConnectionService,
 )
 from src.utils import (
     get_logger,
-    time_in_millisecond,
-    INTERNET_CONNECTION_UNHEALTHY_PATTERN,
-    HTTP_PUT,
     GET_UNTRANSMITTED_SENSORS_DATA,
     GET_UNTRANSMITTED_ACTUATORS_ORDERS,
     UPDATE_SENSORS_TRANSMITTED_FROM_DATE,
@@ -19,10 +13,7 @@ from src.utils import (
     GET_UNTRANSMITTED_PLANT,
     UPDATE_PLANT_TRANSMITTED_UUID,
 )
-from src.models import Plant
-from src.utils import config
 import schedule
-import time
 
 _CONTROLLER_TAG = "controllers.DataSynchronizationController"
 
@@ -91,20 +82,11 @@ class DataSynchronizationController:
         # TODO check if there if some plants have been removed
         schedule.every(30).minutes.do(self._api_service.remove_plant())
 
+    def _update_local_plants(self):
+        plants = self._api_service.get_greenhouse()
 
-def _update_local_plants(self):
-    plants_data = await self._api_service.get_greenhouse()
-    plants = []
-
-    for plant_data in plants_data:
-        plants.append(Plant.create_from_dict(plant_data))
-
-    # TODO THEN: Update data in the database -> UPDATE_PLANT_INFO
-    self._db_service.execute(UPDATE_PLANT_INFO)
-
-    schedule.every(45).minutes.do(self._update_local_plants)
-
-
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+        for plant in plants:
+            self._db_service.execute(
+                UPDATE_PLANT_INFO,
+                parameters=[plant.moisture_goal, plant.light_exposure_min_duration],
+            )

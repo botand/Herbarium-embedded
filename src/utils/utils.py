@@ -10,7 +10,7 @@ def pin_number_to_digital_gpio(pin):
     :param pin: number of the GPIO
     :type pin: int
     :return: GPIO Pin
-    :rtype Pin
+    :rtype: Pin
     """
 
     pins = [
@@ -62,7 +62,7 @@ def generate_uuid_string():
     Generate a new UUID.
 
     :return a new UUID.
-    :rtype str
+    :rtype: str
     """
     return str(uuid.uuid4())
 

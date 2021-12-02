@@ -78,6 +78,6 @@ class BleService:
     def get_services(self):
         """
         :return: all the services currently advertised
-        :rtype list
+        :rtype: list
         """
         return self._services

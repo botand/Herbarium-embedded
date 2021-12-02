@@ -41,7 +41,7 @@ class DatabaseService:
         :param parameters: all the parameters for the query.
         :type parameters Iterable|dict
         :return the results of the query
-        :rtype list
+        :rtype: list
         """
         if parameters is None:
             parameters = []
