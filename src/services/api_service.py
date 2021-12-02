@@ -1,28 +1,19 @@
 """Service to interact with the API"""
-import json
-import uuid
-
 import requests
 
 from src.constants.api_endpoints import (
     get_greenhouse_url,
     greenhouse_send_data_url,
     greenhouse_notify_added_plant_url,
-    greenhouse_update_plant_detail_url,
     greenhouse_remove_plant_url,
 )
 from src.errors.http_error import HttpError
-from src.services import DatabaseService
+from src.models import Plant
 from src.utils.logger import get_logger
 from src.utils import (
     HTTP_GET,
     HTTP_PUT,
-    GET_UNTRANSMITTED_SENSORS_DATA,
-    GET_UNTRANSMITTED_ACTUATORS_ORDERS,
-    INSERT_NEW_PLANT,
-    HTTP_POST,
-    UPDATE_PLANT_INFO,
-    DELETE_PLANT,
+    HTTP_DELETE,
 )
 from src.utils import config
 
@@ -47,8 +38,8 @@ class ApiService:
         return ApiService.__instance
 
     def __init__(self):
-        self._base_url = config["base_url"]  # TODO Load from config: key=api.base_url
-        self._api_key = config["api_key"]  # TODO Load from config: key=api.api_key
+        self._base_url = config["base_url"]
+        self._api_key = config["api_key"]
 
         self._logger.info("initialized")
 
@@ -64,7 +55,7 @@ class ApiService:
             Decoded JSON received
 
         Raises:
-            HttpError when the responses code is
+            HttpError when the responses code is superior or equals to 400
         """
         answer = requests.request(
             method,
@@ -100,22 +91,19 @@ class ApiService:
         """
         plants = []
 
-        # TODO handle error
-        await self._request(
-            HTTP_GET, get_greenhouse_url((config["device_uuid"])), payload=None
-        )
         try:
             response = await self._request(
                 HTTP_GET, get_greenhouse_url(config["device_uuid"])
             )
 
-            # TODO load plants from the JSON
-            plants = response["plants"]
+            for plant_data in response["plants"]:
+                plants.append(Plant.create_from_dict(plant_data))
+
             return plants
         except HttpError:
             return False
 
-    async def api_put_greenhouse_send_data(self, sensors_data, actuactors_data):
+    async def send_logs(self, sensors_data, actuators_data):
         """
         Send logs of the reading of one or multiple sensors and actuators
 
@@ -125,39 +113,38 @@ class ApiService:
             await self._request(
                 HTTP_PUT,
                 greenhouse_send_data_url(config["device_uuid"]),
-                payload={"sensors": sensors_data, "actuators": actuactors_data},
+                payload={"sensors": sensors_data, "actuators": actuators_data},
             )
         except HttpError:
             return False
         return True
 
-    def api_put_greenhouse_notify_added_plant(self, planted_at, position):
+    def add_plant(self, planted_at, position):
         """
         Notify the API a when plant have been added to a greenhouse
 
-        :rtype:boolean
+        :return UUID of the new plant
+        :rtype string
         """
-        # TODO handle error
         try:
-            await self._request(
+            result = await self._request(
                 HTTP_PUT,
                 greenhouse_notify_added_plant_url(config["device_uuid"]),
                 payload={"planted_at": planted_at, "position": position},
             )
         except HttpError:
             return False
-        return True
+        return result["uuid"]
 
-    def api_delete_greenhouse_remove_plant_url(self):
+    def remove_plant(self):
         """
         Update the details of a plant
 
         :rtype:boolean
         """
-        # TODO handle error
         try:
             await self._request(
-                HTTP_POST, greenhouse_remove_plant_url((config["plant_uuid"]))
+                HTTP_DELETE, greenhouse_remove_plant_url(config["plant_uuid"])
             )
         except HttpError:
             return False
