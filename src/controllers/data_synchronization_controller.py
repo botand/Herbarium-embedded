@@ -52,7 +52,7 @@ class DataSynchronizationController:
             "send_logs": self._send_logs,
             "update_data": self._update_local_plants,
             "check_new_plant": self._notify_new_plant,
-            "check_removed_plant": self._notify_removed_plant
+            "check_removed_plant": self._notify_removed_plant,
         }
 
         for key, value in functions.items():
