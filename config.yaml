@@ -1,4 +1,4 @@
-version: 0.5.0
+version: 0.6.0
 logging:
   level: 'DEBUG'
   path: 'logs'
@@ -54,5 +54,16 @@ api:
   api_key: ''
   base_url: 'https://botand-herbarium-api.herokuapp.com/api'
 data_synchronization_task:
-  # In minutes
-  send_logs: 10
+  # Interval and delays are in seconds
+  send_logs:
+    interval: 600 # update every 10 min
+    delay: 0 # wait 5 min before the first call
+  update_data:
+    interval: 350 # update every 5min
+    delay: 0
+  check_new_plant:
+    interval: 60 # check every minutes
+    delay: 1 # wait 1 min before the first call
+  check_removed_plant:
+    interval: 60 # check every minutes
+    delay: 60 # wait 2 min before first call

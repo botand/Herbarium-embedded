@@ -1,6 +1,8 @@
 """Service to interact with the database"""
 import os
 import sqlite3 as sqlite
+import threading
+
 from src.utils.logger import get_logger
 
 _SERVICE_TAG = "services.DatabaseService"
@@ -8,6 +10,8 @@ _db_path = os.getenv("DB_FILE", ".database.db")
 _db_init_scripts_dir = os.path.join(
     os.path.dirname(__file__), "../../database/upgrades"
 )
+
+lock = threading.Lock()
 
 
 class DatabaseService:
@@ -29,26 +33,31 @@ class DatabaseService:
 
     def __init__(self):
         """Initialize the service"""
-        self._db = sqlite.connect(_db_path)
+        self._db = sqlite.connect(_db_path, timeout=10, check_same_thread=False)
 
         self._logger.info("initialized")
 
-    def execute(self, query, parameters=None):
+    def execute(self, query, parameters=None, commit=True):
         """
         Execute a SQL request. This function doesn't return the result of the query
         :param query: SQL query to execute.
         :type query: str
         :param parameters: all the parameters for the query.
         :type parameters Iterable|dict
+        :param commit: do we need to commit the cursor
+        :type commit: bool
         :return the results of the query
         :rtype: list
         """
-        if parameters is None:
-            parameters = []
-        self._logger.info("Executing query: %s with params %s.", query, str(parameters))
-        cursor = self._db.execute(query, parameters)
+        lock.acquire(blocking=True)
+        self._logger.debug(
+            "Executing query: '%s' with params %s.", query, str(parameters)
+        )
+        cursor = self._db.execute(query)
         result = cursor.fetchall()
-        self._db.commit()
+        if commit:
+            self._db.commit()
+        lock.release()
         self._logger.debug("Query results: %s", str(result))
         return result
 
@@ -65,5 +74,6 @@ class DatabaseService:
         files = os.listdir(_db_init_scripts_dir)
         for file_path in files:
             with open(f"{_db_init_scripts_dir}/{file_path}", "r") as file:
-                self._logger.debug("executing %s file", file_path)
                 self._db.executescript(file.read())
+                self._db.commit()
+                self._logger.debug("executing %s file", file_path)

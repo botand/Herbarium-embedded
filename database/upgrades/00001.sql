@@ -9,6 +9,7 @@ create table if not exists plant
     light_exposure_min_duration REAL    default 14.0 not null,
     planted_at                  INTEGER default (datetime('now')) not null,
     transmitted                 BOOLEAN default 0 not null,
+    removed                     BOOLEAN default 0 not null,
     check (light_exposure_min_duration >= 0.0 AND light_exposure_min_duration < 24.0),
     check (moisture_goal >= 0.0 AND moisture_goal < 100.0),
     check (position >= 0)

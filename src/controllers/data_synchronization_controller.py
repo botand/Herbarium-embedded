@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor
 from src.services import (
     ApiService,
     DatabaseService,
@@ -9,17 +10,21 @@ from src.utils import (
     GET_UNTRANSMITTED_ACTUATORS_ORDERS,
     UPDATE_SENSORS_TRANSMITTED_FROM_DATE,
     UPDATE_ACTUATORS_TRANSMITTED_FROM_DATE,
-    UPDATE_PLANT_INFO,
+    UPDATE_PLANT,
     GET_UNTRANSMITTED_PLANT,
-    UPDATE_PLANT_TRANSMITTED_UUID,
+    GET_REMOVED_UNTRANSMITTED_PLANT,
+    UPDATE_PLANT_INFO,
+    UPDATE_PLANT_TRANSMITTED,
+    time_in_millisecond,
 )
-import schedule
 
 _CONTROLLER_TAG = "controllers.DataSynchronizationController"
+_CONFIG_TAG = "data_synchronization_task"
+_CONFIG_INTERVAL_TAG = "interval"
+_CONFIG_DELAY_TAG = "delay"
 
 
 class DataSynchronizationController:
-    # TODO Complete docstring. C'est la tache "Rapport"
     """Controller that manage the data synchronization  for the device"""
 
     _logger = get_logger(_CONTROLLER_TAG)
@@ -28,28 +33,67 @@ class DataSynchronizationController:
 
     _db_service = DatabaseService.instance()
 
-    _last_update = 0
+    _internet_connection_service = InternetConnectionService.instance()
 
-    def __init__(self):
+    _send_logs_last_update = 0
+    _new_plant_last_update = 0
+    _removed_plant_last_update = 0
+    _update_local_last_update = 0
+
+    _tasks = []
+
+    def __init__(self, config):
         """Create the controller"""
-        self._logger.debug("Start initialization")
-        self._internet_connection_service = InternetConnectionService.instance()
+        self._executor = ThreadPoolExecutor(max_workers=8)
+
+        task_config = config[_CONFIG_TAG]
+
+        functions = {
+            "send_logs": self._send_logs,
+            # "update_data": self._update_local_plants,
+            # "check_new_plant": self._notify_new_plant,
+            # "check_removed_plant": self._notify_removed_plant
+        }
+
+        for key, value in functions.items():
+            interval = task_config[key][_CONFIG_INTERVAL_TAG] * 1000
+            delay = task_config[key][_CONFIG_DELAY_TAG] * 1000
+
+            self._tasks.append(
+                {
+                    "interval": interval,
+                    "last_update": time_in_millisecond() - interval + delay,
+                    "function": value,
+                }
+            )
+        self._logger.debug("initialized")
 
     def update(self):
-        self._logger.info("Update time!")
-        # TODO check time
-        # TODO check if it's time to send data to the API
+        """Check and update the different API call (if needed)"""
 
-        # TODO If YES: get data to send from the DB -> GET_UNTRANSMITTED_SENSORS_DATA, GET_UNTRANSMITTED_ACTUATORS_ORDERS
-        _sensors_data = self._db_service.execute(GET_UNTRANSMITTED_SENSORS_DATA)
-        _actuators_data = self._db_service.execute(GET_UNTRANSMITTED_ACTUATORS_ORDERS)
+        current_time = time_in_millisecond()
+        for task in self._tasks:
+            time_elapsed = current_time - task["last_update"]
+            if (
+                time_elapsed > task["interval"]
+                and self._internet_connection_service.last_connection_check
+            ):
+                self._executor.submit(task["function"])
+                task["last_update"] = current_time
 
-        # TODO THEN: Send data to the API
-        schedule.every(10).minutes.do(
-            self._api_service.send_logs(_sensors_data, _actuators_data)
+    def _send_logs(self):
+        """Transmit all the un-transmitted logs from the API"""
+        self._logger.info("Start send logs to the API.")
+        _sensors_data = self._db_service.execute(
+            GET_UNTRANSMITTED_SENSORS_DATA, commit=False
+        )
+        _actuators_data = self._db_service.execute(
+            GET_UNTRANSMITTED_ACTUATORS_ORDERS, commit=False
         )
 
-        if self._api_service.send_logs(_sensors_data, _actuators_data):
+        is_success = self._api_service.send_logs(_sensors_data, _actuators_data)
+
+        if is_success:
             self._db_service.execute(
                 UPDATE_SENSORS_TRANSMITTED_FROM_DATE,
                 parameters=[
@@ -65,28 +109,71 @@ class DataSynchronizationController:
                 ],
             )
             self._logger.info("Logs successfully transmitted to the API.")
+        else:
+            self._logger.info("Logs unsuccessfully transmitted to the API.")
 
-        # TODO check if it's time to retrieve data from the API
-        schedule.every(15).minutes.do(self._update_local_plants())
+    def _notify_new_plant(self):
+        """Notify the API when a new plant is detected"""
+        self._logger.info("Start send new plant to the API.")
+        new_plant = self._db_service.execute(GET_UNTRANSMITTED_PLANT)
 
-        # TODO check if there is new plants to send to the API
-        plant = self._db_service.execute(GET_UNTRANSMITTED_PLANT)
+        if len(new_plant) == 0:
+            self._logger.info("There is no plant to transmit.")
+            return
+        new_plant = new_plant[0]
 
-        plant_uuid = self._api_service.add_plant(plant["planted_at"], plant["position"])
+        plant = self._api_service.add_plant(
+            new_plant["planted_at"], new_plant["position"]
+        )
 
-        if plant_uuid:
+        if plant:
             self._db_service.execute(
-                UPDATE_PLANT_TRANSMITTED_UUID, [plant_uuid, plant["uuid"]]
+                UPDATE_PLANT,
+                [
+                    plant.uuid,
+                    plant.moisture_goal,
+                    plant.light_exposure_min_duration,
+                    plant.position,
+                ],
             )
+            self._logger.info("Plant successfully transmitted.")
+        else:
+            self._logger.info("Plant unsuccessfully transmitted.")
 
-        # TODO check if there if some plants have been removed
-        schedule.every(30).minutes.do(self._api_service.remove_plant())
+    def _notify_removed_plant(self):
+        """Notify the API about the plants that was removed"""
+        self._logger.info("Start send removed plant to the API.")
+        plant = self._db_service.execute(GET_REMOVED_UNTRANSMITTED_PLANT)
+
+        if len(plant) == 0:
+            self._logger.info("There is no plant removed to transmit.")
+            return
+        plant = plant[0]
+
+        if self._api_service.remove_plant(plant["uuid"]):
+            self._db_service.execute(UPDATE_PLANT_TRANSMITTED, [plant["uuid"]])
+            self._logger.info("Removed plant (%s) was successfully transmitted.")
+        else:
+            self._logger.info("Removed plant (%s) unsuccessfully transmitted.")
 
     def _update_local_plants(self):
+        """Update the plants data from the API"""
+        self._logger.info("Start gathering plants data from the API.")
         plants = self._api_service.get_greenhouse()
 
         for plant in plants:
             self._db_service.execute(
                 UPDATE_PLANT_INFO,
-                parameters=[plant.moisture_goal, plant.light_exposure_min_duration],
+                parameters=[
+                    plant.moisture_goal,
+                    plant.light_exposure_min_duration,
+                    plant.uuid,
+                ],
             )
+        self._logger.info("Gathering plants data from the API was successfully.")
+
+    def stop(self):
+        """Stop every current future"""
+        self._logger.debug("Stopping controller")
+        self._executor.shutdown(wait=True)
+        self._logger.debug("Controller stopped")

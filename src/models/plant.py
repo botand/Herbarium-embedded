@@ -1,11 +1,8 @@
 class Plant:
     """Object which represent a plant"""
 
-    def __init__(
-        self, uuid, last_uuid, position, moisture_goal, light_exposure_min_duration
-    ):
+    def __init__(self, uuid, position, moisture_goal, light_exposure_min_duration):
         self._uuid = uuid
-        self._last_uuid = last_uuid
         self._position = position
         self._moisture_goal = moisture_goal
         self._light_exposure_min_duration = light_exposure_min_duration
@@ -14,11 +11,6 @@ class Plant:
     def uuid(self):
         """Universal unique identifier of the plant"""
         return self._uuid
-
-    @property
-    def last_uuid(self):
-        """Last known universal unique identifier of the plant"""
-        return self._last_uuid
 
     @property
     def position(self):
@@ -38,6 +30,7 @@ class Plant:
     @staticmethod
     def create_from_dict(data):
         """
+        Instantiate a plant from a dictionary
         :param data all the information about the plant
         :type data dict
         :return instance of the plant
@@ -45,7 +38,6 @@ class Plant:
         """
         return Plant(
             data["uuid"],
-            data["last_uuid"],
             data["position"],
             data["override_moisture_goal"]
             if data["override_moisture_goal"] in data
@@ -54,6 +46,3 @@ class Plant:
             if data["override_light_exposure_min_duration"] in data
             else data["type"]["light_exposure_min_duration"],
         )
-
-    def __str__(self):
-        return "<Plant {0}>".format(self._last_uuid)

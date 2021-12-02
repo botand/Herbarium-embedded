@@ -44,10 +44,10 @@ class InternetConnectionService:
         timeout = 1
         try:
             requests.get(url, timeout=timeout)
-            _connection_is_healthy = True
+            self._connection_is_healthy = True
             return True
         except (requests.ConnectionError, requests.Timeout):
-            _connection_is_healthy = False
+            self._connection_is_healthy = False
             return False
 
     def check_wifi(self):

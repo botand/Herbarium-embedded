@@ -1,1 +1,1 @@
-from api_endpoints import *
+from .api_endpoints import *
