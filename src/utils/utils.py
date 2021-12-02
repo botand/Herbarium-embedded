@@ -1,6 +1,7 @@
 """Contains utils functions"""
 import time
 import board
+import uuid
 
 
 def pin_number_to_digital_gpio(pin):
@@ -50,7 +51,17 @@ def time_in_millisecond():
     """
     Current time in millisecond
 
-    :return: epoch in millisecond
+    :return epoch in millisecond
     :rtype: int
     """
     return round(time.time() * 1000)
+
+
+def generate_uuid_string():
+    """
+    Generate a new UUID.
+
+    :return a new UUID.
+    :rtype str
+    """
+    return str(uuid.uuid4())

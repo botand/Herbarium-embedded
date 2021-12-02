@@ -1,20 +1,15 @@
 #!/usr/bin/env python3
 """Main program"""
 import RPi.GPIO as GPIO
-from src.utils import (
-    config, 
-    config_ble,
-    led_utils, 
-    get_logger, 
-    time_in_millisecond
-)
+from src.utils import config, config_ble, led_utils, get_logger, time_in_millisecond
 from src.controllers import InternetConnectionController
 from src.services import (
     StatusIndicatorService,
     LightningLedService,
     ValveService,
     PumpService,
-    ADCService
+    ADCService,
+    DatabaseService,
 )
 from src.models import StatusPattern
 
@@ -51,6 +46,7 @@ def main():
     pump.stop()
 
     adc = ADCService()
+    DatabaseService.instance().run_init_scripts()
 
     print("You can stop the program using Ctrl + C safely ;)")
     try:

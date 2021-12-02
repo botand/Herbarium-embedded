@@ -21,7 +21,7 @@ This project should run on a Raspberry Pi with bluetooth. For `Ubuntu/Debian/Ras
 install the following packages:
 
 ```shell
-sudo apt-get install bluetooth bluez libbluetooth-dev libudev-dev
+sudo apt-get install bluetooth bluez libbluetooth-dev libudev-dev sqlite3
 ```
 
 Install the python requirements:
@@ -31,6 +31,12 @@ pip3 install -r requirements.txt
 ```
 
 ### Local setup
+
+Make sure to install the dev dependencies, using the following command:
+
+```shell
+pip3 install -r dev-requirements.txt
+```
 
 #### Wi-Fi
 
@@ -55,10 +61,49 @@ which redirect to the `config.yaml` file. So to start the code, execute the foll
 ```shell
 sudo su
 sudo export CONFIG_YAML_FILE='<YOUR-CONFIG-FILE>'
+sudo export DB_FILE='<YOUR-SQLITE-DB-FILE>'
+sudo export DB_INIT_SCRIPTS_DIR='<DATABASE-FOLDER>' # Path to the 
 sudo python3 -m src
 ```
-You can also write the `CONFIG_YAML_FILE` variable into the `/etc/environment` file.
-Note that you will have to logout and login to access the variable.
+You can also write the `CONFIG_YAML_FILE` and `DB_FILE` variables into the `/etc/environment` file.
+Note that you will have to logout and login to access the variables.
+
+### Auto-Run Python Program on Raspberry Pi Startup
+
+We recommend using `systemd` to run the python program after the raspberry pi is started. 
+Create a configuration file and edit it. This file will tell systemd which program needs to be executed:
+
+```shell
+sudo nano /lib/systemd/system/herbarium.service
+```
+
+Add the following lines in the file:
+```shell
+[Unit]
+Description=PiCube Pattern
+After=multi-user.target
+[Service]
+Type=idle
+ExecStart=/usr/bin/python3  /<PATH-TO-THE-PROJECT>/__main__.py
+[Install]
+WantedBy=multi-user.target
+```
+
+Change the permissions on the configuration file to 644:
+```shell
+sudo chmod 644 /lib/systemd/system/herbarium.service
+```
+
+Now tell the systemd to start the process on boot up :
+```shell
+sudo systemctl daemon-reload
+sudo systemctl enable herbarium.service
+```
+
+Now reboot your Pi and the process should run:
+```shell
+sudo reboot
+```
 
 ## Hooks
 

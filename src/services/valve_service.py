@@ -70,9 +70,7 @@ class ValveService:
             self._valve_state.append("open")
         while self._valve_state[15] != "close":
             self.update()
-        self._logger.debug(
-            f"Valve Initialisation - Done !"
-        )
+        self._logger.debug("Valve Initialisation - Done !")
 
     def _select_addr(self, valve_nb):
         """
@@ -113,9 +111,7 @@ class ValveService:
         :param tile_nb : tile number [0-15]
         :type tile_nb: int
         """
-        self._asked_valve_state.append(
-            (tile_nb, "close")
-        )  # Add close request at tail
+        self._asked_valve_state.append((tile_nb, "close"))  # Add close request at tail
 
     def close_all(self):
         """
@@ -130,9 +126,7 @@ class ValveService:
         :param tile_nb : tile number [0-15]
         :type tile_nb: int
         """
-        self._asked_valve_state.append(
-            (tile_nb, "open")
-        )  # Add open request at tail
+        self._asked_valve_state.append((tile_nb, "open"))  # Add open request at tail
 
     def update(self):
         """

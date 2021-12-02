@@ -14,7 +14,9 @@ class InternetConnectionService:
     _logger = get_logger(_SERVICE_TAG)
 
     def __init__(self):
+        """Initialize the service"""
         self._wireless = Wireless()
+        self._logger.info("initialized")
 
     def check_connection(self):
         """

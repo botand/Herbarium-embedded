@@ -24,6 +24,7 @@ class BleService:
 
         self._bleno.on("advertisingStart", self._on_advertising_start)
         self._bleno.on("stateChange", self._on_state_change)
+        self._logger.info("initialized")
 
     def _on_state_change(self, state):
         """
