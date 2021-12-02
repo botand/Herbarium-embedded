@@ -66,6 +66,7 @@ class DataSynchronizationController:
                     "function": value,
                 }
             )
+        # self._logger.debug(self._tasks)
         self._logger.debug("initialized")
 
     def update(self):

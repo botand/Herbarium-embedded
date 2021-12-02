@@ -32,7 +32,7 @@ class Plant:
         """
         Instantiate a plant from a dictionary
         :param data all the information about the plant
-        :type data dict
+        :type data: dict
         :return instance of the plant
         :rtype: Plant
         """
@@ -40,9 +40,9 @@ class Plant:
             data["uuid"],
             data["position"],
             data["override_moisture_goal"]
-            if data["override_moisture_goal"] in data
+            if "override_moisture_goal" in data
             else data["type"]["moisture_goal"],
             data["override_light_exposure_min_duration"]
-            if data["override_light_exposure_min_duration"] in data
+            if "override_light_exposure_min_duration" in data
             else data["type"]["light_exposure_min_duration"],
         )

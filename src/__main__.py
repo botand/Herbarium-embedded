@@ -43,9 +43,9 @@ def main():
     lightning_led = LightningLedService(config["led_strip"])
     lightning_led.turn_off_all()
 
-    # valve = ValveService(config["valve"])
-    # pump = PumpService(config["pump"])
-    # pump.stop()
+    valve = ValveService(config["valve"])
+    pump = PumpService(config["pump"])
+    pump.stop()
 
     print("You can stop the program using Ctrl + C safely ;)")
     try:
