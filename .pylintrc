@@ -17,3 +17,6 @@ ignore-docstrings=yes
 
 # Ignore imports when computing similarities.
 ignore-imports=yes
+
+[FORMAT]
+max-line-length=120

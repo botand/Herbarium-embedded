@@ -9,6 +9,7 @@ from src.services import (
     LightningLedService,
     ValveService,
     PumpService,
+    ADCService,
     DatabaseService,
 )
 from src.models import StatusPattern
@@ -47,6 +48,8 @@ def main():
     pump = PumpService(config["pump"])
     pump.stop()
 
+    adc = ADCService()
+
     print("You can stop the program using Ctrl + C safely ;)")
     try:
         logger.debug("Starting main loop")
@@ -57,47 +60,61 @@ def main():
         open_trig = False
         pump_speed = 0
         valve_count = 0
+        pot_count = 0
+        pot_vals = [0.0]*40
+        pot_idx = 0
+        pot_mean = 0
+
         while True:
             status_indicator_service.update()
             internet_connection_controller.update()
             data_synchronization_controller.update()
 
-            # valve.update()
-            #
-            # if time_in_millisecond() - prev > 500:
-            #     prev = time_in_millisecond()
-            #
-            #     if tile > 16:
-            #         if tile_on:
-            #             tile_on = False
-            #         else:
-            #             tile_on = True
-            #         tile = 1
-            #
-            #     if tile_on:
-            #         lightning_led.turn_on(tile)
-            #
-            #     else:
-            #         lightning_led.turn_off(tile)
-            #
-            #     tile = tile + 1
-            #
-            #     if open_trig:
-            #         valve.open(valve_count)
-            #         open_trig = False
-            #         valve_count += 1
-            #         if valve_count % 16 == 0:
-            #             valve_count = 0
-            #
-            #     else:
-            #         valve.close(valve_count)
-            #         open_trig = True
-            #
-            #     pump.set_speed(pump_speed)
-            #     pump_speed += 20
-            #     if pump_speed > 100.0:
-            #         pump_speed = 0.0
+            valve.update()
 
+            if time_in_millisecond() - prev > 1000:
+                prev = time_in_millisecond()
+
+                # test LED
+
+                if tile > 15:
+                    if tile_on:
+                        tile_on = False
+                    else:
+                        tile_on = True
+                    tile = 0 
+
+                if tile_on:
+                    lightning_led.turn_on(tile)
+                else:
+                    lightning_led.turn_off(tile)
+                tile = tile + 1
+
+                # test valves
+                if open_trig:
+                    valve.open(valve_count)
+                    open_trig = False
+                    valve_count += 1
+                    if valve_count % 16 == 0:
+                        valve_count = 0
+                else:
+                    valve.close(valve_count)
+                    open_trig = True
+
+                # Test pompe
+                pump.set_speed(pump_speed)
+                pump_speed += 20
+                if pump_speed > 100.0:
+                   pump_speed = 0.0
+
+                # test adc
+                adc.get_ambient_luminosity_value()
+                adc.get_water_level_value()
+                adc.get_plant_hygrometry_value(pot_count);
+
+                pot_count += 1
+                if pot_count % 16 == 0:
+                    pot_count = 0
     except KeyboardInterrupt:
         # Stopping all the controllers and services
         logger.debug("Turning off the program")

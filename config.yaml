@@ -1,4 +1,4 @@
-version: 0.6.0
+version: 0.7.0
 logging:
   level: 'DEBUG'
   path: 'logs'
@@ -32,8 +32,8 @@ status_indicator:
   interval_update: 10
 led_strip:
   gpio_data_in: 21 # Pin 40
-  led_count: 144 # Total Lightning LED number in the whole herbarium
-  led_by_tile: 8 # Number of LED by tile
+  led_count: 320 # Total Lightning LED number in the whole herbarium
+  led_by_tile: 20 # Number of LED by tile
 valve:
   gpio_selector_pin_S0: 5 # Pin 29
   gpio_selector_pin_S1: 6 # Pin 31
@@ -44,7 +44,7 @@ valve:
   position_off: 8
   position_on: 3
   opening_time: 200 # ms
-  closing_time: 300 # ms
+  closing_time: 500 # ms
 pump:
   gpio_speed_out: 13 # Pin 33
   pwm_freq: 50
@@ -67,3 +67,13 @@ data_synchronization_task:
   check_removed_plant:
     interval: 30 # check every minutes
     delay: 150 # wait 2 min before first call
+adc_config:
+  i2c_sda: 2
+  i2c_scl: 3
+  adc_channel_ambient_luminosity: 0
+  adc_channel_water_level: 1
+  adc_channel_plant_hygrometry: 2
+  gpio_selector_pin_S0: 8 # Pin 24
+  gpio_selector_pin_S1: 7 # Pin 26
+  gpio_selector_pin_S2: 16 # Pin 36
+  gpio_selector_pin_S3: 20 # Pin 38
