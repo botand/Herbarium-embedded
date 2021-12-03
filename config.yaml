@@ -1,9 +1,9 @@
-version: 0.6.0
+version: 0.7.0
 logging:
   level: 'DEBUG'
   path: 'logs'
   filename_suffix: '.log'
-device_uuid: '2222'
+device_uuid: '47804a3a-20d6-b1f3-1e1b-95d8e47d7ae0'
 ble:
   device_name: 'Herbarium'
   services:
@@ -50,7 +50,23 @@ pump:
   pwm_freq: 50
   max_speed: 100
   min_speed: 50
-
+api:
+  api_key: ''
+  base_url: 'https://botand-herbarium-api.herokuapp.com/api'
+data_synchronization_task:
+  # Interval and delays are in seconds
+  send_logs:
+    interval: 600 # update every 10 min
+    delay: 350 # wait 5 min before the first call
+  update_data:
+    interval: 350 # update every 5min
+    delay: 0
+  check_new_plant:
+    interval: 30 # check every minutes
+    delay: 90 # wait 1 min before the first call
+  check_removed_plant:
+    interval: 30 # check every minutes
+    delay: 150 # wait 2 min before first call
 adc_config:
   i2c_sda: 2
   i2c_scl: 3

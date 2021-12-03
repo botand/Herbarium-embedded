@@ -7,3 +7,4 @@ from .pump_service import PumpService
 from .internet_connection_service import InternetConnectionService
 from .adc_service import ADCService
 from .database_service import DatabaseService
+from .api_service import ApiService

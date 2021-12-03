@@ -10,7 +10,7 @@ def pin_number_to_digital_gpio(pin):
     :param pin: number of the GPIO
     :type pin: int
     :return: GPIO Pin
-    :rtype Pin
+    :rtype: Pin
     """
 
     pins = [
@@ -62,6 +62,16 @@ def generate_uuid_string():
     Generate a new UUID.
 
     :return a new UUID.
-    :rtype str
+    :rtype: str
     """
     return str(uuid.uuid4())
+
+
+"GET = Retrieve an existing resource."
+HTTP_GET = "GET"
+"POST = Create a new resource."
+HTTP_POST = "POST"
+"PUT = Update an existing resource."
+HTTP_PUT = "PUT"
+"DELETE = Delete a resource."
+HTTP_DELETE = "DELETE"

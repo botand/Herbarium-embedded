@@ -49,7 +49,7 @@ class InternetConnectionController:
             ]
         )
 
-        self._internet_connection_service = InternetConnectionService()
+        self._internet_connection_service = InternetConnectionService.instance()
 
         # Check if already connected.
         if self._internet_connection_service.check_wifi() is False:

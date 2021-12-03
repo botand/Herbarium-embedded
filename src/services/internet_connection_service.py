@@ -13,6 +13,20 @@ class InternetConnectionService:
 
     _logger = get_logger(_SERVICE_TAG)
 
+    _connection_is_healthy = False
+
+    __instance = None
+
+    @staticmethod
+    def instance():
+        """
+        Get the service
+        :rtype: InternetConnectionService
+        """
+        if InternetConnectionService.__instance is None:
+            InternetConnectionService.__instance = InternetConnectionService()
+        return InternetConnectionService.__instance
+
     def __init__(self):
         """Initialize the service"""
         self._wireless = Wireless()
@@ -22,7 +36,7 @@ class InternetConnectionService:
         """
         Check if the device has a internet access
         :return: True if the device has access to internet
-        :rtype bool
+        :rtype: bool
         """
         if self._wireless.current() is None:
             return False
@@ -30,14 +44,16 @@ class InternetConnectionService:
         timeout = 1
         try:
             requests.get(url, timeout=timeout)
+            self._connection_is_healthy = True
             return True
         except (requests.ConnectionError, requests.Timeout):
+            self._connection_is_healthy = False
             return False
 
     def check_wifi(self):
         """
         Check if the device is connected to a wifi
-        :rtype bool
+        :rtype: bool
         """
         return self._wireless.current() is not None
 
@@ -47,7 +63,7 @@ class InternetConnectionService:
         :type ssid str
         :param password: Password of this wifi
         :type password str
-        :rtype bool
+        :rtype: bool
         """
         self._logger.debug("Trying to connect to %s", ssid)
         successful = self._wireless.connect(ssid, password)
@@ -55,3 +71,12 @@ class InternetConnectionService:
             "Connection is successful" if successful else "Connection failed"
         )
         return successful
+
+    @property
+    def last_connection_check(self):
+        """
+        Return the result of the last connection check
+        :return: True if during the last check, the connection was healthy
+        :rtype: bool
+        """
+        return self._connection_is_healthy

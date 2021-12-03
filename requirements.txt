@@ -14,3 +14,4 @@ wireless~=0.3.3
 adafruit-circuitpython-ads1x15==2.2.9
 adafruit-circuitpython-busdevice==5.1.0
 RPi.GPIO==0.7.1a4
+requests-futures==1.0.0

@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Main program"""
 import RPi.GPIO as GPIO
+
 from src.utils import config, config_ble, led_utils, get_logger, time_in_millisecond
-from src.controllers import InternetConnectionController
+from src.controllers import InternetConnectionController, DataSynchronizationController
 from src.services import (
     StatusIndicatorService,
     LightningLedService,
@@ -24,6 +25,7 @@ def main():
     logger.info("Version loaded: %s", config["version"])
 
     status_indicator_service = StatusIndicatorService.instance()
+    DatabaseService.instance().run_init_scripts()
 
     status_indicator_service.add_status(
         StatusPattern(
@@ -37,6 +39,7 @@ def main():
     # Initializing all the controllers
     logger.debug("Start initializing all the controllers and services")
     internet_connection_controller = InternetConnectionController(config, config_ble)
+    data_synchronization_controller = DataSynchronizationController(config)
 
     lightning_led = LightningLedService(config["led_strip"])
     lightning_led.turn_off_all()
@@ -46,7 +49,6 @@ def main():
     pump.stop()
 
     adc = ADCService()
-    DatabaseService.instance().run_init_scripts()
 
     print("You can stop the program using Ctrl + C safely ;)")
     try:
@@ -66,6 +68,8 @@ def main():
         while True:
             status_indicator_service.update()
             internet_connection_controller.update()
+            data_synchronization_controller.update()
+
             valve.update()
 
             if time_in_millisecond() - prev > 1000:
@@ -111,13 +115,13 @@ def main():
                 pot_count += 1
                 if pot_count % 16 == 0:
                     pot_count = 0
-
-
     except KeyboardInterrupt:
         # Stopping all the controllers and services
         logger.debug("Turning off the program")
         status_indicator_service.turn_off()
+        DatabaseService.instance().close()
         internet_connection_controller.stop()
+        data_synchronization_controller.stop()
         lightning_led.turn_off_all()
         pump.stop()
         GPIO.cleanup()

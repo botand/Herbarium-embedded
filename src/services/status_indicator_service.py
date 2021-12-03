@@ -274,7 +274,7 @@ class StatusIndicatorService:
         """
         Determine the interval between each update based on the animation
         :return: number of millisecond that need to be elapsed between update
-        :rtype int
+        :rtype: int
         """
         pattern = self._animations_in_progress[self._current_animation_index]
         modifier = 1

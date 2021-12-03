@@ -37,7 +37,7 @@ class StatusPattern:
     def name(self):
         """
         Name of the status
-        :rtype str
+        :rtype: str
         """
         return self._name
 
@@ -46,7 +46,7 @@ class StatusPattern:
         """
         :return: tuple that represent the color like (R, G, B) with each
         value between 0 and 255
-        :rtype tuple
+        :rtype: tuple
         """
         return self._color
 
@@ -54,7 +54,7 @@ class StatusPattern:
     def animation_type(self):
         """
         Type of the animation
-        :rtype int
+        :rtype: int
         """
         return self._animation_type
 
@@ -62,7 +62,7 @@ class StatusPattern:
     def max_brightness(self):
         """
         Maximum brightness of the pattern
-        :rtype float
+        :rtype: float
         """
         return self._max_brightness
 
