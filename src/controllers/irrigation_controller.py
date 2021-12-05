@@ -16,7 +16,19 @@ _PUMP_SPEED = "pump_speed"
 class IrrigationController:
     "Controller That manage the irriigation systeme"""
 
-    _logger = get_logger(_CONTROLLER_TAG)
+    __instance = None
+
+    _logger = get_logger(_SERVICE_TAG)
+
+    @staticmethod
+    def instance():
+        """
+        Get the service
+        :rtype: ADCService
+        """
+        if IrrigationController.__instance is None:
+            IrrigationController.__instance = IrrigationController()
+        return IrrigationController.__instance
     
     def __init__(self, config):
         """
