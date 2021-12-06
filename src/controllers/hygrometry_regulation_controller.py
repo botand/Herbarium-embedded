@@ -10,16 +10,15 @@ from src.utils import (
 )
 
 _CONTROLLER_TAG = "controllers.HygromertyRegulationController"
+
 # Hygrometric Regulation
-
-
-# For water shot Attribution
 _INTERVAL_UPDATE = "interval_update"
 _DELTA_DETECTION = "delta_detection"
-_SHOT_DURATION = "shot_duration"
-_PUMP_SPEED = "pump_speed"
 _MAX_SAMPLE_REGULATION = "max_sample_before_regulation"
 
+# For water shot Attribution
+_SHOT_DURATION = "shot_duration"
+_PUMP_SPEED = "pump_speed"
 
 class HygrometryRegulationController:
     "Controller That manage the hygrometry Regulation"""
