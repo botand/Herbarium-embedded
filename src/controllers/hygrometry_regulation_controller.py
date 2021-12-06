@@ -1,15 +1,26 @@
 """HygrometryRegulationController"""
+from src.models import plant
 from src.services import (
     ADCService,
+    DatabaseService,
     PumpService,
     ValveService
 )
 from src.utils import (
+    configuration.config,
     get_logger,
     time_in_millisecond,
 )
 
+from src.utils.sql_queries import(
+    INSERT_MOISTURE_LEVEL_FOR_PLANT,
+    INSERT_NEW_PLANT,
+    REMOVE_PLANT
+)
+
 _CONTROLLER_TAG = "controllers.HygromertyRegulationController"
+_CONFIG_TAG = "hygrometry"
+_PLANT_COUNT = "plant_count"
 
 # Hygrometric Regulation
 _INTERVAL_UPDATE = "interval_update"
@@ -36,28 +47,37 @@ class HygrometryRegulationController:
             HygrometryRegulationController.__instance = HygrometryRegulationController()
         return HygrometryRegulationController.__instance
     
-    def __init__(self, config):
+    def __init__(self):
         """
         :param config: configuration to use.
         :type config : dict of str
         """
+        hygro_config = config[_CONFIG_TAG]
+
         # Hygrometry regulation, one value per plant position
-        # TODO On a besoins de revenr sur les valeurs à l'initialisation. Peut être inverser la boucle tout simplement.
-        self._cummulative = []
-        self._last_read = []
-        self._average = []
-        self._nb_sample = []
-        self._interval_update = config[_INTERVAL_UPDATE]
-        self._delta_detection = config[_DELTA_DETECTION]
-        self._max_sample_regulation = config[_MAX_SAMPLE_REGULATION]
+        self._cummulative = [0.0]*16
+        self._last_read = [0.0]*16
+        self._average = [0.0]*16
+        self._nb_sample = [0]*16
+        self._interval_update = hygro_config[_INTERVAL_UPDATE]
+        self._delta_detection = hygro_config[_DELTA_DETECTION]
+        self._max_sample_regulation = hygro_config[_MAX_SAMPLE_REGULATION]
         self._previous_read_time = 0
 
         # water Shot
-        self._shot_duration = config[_SHOT_DURATION]
-        self._pump_speed = config[_PUMP_SPEED]
+        self._shot_duration = hygro_config[_SHOT_DURATION]
+        self._pump_speed = hygro_config[_PUMP_SPEED]
         self._shot_query_queue = []  # Contains plant position line.
         self._query_status = False # False:wating, True:In progress
         self._previous_shot_time = 0
+
+        # Initialisation
+        for i in range(config[_PLANT_COUNT]):
+            hygro_value = ADCService.instance().get_plant_hygrometry_value(i)
+            self._cummulative[i] = hygro_value
+            self._last_read[i] = hygro_value 
+            self._average[i] = hygro_value
+            self._nb_sample[i] = 1
 
     def update(self, plants):
         """
@@ -65,7 +85,7 @@ class HygrometryRegulationController:
         - Check for add or removed plants
         - Check for Hygrometry
         - Give some water shots for hygrometry regulation
-        :param plants: plant list - 16 elements by ASC position but it doesn't matter
+        :param plants: plant list - 16 elements by ASC position
         :type plants: list
         """
         self._shot_update()
@@ -92,9 +112,11 @@ class HygrometryRegulationController:
 
                 # If it was an adding
                 if hygro_val >= (self._average(i) + self._delta_detection)
-                    # TODO : aouter dans la dB
+                    # Ajouter dans la dB
+                    DatabaseService.instance().execute(INSERT_NEW_PLANT, i)
                 else
-                    # TODO : Retirer de la DB
+                    # Retirer de la DB
+                    DatabaseService.instance().execute(REMOVE_PLANT, plants(i).uuid(), i)
 
                 # Redo the cummulative for a new average value
                 self._cummulative(i) = self._last_read(i)
@@ -108,10 +130,11 @@ class HygrometryRegulationController:
             if self._nb_sample(i) == self._max_sample_regulation:
                 self._average(i) = self._cummulative(i) / self._nb_sample(i)
                 if plant.moisture_goal() != None
-                    # TODO Send DB
-                    # TODO Regulation procedure
+                    # Dataase Communication
+                    DatabaseService.instance().execute(INSERT_MOISTURE_LEVEL_FOR_PLANT, plants(i).uuid(),self._average(i))
+                    # Regulation
                     if self.average(i) < plat.moisture_goal()
-                        _query_shot(i)
+                        self._query_shot(i)
                 self._cummulative(i) = 0
                 self._nb_sample(i) = 0              
 
@@ -133,12 +156,12 @@ class HygrometryRegulationController:
             if !self._query_status:
                 self._previous_shot_time = time_in_millisecond()
                 ValveService.instance().open(self._shot_query_queue[0])
-                PumpService.instace().set_speed(self._pump_seed)
+                PumpService.instance().set_speed(self._pump_seed)
                 self._query_status = True
             else:
                 if time_in_millisecond() - self._previous_shot_time > self._shot_duration:
                     ValveService.instance().close(self._shot_query_queue[0])
-                    PumpService.instace().stop()
+                    PumpService.instance().stop()
                     self._query_status = False
                     self._logger.debug(f"{_SERVICE_TAG} Shot Done for plant {self._shot_query_queue[0]}")
                     self._shot_query_queue.pop(0)

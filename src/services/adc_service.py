@@ -38,9 +38,9 @@ class ADCService:
             ADCService.__instance = ADCService()
         return ADCService.__instance
 
-    def __init__(self):
+    def __init__(self, config):
         """Initialize the service"""
-        adc_config = config["adc_config"]
+        adc_config = config[config]
         self._i2c = busio.I2C(adc_config[_I2C_PIN_SCL], adc_config[_I2C_PIN_SDA])
         self._adc = ads.ADS1115(self._i2c)
         self._water_level_channel = AnalogIn(self._adc, adc_config[_ADC_CHANNEL_WATER_LEVEL])
