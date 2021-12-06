@@ -25,6 +25,9 @@ ble:
       descriptors:
 plant_count: 16
 hygrometry:
+  delta_detection: 8 # % delta use for deteting the adding or the  removig of a plant
+  interval_update: 500 # ms
+  max_sample_before_regulation: 120 # use or execute the regulation after a define number of sample (120*interval_update = 60sec)
   shot_duration: 3000 # ms
   pump_speed: 75 # %
 status_indicator:
