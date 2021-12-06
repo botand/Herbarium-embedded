@@ -1,5 +1,6 @@
 """HygrometryRegulationController"""
 from src.services import (
+    ADCService,
     PumpService,
     ValveService
 )
@@ -9,7 +10,10 @@ from src.utils import (
 )
 
 _CONTROLLER_TAG = "controllers.HygromertyRegulationController"
+# Hygrometric Regulation
 
+
+# For water shot Attribution
 _SHOT_DURATION = "shot_duration"
 _PUMP_SPEED = "pump_speed"
 
@@ -36,13 +40,34 @@ class HygrometryRegulationController:
         :param config: configuration to use.
         :type config : dict of str
         """
+        # Hygrometry regulation, one value per plant position
+        # TODO On a besoins de revenr sur les valeurs à l'initialisation. Peut être inverser la boucle tout simplement.
+        self._cummulative = []
+        self._last_read = []
+        self._average = []
+        self._nb_sample = []
+    
+        # water Shot
         self._shot_duration = config[_SHOT_DURATION]
         self._pump_speed = config[_PUMP_SPEED]
         self._shot_query_queue = []  # Contains plant position line.
         self._query_status = False # False:wating, True:In progress
         self._previous_time = 0
 
-    def query_shot(plant_position):
+    def hygrometric_update(plants):
+        for plant in plants: 
+
+            hygro_val = ADCService.instance().get_plant_hygrometry_value(plant.position)
+            cummulative = self._cummulative(plant.position)
+            last_read = self._last_read(plant.position)
+            average = self._average(plant.position)
+
+            if hygro_val != average && _hygro_val == last_read  # TODO Ajouter la tolérence parce que la ca ne marchera pas
+                
+
+        
+
+    def _query_shot(plant_position):
         """
         Add a shot query to the line.
         :param plant_position: plant position [0-15]
