@@ -24,7 +24,7 @@ ble:
       uuid: 'ddb4c99c-d127-4314-bb6f-597c4cb1859d'
       descriptors:
 plant_count: 16
-irrigation:
+hygrometry:
   shot_duration: 3000 # ms
   pump_speed: 75 # %
 status_indicator:

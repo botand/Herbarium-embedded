@@ -74,6 +74,7 @@ def main():
 
         # Plants - SP (Set Point)
         plants = []
+        plant_mean_detection = [[]]*16
 
         # PV (Point Value)
         ambient_luminosity_value = 0.0  # %
@@ -100,6 +101,8 @@ def main():
             for plant_position in range(PLANT_COUNT):
                 plant_detail = DatabaseService.instance().execute(GET_PLANT_BY_POSITION, plant_position)
                 # TODO : Do some string decoding shit, config a plant object and adds it to plants list.
+
+            # Add or Removing plant Detection
 
 
             # Update Sensors - Send to DB

@@ -1,4 +1,4 @@
-"""IrrigationController"""
+"""HygrometryRegulationController"""
 from src.services import (
     PumpService,
     ValveService
@@ -8,13 +8,14 @@ from src.utils import (
     time_in_millisecond,
 )
 
-_CONTROLLER_TAG = "controllers.IrrigationController"
+_CONTROLLER_TAG = "controllers.HygromertyRegulationController"
+
 _SHOT_DURATION = "shot_duration"
 _PUMP_SPEED = "pump_speed"
 
 
-class IrrigationController:
-    "Controller That manage the irriigation systeme"""
+class HygrometryRegulationController:
+    "Controller That manage the hygrometry Regulation"""
 
     __instance = None
 
@@ -26,9 +27,9 @@ class IrrigationController:
         Get the service
         :rtype: ADCService
         """
-        if IrrigationController.__instance is None:
-            IrrigationController.__instance = IrrigationController()
-        return IrrigationController.__instance
+        if HygrometryRegulationController.__instance is None:
+            HygrometryRegulationController.__instance = HygrometryRegulationController()
+        return HygrometryRegulationController.__instance
     
     def __init__(self, config):
         """
@@ -50,7 +51,7 @@ class IrrigationController:
         self._shot_query_queue.append(plant_position)
         self._logger.debug(f"{_SERVICE_TAG} Shot Plannified for plant {plant_position}")
 
-    def update():
+    def shot_update():
         """
         Execute the query line. Each shot is done one by one.
         """
