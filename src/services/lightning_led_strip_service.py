@@ -34,24 +34,24 @@ class LightningLedService:
         Update one selected segment by it number.
         :param tile_nb: number of the tile [0-15]
         :param color: selected color in led_utils.py
-        :param brightness: [0.0-1.0]
+        :param brightness: [0.0-100.0]
         """
         for i in range(
             tile_nb * self._led_by_tile, (tile_nb + 1) * self._led_by_tile
         ):
             self._strip[i] = (
-                round(color[0] * brightness),
-                round(color[1] * brightness),
-                round(color[2] * brightness),
+                round(color[0] * brightness / 100),
+                round(color[1] * brightness / 100),
+                round(color[2] * brightness / 100),
             )
         self._strip.show()
 
-    def turn_on(self, tile_nb):
+    def turn_on(self, tile_nb, brightness):
         """
         Turn ON tile selected lightning
         :param tile_nb: tile number [0-15]
         """
-        self._update_segment(tile_nb, led_utils.COLOR_WHITE, 1)
+        self._update_segment(tile_nb, led_utils.COLOR_WHITE, brightness)
         self._logger.debug(f"Turn ON Tile {tile_nb} Lightning")
 
     def turn_off(self, tile_nb):

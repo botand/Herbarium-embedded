@@ -31,10 +31,10 @@ _SHOT_DURATION = "shot_duration"
 _PUMP_SPEED = "pump_speed"
 
 class HygrometryRegulationController:
-    "Controller That manage the hygrometry Regulation"""
+    """Controller That manage the hygrometry Regulation"""
 
     __instance = None
-    _logger = get_logger(_SERVICE_TAG)
+    _logger = get_logger(_CONTROLLER_TAG)
     _adc_instance = ADCService.instance()
     _db_instance = DatabaseService.instance()
 
@@ -42,17 +42,14 @@ class HygrometryRegulationController:
     def instance():
         """
         Get the service
-        :rtype: ADCService
+        :rtype: HygrometryRegulationController
         """
         if HygrometryRegulationController.__instance is None:
             HygrometryRegulationController.__instance = HygrometryRegulationController()
         return HygrometryRegulationController.__instance
     
     def __init__(self):
-        """
-        :param config: configuration to use.
-        :rtype config : dict of str
-        """
+        """Initialize the Controller"""
         hygro_config = config[_CONFIG_TAG]
 
         # Hygrometry regulation, one value per plant position
@@ -87,11 +84,11 @@ class HygrometryRegulationController:
         - Check for Hygrometry
         - Give some water shots for hygrometry regulation
         :param plants: plant list - 16 elements by ASC position
-        :rtype plants: list
+        :ptype plants: list
         """
         self._shot_update()
 
-        if time_in_millisecond() - self._previous_read_time < self._interval_update:
+        if time_in_millisecond() - self._previous_read_time > self._interval_update:
             self._hygrometric_update(plants)
             self._previous_read_time = time_in_millisecond()
 
@@ -99,7 +96,7 @@ class HygrometryRegulationController:
         """
         Check for the added or removed plants and ask for hygrometric regulation
         :param plants: plant list - 16 elements by ASC position but it doesn't matter
-        :rtype plants: list
+        :ptype plants: list
         """
         for plant in plants: 
             i = plant.position()
@@ -148,7 +145,7 @@ class HygrometryRegulationController:
         """
         Add a shot query to the line.
         :param plant_position: plant position [0-15]
-        :rtype plant_position: int
+        :ptype plant_position: int
         """
         self._shot_query_queue.append(plant_position)
         self._logger.debug(f"{_SERVICE_TAG} Shot Plannified for plant {plant_position}")
@@ -161,14 +158,14 @@ class HygrometryRegulationController:
         if len(self._shot_query_queue) > 0:
             if !self._query_status:
                 self._previous_shot_time = time_in_millisecond()
-                _db_instance.execute(INSERT_VALVE_ORDER, plants(self._shot_query_queue[0]).uuid(), "open")
+                _db_instance.execute(INSERT_VALVE_ORDER, "open", plants(self._shot_query_queue[0]).uuid())
                 ValveService.instance().open(self._shot_query_queue[0])
                 _db_instance.execute(INSERT_PUMP_ORDER, self._pump_seed)
                 PumpService.instance().set_speed(self._pump_seed)
                 self._query_status = True
             else:
                 if time_in_millisecond() - self._previous_shot_time > self._shot_duration:
-                    _db_instance.execute(INSERT_VALVE_ORDER, plants(self._shot_query_queue[0]).uuid, "close")
+                    _db_instance.execute(INSERT_VALVE_ORDER, "close", plants(self._shot_query_queue[0]).uuid)
 
                     ValveService.instance().close(self._shot_query_queue[0])
                     _db_instance.execute(INSERT_PUMP_ORDER, 0)
