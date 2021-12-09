@@ -106,8 +106,11 @@ class HygrometryRegulationController:
             # Si on a détecté une diférence d'hygrométrie spontannée on conjuge avec la dernière mesure 
             # pour confirmer ce changement et détecter l'ajout ou le retrait d'un pot.
             # if hygro Val != avergae +/- delta AND hygro_val == last_read +/- delta
-            if ((hygro_val <= (self._average(i) - self._delta_detection)) || (hygro_val >= (self._average(i) + self._delta_detection))) && 
-            ((hygro_val >= (self._last_read(i) - self._delta_detection)) && (hygro_val <= (self._last_read(i) + self._delta_detection))):
+            difference_avg = hygro_val - self._average[i]
+            difference_last_read = hygro_val - self._last_read[i]
+            if ((difference_avg <= - self._delta_detection) || (difference_avg >= self._delta_detection)) && 
+            ((difference_last_read >= - self._delta_detection) && (difference_last_read <= self._delta_detection)):
+
 
                 # If it was an adding
                 if hygro_val >= (self._average(i) + self._delta_detection)
