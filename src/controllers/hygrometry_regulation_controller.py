@@ -113,7 +113,8 @@ class HygrometryRegulationController:
 
 
                 # If it was an adding
-                if hygro_val >= (self._average(i) + self._delta_detection)
+                if hygro_val >= (self._average[i] + self._delta_detection):
+
                     # Ajouter dans la dB
                     DatabaseService.instance().execute(INSERT_NEW_PLANT, i)
                 else
