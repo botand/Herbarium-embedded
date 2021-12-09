@@ -35,6 +35,8 @@ class HygrometryRegulationController:
 
     __instance = None
     _logger = get_logger(_SERVICE_TAG)
+    _adc_instance = ADCService.instance()
+    _db_instance = DatabaseService.instance()
 
     @staticmethod
     def instance():
@@ -72,7 +74,7 @@ class HygrometryRegulationController:
 
         # Initialisation
         for i in range(config[_PLANT_COUNT]):
-            hygro_value = ADCService.instance().get_plant_hygrometry_value(i)
+            hygro_value = _adc_instance.get_plant_hygrometry_value(i)
             self._cummulative[i] = hygro_value
             self._last_read[i] = hygro_value 
             self._average[i] = hygro_value
@@ -101,7 +103,7 @@ class HygrometryRegulationController:
         """
         for plant in plants: 
             i = plant.position()
-            hygro_val = ADCService.instance().get_plant_hygrometry_value(i)
+            hygro_val = _adc_instance.get_plant_hygrometry_value(i)
 
             # Si on a détecté une diférence d'hygrométrie spontannée on conjuge avec la dernière mesure 
             # pour confirmer ce changement et détecter l'ajout ou le retrait d'un pot.
@@ -116,10 +118,10 @@ class HygrometryRegulationController:
                 if hygro_val >= (self._average[i] + self._delta_detection):
 
                     # Ajouter dans la dB
-                    DatabaseService.instance().execute(INSERT_NEW_PLANT, i)
+                    _db_instance.execute(INSERT_NEW_PLANT, i)
                 else
                     # Retirer de la DB
-                    DatabaseService.instance().execute(REMOVE_PLANT, plants(i).uuid(), i)
+                    _db_instance.execute(REMOVE_PLANT, plants(i).uuid(), i)
 
                 # Redo the cummulative for a new average value
                 self._cummulative(i) = self._last_read(i)
@@ -134,7 +136,7 @@ class HygrometryRegulationController:
                 self._average[i] = self._cummulative[i] / self._nb_sample[i]
                 if plant.moisture_goal != None
                     # Dataase Communication
-                    DatabaseService.instance().execute(INSERT_MOISTURE_LEVEL_FOR_PLANT, self._average[i], plants[i].uuid)
+                    _db_instance.execute(INSERT_MOISTURE_LEVEL_FOR_PLANT, self._average[i], plants[i].uuid)
                     # Regulation
                     if self.average(i) < plat.moisture_goal()
                         self._query_shot(i)
@@ -159,17 +161,17 @@ class HygrometryRegulationController:
         if len(self._shot_query_queue) > 0:
             if !self._query_status:
                 self._previous_shot_time = time_in_millisecond()
-                DatabaseService.instance().execute(INSERT_VALVE_ORDER, plants(self._shot_query_queue[0]).uuid(), "open")
+                _db_instance.execute(INSERT_VALVE_ORDER, plants(self._shot_query_queue[0]).uuid(), "open")
                 ValveService.instance().open(self._shot_query_queue[0])
-                DatabaseService.instance().execute(INSERT_PUMP_ORDER, self._pump_seed)
+                _db_instance.execute(INSERT_PUMP_ORDER, self._pump_seed)
                 PumpService.instance().set_speed(self._pump_seed)
                 self._query_status = True
             else:
                 if time_in_millisecond() - self._previous_shot_time > self._shot_duration:
-                    DatabaseService.instance().execute(INSERT_VALVE_ORDER, plants(self._shot_query_queue[0]).uuid, "close")
+                    _db_instance.execute(INSERT_VALVE_ORDER, plants(self._shot_query_queue[0]).uuid, "close")
 
                     ValveService.instance().close(self._shot_query_queue[0])
-                    DatabaseService.instance().execute(INSERT_PUMP_ORDER, 0)
+                    _db_instance.execute(INSERT_PUMP_ORDER, 0)
                     PumpService.instance().stop()
                     self._query_status = False
                     self._logger.debug(f"{_SERVICE_TAG} Shot Done for plant {self._shot_query_queue[0]}")
