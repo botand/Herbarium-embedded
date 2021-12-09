@@ -70,8 +70,10 @@ class LuminosityRegulationController:
 
                 if _is_on(plant, hour):
                     _led_instance.turn_on(plant.position, -_adc_instance.get_ambient_luminosity_value)
+                    self._logger.debug(f"{_CONTROLLER_TAG} Turn ON Tile {plant_position} Ligthning ({-_adc_instance.get_ambient_luminosity_value} %)")
                 else:
                     _led_instance.turn_off(plant.position)
+                    self._logger.debug(f"{_CONTROLLER_TAG} Turn OFF Tile {plant_position} Ligthning")
 
 
     def _is_on(self, plant):
@@ -92,9 +94,3 @@ class LuminosityRegulationController:
         else:
             _db_instance.execute(INSERT_LIGHT_STRIP_ORDER, "off", plants(i).uuid())
             return False
-
-
-
-
-
-diff --git a/config.yaml b/config.yaml

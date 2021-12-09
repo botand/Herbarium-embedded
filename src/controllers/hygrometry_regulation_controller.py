@@ -148,7 +148,7 @@ class HygrometryRegulationController:
         :ptype plant_position: int
         """
         self._shot_query_queue.append(plant_position)
-        self._logger.debug(f"{_SERVICE_TAG} Shot Plannified for plant {plant_position}")
+        self._logger.debug(f"{_CONTROLLER_TAG} Shot Plannified for plant {plant_position}")
 
     def _shot_update(self):
         """
@@ -171,5 +171,5 @@ class HygrometryRegulationController:
                     _db_instance.execute(INSERT_PUMP_ORDER, 0)
                     PumpService.instance().stop()
                     self._query_status = False
-                    self._logger.debug(f"{_SERVICE_TAG} Shot Done for plant {self._shot_query_queue[0]}")
+                    self._logger.debug(f"{_CONTROLLER_TAG} Shot Done for plant {self._shot_query_queue[0]}")
                     self._shot_query_queue.pop(0)
