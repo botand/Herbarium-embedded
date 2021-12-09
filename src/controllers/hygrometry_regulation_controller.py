@@ -130,16 +130,17 @@ class HygrometryRegulationController:
             self._last_read(i) = hygro_val
 
             # Hyometric reglation at every MAX SAMPLE BEFORE REGULATION acquisiition cycle
-            if self._nb_sample(i) == self._max_sample_regulation:
-                self._average(i) = self._cummulative(i) / self._nb_sample(i)
-                if plant.moisture_goal() != None
+            if self._nb_sample[i] == self._max_sample_regulation:
+                self._average[i] = self._cummulative[i] / self._nb_sample[i]
+                if plant.moisture_goal != None
                     # Dataase Communication
-                    DatabaseService.instance().execute(INSERT_MOISTURE_LEVEL_FOR_PLANT, self._average(i), plants(i).uuid())
+                    DatabaseService.instance().execute(INSERT_MOISTURE_LEVEL_FOR_PLANT, self._average[i], plants[i].uuid)
                     # Regulation
                     if self.average(i) < plat.moisture_goal()
                         self._query_shot(i)
                 self._cummulative(i) = 0
                 self._nb_sample(i) = 0              
+
 
     def _query_shot(self, plant_position):
         """
