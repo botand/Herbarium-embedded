@@ -1,4 +1,4 @@
-version: 0.7.0
+version: 0.8.0
 logging:
   level: 'DEBUG'
   path: 'logs'
@@ -23,6 +23,13 @@ ble:
     setup_wifi:
       uuid: 'ddb4c99c-d127-4314-bb6f-597c4cb1859d'
       descriptors:
+plant_count: 16
+hygrometry:
+  delta_detection: 8 # % delta use for deteting the adding or the  removig of a plant
+  interval_update: 500 # ms
+  max_sample_before_regulation: 120 # use or execute the regulation after a define number of sample (120*interval_update = 60sec)
+  shot_duration: 3000 # ms
+  pump_speed: 75 # %
 status_indicator:
   led_count: 16
   gpio_data_in: 18 # Pin 12, According to the documentation, should be one of GPIO10, GPIO12, GPIO18 or GPIO21. Ref: https://learn.adafruit.com/neopixels-on-raspberry-pi/raspberry-pi-wiring

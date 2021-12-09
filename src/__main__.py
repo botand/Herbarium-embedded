@@ -38,6 +38,7 @@ def main():
 
     # Initializing all the controllers
     logger.debug("Start initializing all the controllers and services")
+
     internet_connection_controller = InternetConnectionController(config, config_ble)
     data_synchronization_controller = DataSynchronizationController(config)
 
@@ -50,10 +51,11 @@ def main():
 
     adc = ADCService()
 
-    print("You can stop the program using Ctrl + C safely ;)")
     try:
-        logger.debug("Starting main loop")
-        logger.debug("You can stop the program using Ctrl + C safely ;)")
+        logger.debug("Main loop Initilization...")
+        
+
+        # TODO : Destiné à Disparaître danns les profondeurs insondables et pleines de microbe de l'oubli.
         prev = time_in_millisecond()
         tile = 0
         tile_on = False
@@ -65,11 +67,60 @@ def main():
         pot_idx = 0
         pot_mean = 0
 
+
+        # Main loop Regulation Data
+        # constant
+        PLANT_COUNT = config["plant_count"]
+
+        # Plants - SP (Set Point)
+        plants = []
+        plant_mean_detection = [[]]*16
+
+        # PV (Point Value)
+        ambient_luminosity_value = 0.0  # %
+        water_level_value = 0.0  # %
+        plants_hygrometry_values = [0.0]*PLANT_COUNT  # %
+
+        # Loop Flow Coontrol Flags
+        low_water_level_flag = True
+        open_valve_flag = False
+
+        logger.debug("Main loop startig...")
+        logger.debug("You can stop the program using Ctrl + C safely ;)")
+
         while True:
-            status_indicator_service.update()
+            
+            # Connectivity
             internet_connection_controller.update()
             data_synchronization_controller.update()
 
+            # Status Ring LED Update
+            status_indicator_service.update()
+            
+            # Database Update
+            for plant_position in range(PLANT_COUNT):
+                plant_detail = DatabaseService.instance().execute(GET_PLANT_BY_POSITION, plant_position)
+                # TODO : Do some string decoding shit, config a plant object and adds it to plants list.
+
+            # Add or Removing plant Detection
+
+
+            # Update Sensors - Send to DB
+            ambient_luminosity_value = adc.get_ambient_luminosity_value()
+
+            water_level_value = adc.get_water_level_value()
+
+            for plant_position in range(PLANT_COUNT):
+                plants_hygrometry_values[plant_position] = adc.get_plant_hygrometry_value(plant_position)
+                DatabaseService.instance().execute(INSERT_MOISTURE_LEVEL_FOR_PLANT, ambient_luminosity_value, uuid)
+                # TODO : Shit I can't do that.. I absolutely need to scan the presents plants, gather position and then get the  value ... well 
+
+
+
+            # Luminosity Regulation
+
+
+            # Hygrometric Regulation
             valve.update()
 
             if time_in_millisecond() - prev > 1000:
@@ -106,15 +157,11 @@ def main():
                 pump_speed += 20
                 if pump_speed > 100.0:
                    pump_speed = 0.0
-
-                # test adc
-                adc.get_ambient_luminosity_value()
-                adc.get_water_level_value()
-                adc.get_plant_hygrometry_value(pot_count);
-
+        
                 pot_count += 1
                 if pot_count % 16 == 0:
                     pot_count = 0
+
     except KeyboardInterrupt:
         # Stopping all the controllers and services
         logger.debug("Turning off the program")

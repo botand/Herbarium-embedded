@@ -8,6 +8,7 @@ from src.utils.configuration import config
 from math import exp
 
 _SERVICE_TAG = "service.AdcService"
+_CONFIG_TAG = "adc_config"
 _I2C_PIN_SDA = "i2c_sda"
 _I2C_PIN_SCL = "i2c_scl"
 _ADC_CHANNEL_WATER_LEVEL = "adc_channel_water_level"
@@ -40,7 +41,7 @@ class ADCService:
 
     def __init__(self):
         """Initialize the service"""
-        adc_config = config["adc_config"]
+        adc_config = config[_CONFIG_TAG]
         self._i2c = busio.I2C(adc_config[_I2C_PIN_SCL], adc_config[_I2C_PIN_SDA])
         self._adc = ads.ADS1115(self._i2c)
         self._water_level_channel = AnalogIn(self._adc, adc_config[_ADC_CHANNEL_WATER_LEVEL])
