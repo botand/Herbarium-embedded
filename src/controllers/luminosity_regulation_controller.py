@@ -51,7 +51,7 @@ class LuminosityRegulationController:
 
             # What time is it ?
             now = datetime.utcnow()
-            hour = (now.hour - self._time_zone_offset) + now.min / 6
+            hour = (now.hour - self._time_zone_offset) + now.minute / 6
 
             # Regulation for plants
             for plant in plants:
