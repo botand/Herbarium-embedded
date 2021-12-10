@@ -7,6 +7,7 @@ from src.utils import (
     config_ble,
     led_utils,
     get_logger,
+    time_in_millisecond
 )
 
 from src.controllers import (
@@ -23,7 +24,7 @@ from src.services import (
     StatusIndicatorService,
 )
 
-from src.models import StatusPattern
+from src.models import StatusPattern, Plant
 from src.utils.sql_queries import GET_PLANTS
 
 
@@ -65,8 +66,9 @@ def main():
     try:
         logger.debug("Initializing - Main Loop")
 
-        plants = [0]*16
-
+        plants = list()
+        previous_plants_loading = 0
+        plant_loading_interval = config["plants_loading"]
         logger.debug("Executing - Main Loop")
 
         while True:
@@ -79,7 +81,10 @@ def main():
             status_indicator_service.update()
 
             # Database Update
-            plants = DatabaseService.instance().execute(GET_PLANTS)
+            if (time_in_millisecond() - previous_plants_loading) > plant_loading_interval:
+                for plant_data in DatabaseService.instance().execute(GET_PLANTS):
+                    plants.append(Plant.create_from_dict(plant_data))
+                previous_plants_loading = time_in_millisecond()
 
             # Luminosity Regulation
             luminosity_regulation_controller.update(plants)

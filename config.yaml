@@ -1,5 +1,6 @@
 version: 0.10.0
 time_zone_offfset: -5
+
 logging:
   level: 'DEBUG'
   path: 'logs'
@@ -25,6 +26,7 @@ ble:
       uuid: 'ddb4c99c-d127-4314-bb6f-597c4cb1859d'
       descriptors:
 plant_count: 16
+plants_loading:  300000 # ms -> 5min
 hygrometry:
   delta_detection: 8 # % delta use for deteting the adding or the  removig of a plant
   interval_update: 500 # ms
