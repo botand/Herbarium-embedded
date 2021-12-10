@@ -17,6 +17,7 @@ _CONTROLLER_TAG = "controllers.LuminosityRegulationController"
 _CONFIG_TAG = "luminosity"
 _PLANT_COUNT = "plant_count"
 _TZ_OFFSET = "time_zone_offset"
+_INTERVAL_UPDATE = "interval_update"
 _TIME_RANGE_CENTER = "time_range_center"
 
 
@@ -32,9 +33,8 @@ class LuminosityRegulationController:
         """Initialize the Controller"""
         lum_config = config[_CONFIG_TAG]
         self._time_zone_offset = config[_TZ_OFFSET]
-
-        self._update_time = lum_config["interval_update"]
-        self._time_range_center = lum_config["_TIME_RANGE_CENTER"]
+        self._update_time = lum_config[_INTERVAL_UPDATE]
+        self._time_range_center = lum_config[_TIME_RANGE_CENTER]
         self._previous_time = 0
         self.time = 0
         self._logger.debug("initialized")
