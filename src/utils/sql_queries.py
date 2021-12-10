@@ -38,6 +38,7 @@ GET_PLANT_BY_POSITION = "select * from plant where position=?"
 GET_PLANT_BY_UUID = "select * from plant where uuid=?"
 INSERT_NEW_PLANT = "insert into plant(position) values (?)"
 UPDATE_PLANT_TRANSMITTED = "update plant set transmitted=1 where uuid=?"
+INSERT_OR_IGNORE_PLANT = "insert or ignore into plant(uuid, moisture_goal, light_exposure_min_duration, position) values (?, ?, ?, ?)"
 UPDATE_PLANT = "update plant set uuid=?, moisture_goal=?, light_exposure_min_duration=?, removed=0, transmitted=1 where position=?"
 UPDATE_PLANT_INFO = (
     "update plant set moisture_goal=?, light_exposure_min_duration=? where uuid=?"

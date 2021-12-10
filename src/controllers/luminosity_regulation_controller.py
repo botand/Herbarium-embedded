@@ -79,7 +79,7 @@ class LuminosityRegulationController:
 
         # if we are in the time range, turn on the lighting.
         if time_range[0] <= hour <= time_range[1]:
-            self._db_instance.execute(INSERT_LIGHT_STRIP_ORDER, [1, plant.uuid])
+            self._db_instance.execute(INSERT_LIGHT_STRIP_ORDER, parameters=[1, plant.uuid])
             return True
-        self._db_instance.execute(INSERT_LIGHT_STRIP_ORDER, [0, plant.uuid])
+        self._db_instance.execute(INSERT_LIGHT_STRIP_ORDER, parameters=[0, plant.uuid])
         return False

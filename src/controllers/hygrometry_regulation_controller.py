@@ -107,10 +107,10 @@ class HygrometryRegulationController:
                 # If it was an adding
                 if hygro_val >= (self._average[i] + self._delta_detection):
                     # Add to DB
-                    self._db_service.execute(INSERT_NEW_PLANT, [i])
+                    self._db_service.execute(INSERT_NEW_PLANT, parameters=[i])
                 else:
                     # Remove from DB
-                    self._db_service.execute(REMOVE_PLANT, [plants[i].uuid, i])
+                    self._db_service.execute(REMOVE_PLANT, parameters=[plants[i].uuid, i])
 
                 # Redo the cumulative for a new average value
                 self._cummulative[i] = self._last_read[i]
@@ -125,7 +125,7 @@ class HygrometryRegulationController:
                 self._average[i] = self._cummulative[i] / self._nb_sample[i]
                 if plant.moisture_goal is not None:
                     # Database Communication
-                    self._db_service.execute(INSERT_MOISTURE_LEVEL_FOR_PLANT, [self._average[i], plants[i].uuid])
+                    self._db_service.execute(INSERT_MOISTURE_LEVEL_FOR_PLANT, parameters=[self._average[i], plants[i].uuid])
                     # Regulation
                     if self._average[i] < plant.moisture_goal:
                         self._query_shot(i)
@@ -151,15 +151,15 @@ class HygrometryRegulationController:
         if len(self._shot_query_queue) > 0:
             if not self._query_status:
                 self._previous_shot_time = time_in_millisecond()
-                self._db_service.execute(INSERT_VALVE_ORDER, [1, plants[self._shot_query_queue[0]].uuid])
+                self._db_service.execute(INSERT_VALVE_ORDER, parameters=[1, plants[self._shot_query_queue[0]].uuid])
                 self._valve_service.open(self._shot_query_queue[0])
                 self._db_service.execute(INSERT_PUMP_ORDER, [1])
                 self._pump_service.set_speed(self._pump_speed)
                 self._query_status = True
             elif (time_in_millisecond() - self._previous_shot_time) > self._shot_duration:
-                self._db_service.execute(INSERT_VALVE_ORDER, [0, plants[self._shot_query_queue[0]].uuid])
+                self._db_service.execute(INSERT_VALVE_ORDER, parameters=[0, plants[self._shot_query_queue[0]].uuid])
                 self._valve_service.close(self._shot_query_queue[0])
-                self._db_service.execute(INSERT_PUMP_ORDER, [0])
+                self._db_service.execute(INSERT_PUMP_ORDER, parameters=[0])
                 self._pump_service.stop()
                 self._query_status = False
                 self._logger.debug(f"{_CONTROLLER_TAG} Shot Done for plant {self._shot_query_queue[0]}")

@@ -16,7 +16,7 @@ from src.utils import (
     GET_REMOVED_UNTRANSMITTED_PLANT,
     UPDATE_PLANT_INFO,
     UPDATE_PLANT_TRANSMITTED,
-    time_in_millisecond,
+    time_in_millisecond, INSERT_OR_IGNORE_PLANT,
 )
 
 _CONTROLLER_TAG = "controllers.DataSynchronizationController"
@@ -164,6 +164,15 @@ class DataSynchronizationController:
         plants = self._api_service.get_greenhouse()
 
         for plant in plants:
+            self._db_service.execute(
+                INSERT_OR_IGNORE_PLANT,
+                parameters=[
+                    plant.uuid,
+                    plant.moisture_goal,
+                    plant.light_exposure_min_duration,
+                    plant.position
+                ],
+            )
             self._db_service.execute(
                 UPDATE_PLANT_INFO,
                 parameters=[
