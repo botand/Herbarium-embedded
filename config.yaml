@@ -1,8 +1,5 @@
-
-version: 0.9.0
-
+version: 0.10.0
 time_zone_offfset: -5
-
 logging:
   level: 'DEBUG'
   path: 'logs'
