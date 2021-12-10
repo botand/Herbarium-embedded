@@ -50,6 +50,7 @@ class HygrometryRegulationController:
     
     def __init__(self):
         """Initialize the Controller"""
+
         hygro_config = config[_CONFIG_TAG]
 
         # Hygrometry regulation, one value per plant position
@@ -165,8 +166,8 @@ class HygrometryRegulationController:
                 self._query_status = True
             else:
                 if time_in_millisecond() - self._previous_shot_time > self._shot_duration:
-                    _db_instance.execute(INSERT_VALVE_ORDER, "close", plants(self._shot_query_queue[0]).uuid)
 
+                    _db_instance.execute(INSERT_VALVE_ORDER, "close", plants(self._shot_query_queue[0]).uuid)
                     ValveService.instance().close(self._shot_query_queue[0])
                     _db_instance.execute(INSERT_PUMP_ORDER, 0)
                     PumpService.instance().stop()
