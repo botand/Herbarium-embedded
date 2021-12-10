@@ -53,7 +53,7 @@ class DatabaseService:
             "Executing query: '%s' with params %s.", query, str(parameters)
         )
         cursor = self._db.cursor()
-        cursor.execute(query)
+        cursor.execute(query, parameters)
         result = cursor.fetchall()
         if commit:
             self._db.commit()
