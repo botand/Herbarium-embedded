@@ -11,8 +11,6 @@ _db_init_scripts_dir = os.path.join(
     os.path.dirname(__file__), "../../database/upgrades"
 )
 
-lock = threading.Lock()
-
 
 class DatabaseService:
     """Service to interact with the database"""
@@ -33,7 +31,8 @@ class DatabaseService:
 
     def __init__(self):
         """Initialize the service"""
-        self._db = sqlite.connect(_db_path, timeout=10, check_same_thread=False)
+        self._db = sqlite.connect(_db_path, timeout=10, check_same_thread=False, )
+        self._lock = threading.Lock()
 
         self._logger.info("initialized")
 
@@ -49,15 +48,17 @@ class DatabaseService:
         :return the results of the query
         :rtype: list
         """
-        lock.acquire(blocking=True)
+        self._lock.acquire()
         self._logger.debug(
             "Executing query: '%s' with params %s.", query, str(parameters)
         )
-        cursor = self._db.execute(query)
+        cursor = self._db.cursor()
+        cursor.execute(query)
         result = cursor.fetchall()
         if commit:
             self._db.commit()
-        lock.release()
+        self._lock.release()
+        cursor.close()
         self._logger.debug("Query results: %s", str(result))
         return result
 
