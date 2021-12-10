@@ -38,6 +38,7 @@ class LightningLedService:
             auto_write=False,
         )
         self._logger.info("initialized")
+        self.turn_off_all()
 
     def _update_segment(self, tile_nb, color, brightness):
         """

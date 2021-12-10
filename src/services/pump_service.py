@@ -42,6 +42,7 @@ class PumpService:
 
         self._pwm_val = 0.0
         self._logger.debug(f"{_SERVICE_TAG} Pump Initiated")
+        self.stop()
 
     def _speed_to_pwm(self, speed):
         """
