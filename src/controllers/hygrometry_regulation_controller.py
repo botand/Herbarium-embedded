@@ -6,8 +6,8 @@ from src.services import (
     PumpService,
     ValveService
 )
+from src.utils.configuration import config
 from src.utils import (
-    configuration.config,
     get_logger, 
     time_in_millisecond,
 )

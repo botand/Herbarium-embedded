@@ -1,6 +1,7 @@
 """Service to interact with the valves"""
 from RPi import GPIO
 from src.utils import time_in_millisecond, get_logger
+from src.utils.configuration import config
 
 _SERVICE_TAG = "service.ValveService"
 _CONFIG_TAG = "valve"
@@ -36,7 +37,7 @@ class ValveService:
 
     def __init__(self):
         """Initialize the service"""
-        valve_config = [_CONFIG_TAG]
+        valve_config = config[_CONFIG_TAG]
         self._valve_pin = valve_config[_VALVE_PIN_CONFIG_KEY]
         self._valve_s0 = valve_config[_VALVE_SELECTOR_PIN_S0]
         self._valve_s1 = valve_config[_VALVE_SELECTOR_PIN_S1]

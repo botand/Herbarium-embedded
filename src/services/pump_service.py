@@ -1,6 +1,7 @@
 """Service to interact with the pump"""
 from RPi import GPIO
 from src.utils import get_logger
+from src.utils.configuration import config
 
 _SERVICE_TAG = "services.PumpService"
 _CONFIG_TAG = "pump"

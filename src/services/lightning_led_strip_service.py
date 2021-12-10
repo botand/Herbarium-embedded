@@ -1,6 +1,7 @@
 """Service to interact with the LED Lightning"""
 from neopixel import NeoPixel
 from src.utils import pin_number_to_digital_gpio, led_utils, get_logger
+from src.utils.configuration import config
 
 _SERVICE_TAG = "services.LightningLedStripService"
 _CONFIG_TAG = "led_strip"
@@ -27,6 +28,7 @@ class LightningLedService:
         return LightningLedService.__instance
 
     def __init__(self):
+
         light_config = config[_CONFIG_TAG]   
         self._led_count = light_config[_LED_COUNT_CONFIG_KEY]
         self._led_by_tile = light_config[_LED_BY_TILE_KEY]

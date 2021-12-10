@@ -7,8 +7,9 @@ from src.services import (
     DatabaseService,
     LightningLedService
 )
+
+from src.utils.configuration import config
 from src.utils import (
-    configuration.config,
     get_logger, 
     time_in_millisecond,
 )
