@@ -1,3 +1,4 @@
+"""Controller that manage the data synchronization"""
 from concurrent.futures import ThreadPoolExecutor
 from src.services import (
     ApiService,

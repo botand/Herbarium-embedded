@@ -1,8 +1,10 @@
 """Service to interact with the valves"""
 from RPi import GPIO
 from src.utils import time_in_millisecond, get_logger
+from src.utils.configuration import config
 
 _SERVICE_TAG = "service.ValveService"
+_CONFIG_TAG = "valve"
 _VALVE_SELECTOR_PIN_S0 = "gpio_selector_pin_S0"
 _VALVE_SELECTOR_PIN_S1 = "gpio_selector_pin_S1"
 _VALVE_SELECTOR_PIN_S2 = "gpio_selector_pin_S2"
@@ -19,28 +21,36 @@ class ValveService:
     """
     Service to interact with the valves
     """
-
+    __instance = None
     _logger = get_logger(_SERVICE_TAG)
 
-    def __init__(self, config):
+    @staticmethod
+    def instance():
         """
-        :param config: configuration to use.
-        :type config : dict of str
+        Get the service
+        :rtype: ValveService
         """
+        if ValveService.__instance is None:
+            ValveService.__instance = ValveService()
+        return ValveService.__instance
 
-        self._valve_pin = config[_VALVE_PIN_CONFIG_KEY]
-        self._valve_s0 = config[_VALVE_SELECTOR_PIN_S0]
-        self._valve_s1 = config[_VALVE_SELECTOR_PIN_S1]
-        self._valve_s2 = config[_VALVE_SELECTOR_PIN_S2]
-        self._valve_s3 = config[_VALVE_SELECTOR_PIN_S3]
-        self._pwm_freq = config[_PWM_FREQ]
+
+    def __init__(self):
+        """Initialize the service"""
+        valve_config = config[_CONFIG_TAG]
+        self._valve_pin = valve_config[_VALVE_PIN_CONFIG_KEY]
+        self._valve_s0 = valve_config[_VALVE_SELECTOR_PIN_S0]
+        self._valve_s1 = valve_config[_VALVE_SELECTOR_PIN_S1]
+        self._valve_s2 = valve_config[_VALVE_SELECTOR_PIN_S2]
+        self._valve_s3 = valve_config[_VALVE_SELECTOR_PIN_S3]
+        self._pwm_freq = valve_config[_PWM_FREQ]
         self._position = {
-            "open": config[_VALVE_POSITION_ON],
-            "close": config[_VALVE_POSITION_OFF],
+            "open": valve_config[_VALVE_POSITION_ON],
+            "close": valve_config[_VALVE_POSITION_OFF],
         }
         self._timing = {
-            "open": config[_VALVE_OPENING_TIME],
-            "close": config[_VALVE_CLOSING_TIME],
+            "open": valve_config[_VALVE_OPENING_TIME],
+            "close": valve_config[_VALVE_CLOSING_TIME],
         }
 
         # GPIO Assignation and configuration

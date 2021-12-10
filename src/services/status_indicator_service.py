@@ -10,7 +10,7 @@ from src.utils import (
 from src.models import StatusPattern
 
 _SERVICE_TAG = "services.StatusIndicatorService"
-
+_CONFIG_TAG = "status_indicator"
 _LED_COUNT_CONFIG_KEY = "led_count"
 _LED_PIN_CONFIG_KEY = "gpio_data_in"
 _MULTI_ANIMATION_MAXIMUM_TIME = "multi_animation_maximum_time"
@@ -59,7 +59,7 @@ class StatusIndicatorService:
 
     def __init__(self):
         """Initialize the service"""
-        ring_config = config["status_indicator"]
+        ring_config = config[_CONFIG_TAG]
         self._ring = NeoPixel(
             pin_number_to_digital_gpio(ring_config[_LED_PIN_CONFIG_KEY]),
             ring_config[_LED_COUNT_CONFIG_KEY],

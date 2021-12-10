@@ -1,20 +1,19 @@
 """HygrometryRegulationController"""
-from src.models import plant
 from src.services import (
     ADCService,
     DatabaseService,
     PumpService,
     ValveService
 )
+from src.utils.configuration import config
 from src.utils import (
-    configuration.config,
-    get_logger, 
+    get_logger,
     time_in_millisecond,
 )
 from src.utils.sql_queries import (
     INSERT_MOISTURE_LEVEL_FOR_PLANT,
     INSERT_NEW_PLANT,
-    REMOVE_PLANT
+    REMOVE_PLANT, INSERT_VALVE_ORDER, INSERT_PUMP_ORDER
 )
 
 _CONTROLLER_TAG = "controllers.HygromertyRegulationController"
@@ -30,36 +29,26 @@ _MAX_SAMPLE_REGULATION = "max_sample_before_regulation"
 _SHOT_DURATION = "shot_duration"
 _PUMP_SPEED = "pump_speed"
 
+
 class HygrometryRegulationController:
-    "Controller That manage the hygrometry Regulation"""
+    """Controller That manage the hygrometry Regulation"""
 
-    __instance = None
-    _logger = get_logger(_SERVICE_TAG)
-    _adc_instance = ADCService.instance()
-    _db_instance = DatabaseService.instance()
+    _logger = get_logger(_CONTROLLER_TAG)
+    _adc_service = ADCService.instance()
+    _valve_service = ValveService.instance()
+    _pump_service = PumpService.instance()
+    _db_service = DatabaseService.instance()
 
-    @staticmethod
-    def instance():
-        """
-        Get the service
-        :rtype: ADCService
-        """
-        if HygrometryRegulationController.__instance is None:
-            HygrometryRegulationController.__instance = HygrometryRegulationController()
-        return HygrometryRegulationController.__instance
-    
     def __init__(self):
-        """
-        :param config: configuration to use.
-        :rtype config : dict of str
-        """
+        """Initialize the Controller"""
+
         hygro_config = config[_CONFIG_TAG]
 
         # Hygrometry regulation, one value per plant position
-        self._cummulative = [0.0]*16
-        self._last_read = [0.0]*16
-        self._average = [0.0]*16
-        self._nb_sample = [0]*16
+        self._cummulative = [0.0] * 16
+        self._last_read = [0.0] * 16
+        self._average = [0.0] * 16
+        self._nb_sample = [0] * 16
         self._interval_update = hygro_config[_INTERVAL_UPDATE]
         self._delta_detection = hygro_config[_DELTA_DETECTION]
         self._max_sample_regulation = hygro_config[_MAX_SAMPLE_REGULATION]
@@ -69,16 +58,17 @@ class HygrometryRegulationController:
         self._shot_duration = hygro_config[_SHOT_DURATION]
         self._pump_speed = hygro_config[_PUMP_SPEED]
         self._shot_query_queue = []  # Contains plant position line.
-        self._query_status = False # False:wating, True:In progress
+        self._query_status = False  # False:wating, True:In progress
         self._previous_shot_time = 0
 
         # Initialisation
         for i in range(config[_PLANT_COUNT]):
-            hygro_value = _adc_instance.get_plant_hygrometry_value(i)
+            hygro_value = self._adc_service.get_plant_hygrometry_value(i)
             self._cummulative[i] = hygro_value
-            self._last_read[i] = hygro_value 
+            self._last_read[i] = hygro_value
             self._average[i] = hygro_value
             self._nb_sample[i] = 1
+        self._logger.debug("initialized")
 
     def update(self, plants):
         """
@@ -87,92 +77,90 @@ class HygrometryRegulationController:
         - Check for Hygrometry
         - Give some water shots for hygrometry regulation
         :param plants: plant list - 16 elements by ASC position
-        :rtype plants: list
+        :type plants: list of Plant
         """
-        self._shot_update()
+        self._shot_update(plants)
 
-        if time_in_millisecond() - self._previous_read_time < self._interval_update:
+        if time_in_millisecond() - self._previous_read_time > self._interval_update:
             self._hygrometric_update(plants)
             self._previous_read_time = time_in_millisecond()
 
     def _hygrometric_update(self, plants):
         """
         Check for the added or removed plants and ask for hygrometric regulation
-        :param plants: plant list - 16 elements by ASC position but it doesn't matter
-        :rtype plants: list
+        :param plants: plant list - 16 elements by ASC position, but it doesn't matter
+        :type plants: list of Plant
         """
-        for plant in plants: 
-            i = plant.position()
-            hygro_val = _adc_instance.get_plant_hygrometry_value(i)
+        for plant in plants:
+            i = plant.position
+            hygro_val = self._adc_service.get_plant_hygrometry_value(i)
 
             # Si on a détecté une diférence d'hygrométrie spontannée on conjuge avec la dernière mesure 
             # pour confirmer ce changement et détecter l'ajout ou le retrait d'un pot.
             # if hygro Val != avergae +/- delta AND hygro_val == last_read +/- delta
             difference_avg = hygro_val - self._average[i]
             difference_last_read = hygro_val - self._last_read[i]
-            if ((difference_avg <= - self._delta_detection) || (difference_avg >= self._delta_detection)) && 
-            ((difference_last_read >= - self._delta_detection) && (difference_last_read <= self._delta_detection)):
-
+            if ((difference_avg <= -self._delta_detection) or (difference_avg >= self._delta_detection)) and (
+                    (difference_last_read >= -self._delta_detection) and (
+                    difference_last_read <= self._delta_detection)):
 
                 # If it was an adding
                 if hygro_val >= (self._average[i] + self._delta_detection):
+                    # Add to DB
+                    self._db_service.execute(INSERT_NEW_PLANT, [i])
+                else:
+                    # Remove from DB
+                    self._db_service.execute(REMOVE_PLANT, [plants[i].uuid, i])
 
-                    # Ajouter dans la dB
-                    _db_instance.execute(INSERT_NEW_PLANT, i)
-                else
-                    # Retirer de la DB
-                    _db_instance.execute(REMOVE_PLANT, plants(i).uuid(), i)
+                # Redo the cumulative for a new average value
+                self._cummulative[i] = self._last_read[i]
+                self._nb_sample[i] = 1
 
-                # Redo the cummulative for a new average value
-                self._cummulative(i) = self._last_read(i)
-                self._nb_sample(i) = 1
+            self._cummulative[i] += hygro_val
+            self._nb_sample[i] += 1
+            self._last_read[i] = hygro_val
 
-            self._cummulative(i) += hygro_val
-            self._nb_sample(i) += 1
-            self._last_read(i) = hygro_val
-
-            # Hyometric reglation at every MAX SAMPLE BEFORE REGULATION acquisiition cycle
+            # Hygrometric regulation at every MAX SAMPLE BEFORE REGULATION acquisition cycle
             if self._nb_sample[i] == self._max_sample_regulation:
                 self._average[i] = self._cummulative[i] / self._nb_sample[i]
-                if plant.moisture_goal != None
-                    # Dataase Communication
-                    _db_instance.execute(INSERT_MOISTURE_LEVEL_FOR_PLANT, self._average[i], plants[i].uuid)
+                if plant.moisture_goal is not None:
+                    # Database Communication
+                    self._db_service.execute(INSERT_MOISTURE_LEVEL_FOR_PLANT, [self._average[i], plants[i].uuid])
                     # Regulation
-                    if self.average(i) < plat.moisture_goal()
+                    if self._average[i] < plant.moisture_goal:
                         self._query_shot(i)
-                self._cummulative(i) = 0
-                self._nb_sample(i) = 0              
-
+                self._cummulative[i] = 0
+                self._nb_sample[i] = 0
 
     def _query_shot(self, plant_position):
         """
         Add a shot query to the line.
         :param plant_position: plant position [0-15]
-        :rtype plant_position: int
+        :type plant_position: int
         """
         self._shot_query_queue.append(plant_position)
-        self._logger.debug(f"{_SERVICE_TAG} Shot Plannified for plant {plant_position}")
+        self._logger.debug("Shot planned for plant %d", plant_position)
 
-    def _shot_update(self):
+    def _shot_update(self, plants):
         """
         Execute the shot query line. Each shot is done one by one.
         Must be executed as quickly as possible.
+        :param plants: plant list - 16 elements by ASC position, but it doesn't matter
+        :type plants: list of Plant
         """
         if len(self._shot_query_queue) > 0:
-            if !self._query_status:
+            if not self._query_status:
                 self._previous_shot_time = time_in_millisecond()
-                _db_instance.execute(INSERT_VALVE_ORDER, plants(self._shot_query_queue[0]).uuid(), "open")
-                ValveService.instance().open(self._shot_query_queue[0])
-                _db_instance.execute(INSERT_PUMP_ORDER, self._pump_seed)
-                PumpService.instance().set_speed(self._pump_seed)
+                self._db_service.execute(INSERT_VALVE_ORDER, [1, plants[self._shot_query_queue[0]].uuid])
+                self._valve_service.open(self._shot_query_queue[0])
+                self._db_service.execute(INSERT_PUMP_ORDER, [1])
+                self._pump_service.set_speed(self._pump_speed)
                 self._query_status = True
-            else:
-                if time_in_millisecond() - self._previous_shot_time > self._shot_duration:
-                    _db_instance.execute(INSERT_VALVE_ORDER, plants(self._shot_query_queue[0]).uuid, "close")
-
-                    ValveService.instance().close(self._shot_query_queue[0])
-                    _db_instance.execute(INSERT_PUMP_ORDER, 0)
-                    PumpService.instance().stop()
-                    self._query_status = False
-                    self._logger.debug(f"{_SERVICE_TAG} Shot Done for plant {self._shot_query_queue[0]}")
-                    self._shot_query_queue.pop(0)
+            elif (time_in_millisecond() - self._previous_shot_time) > self._shot_duration:
+                self._db_service.execute(INSERT_VALVE_ORDER, [0, plants[self._shot_query_queue[0]].uuid])
+                self._valve_service.close(self._shot_query_queue[0])
+                self._db_service.execute(INSERT_PUMP_ORDER, [0])
+                self._pump_service.stop()
+                self._query_status = False
+                self._logger.debug(f"{_CONTROLLER_TAG} Shot Done for plant {self._shot_query_queue[0]}")
+                self._shot_query_queue.pop(0)

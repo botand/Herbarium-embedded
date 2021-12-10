@@ -1,11 +1,11 @@
 """Service to interact with the ADC in order to get Analog Values"""
+from math import exp
 from RPi import GPIO
 import busio
 import adafruit_ads1x15.ads1115 as ads
 from adafruit_ads1x15.analog_in import AnalogIn
 from src.utils import get_logger
 from src.utils.configuration import config
-from math import exp
 
 _SERVICE_TAG = "service.AdcService"
 _CONFIG_TAG = "adc_config"
@@ -24,9 +24,7 @@ class ADCService:
     """
     Service to interact with the ADC in order to get Analog Values
     """
-
     __instance = None
-
     _logger = get_logger(_SERVICE_TAG)
 
     @staticmethod
@@ -66,7 +64,6 @@ class ADCService:
         In the report we have indicate the water level expression.
         Considering the 0% is 200mL lux and 100% is 1000 mL.
         The absolute minimum is -5% (160mL) and maximum absolute is 120% (1150mL).
-
         We use a double conversion. First in order to get the water volume.
         Since we use a power serie, it is impossible to have negative number.
         Also the minimum is 200mL but its not the absolute minimum. 

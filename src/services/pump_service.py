@@ -1,8 +1,10 @@
 """Service to interact with the pump"""
 from RPi import GPIO
 from src.utils import get_logger
+from src.utils.configuration import config
 
 _SERVICE_TAG = "services.PumpService"
+_CONFIG_TAG = "pump"
 _PUMP_PIN_CONFIG_KEY = "gpio_speed_out"
 _PWM_FREQ = "pwm_freq"
 _MAX_SPEED = "max_speed"
@@ -13,18 +15,26 @@ class PumpService:
     """
     Service to interact with the pump
     """
-
+    __instance = None
     _logger = get_logger(_SERVICE_TAG)
 
-    def __init__(self, config):
+    @staticmethod
+    def instance():
         """
-        :param config: configuration to use.
-        :type config : dict of str
+        Get the service
+        :rtype: PumpService
         """
-        self._pump_pin = config[_PUMP_PIN_CONFIG_KEY]
-        self._pwm_freq = config[_PWM_FREQ]
-        self._max_speed = config[_MAX_SPEED]
-        self._min_speed = config[_MIN_SPEED]
+        if PumpService.__instance is None:
+            PumpService.__instance = PumpService()
+        return PumpService.__instance
+
+    def __init__(self):
+        """Initialize the service"""
+        pump_config = config[_CONFIG_TAG]
+        self._pump_pin = pump_config[_PUMP_PIN_CONFIG_KEY]
+        self._pwm_freq = pump_config[_PWM_FREQ]
+        self._max_speed = pump_config[_MAX_SPEED]
+        self._min_speed = pump_config[_MIN_SPEED]
 
         GPIO.setup(self._pump_pin, GPIO.OUT)
         self._pump = GPIO.PWM(self._pump_pin, self._pwm_freq)
