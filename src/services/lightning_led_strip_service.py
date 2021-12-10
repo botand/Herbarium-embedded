@@ -3,6 +3,7 @@ from neopixel import NeoPixel
 from src.utils import pin_number_to_digital_gpio, led_utils, get_logger
 
 _SERVICE_TAG = "services.LightningLedStripService"
+_CONFIG_TAG = "led_strip"
 _LED_COUNT_CONFIG_KEY = "led_count"
 _LED_PIN_CONFIG_KEY = "gpio_data_in"
 _LED_BY_TILE_KEY = "led_by_tile"
@@ -12,18 +13,25 @@ class LightningLedService:
     """
     Service to interact with the LED Lightning
     """
-
+    __instance = None
     _logger = get_logger(_SERVICE_TAG)
 
-    def __init__(self, config):
+    @staticmethod
+    def instance():
         """
-        :param config: configuration file to use.
-        :type config : dict of str
+        Get the service
+        :rtype: PumpService
         """
-        self._led_count = config[_LED_COUNT_CONFIG_KEY]
-        self._led_by_tile = config[_LED_BY_TILE_KEY]
+        if LightningLedService.__instance is None:
+            LightningLedService.__instance = LightningLedService()
+        return LightningLedService.__instance
+
+    def __init__(self):
+        light_config = config[_CONFIG_TAG]   
+        self._led_count = light_config[_LED_COUNT_CONFIG_KEY]
+        self._led_by_tile = light_config[_LED_BY_TILE_KEY]
         self._strip = NeoPixel(
-            pin_number_to_digital_gpio(config[_LED_PIN_CONFIG_KEY]),
+            pin_number_to_digital_gpio(light_config[_LED_PIN_CONFIG_KEY]),
             self._led_count,
             auto_write=False,
         )

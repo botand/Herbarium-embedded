@@ -24,9 +24,7 @@ class ADCService:
     """
     Service to interact with the ADC in order to get Analog Values
     """
-
     __instance = None
-
     _logger = get_logger(_SERVICE_TAG)
 
     @staticmethod
