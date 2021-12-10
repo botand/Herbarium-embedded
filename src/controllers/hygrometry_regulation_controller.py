@@ -108,11 +108,10 @@ class HygrometryRegulationController:
             # if hygro Val != avergae +/- delta AND hygro_val == last_read +/- delta
             difference_avg = hygro_val - self._average[i]
             difference_last_read = hygro_val - self._last_read[i]
-            if ((difference_avg <= - self._delta_detection) || (difference_avg >= self._delta_detection)) && 
-            ((difference_last_read >= - self._delta_detection) && (difference_last_read <= self._delta_detection)):
+            if ((difference_avg <= -self._delta_detection) || (difference_avg >= self._delta_detection)) && 
+            ((difference_last_read >= -self._delta_detection) && (difference_last_read <= self._delta_detection)):
 
-
-                # If it was an adding
+               # If it was an adding
                 if hygro_val >= (self._average[i] + self._delta_detection):
 
                     # Ajouter dans la dB
