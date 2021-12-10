@@ -1,5 +1,5 @@
 version: 0.10.0
-time_zone_offfset: -5
+time_zone_offset: -5
 
 logging:
   level: 'DEBUG'
