@@ -59,7 +59,7 @@ class LuminosityRegulationController:
         :param plants: plant list - 16 elements by ASC position
         :ptype plants: list
         """
-        if time_in_millisecond - self._previous_time > self._update_time
+        if (time_in_millisecond() - self._previous_time) > self._update_time
             self._previous_time = time_in_millisecond
 
             # What time is it ?
