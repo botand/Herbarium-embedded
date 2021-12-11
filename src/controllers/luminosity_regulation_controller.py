@@ -52,7 +52,6 @@ class LuminosityRegulationController:
         """
         if (time_in_millisecond() - self._previous_time) > self._update_time:
             self._logger.info("first - %d ms", time_in_millisecond() - self._previous_time)
-            self._previous_time = time_in_millisecond()
 
             # What time is it ?
             now = datetime.utcnow()
@@ -73,12 +72,17 @@ class LuminosityRegulationController:
                 else:
                     self._led_instance.turn_off(i)
 
+            self._previous_time = time_in_millisecond()
+
         if (time_in_millisecond() - self._previous_log_db) > self._log_db_interval:
             self._logger.info("second - %d ms", time_in_millisecond() - self._previous_log_db)
-            self._previous_log_db = time_in_millisecond()
+
 
             ambient_light = self._adc_instance.get_ambient_luminosity_value()
             self._db_instance.execute(INSERT_AMBIANT_LIGHT, [ambient_light])
+            self._previous_log_db = time_in_millisecond()
+
+
 
     def _is_on(self, plant, hour):
         """
