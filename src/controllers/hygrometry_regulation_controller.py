@@ -93,8 +93,8 @@ class HygrometryRegulationController:
         :type plants: list of Plant
         """
         for i, plant in enumerate(plants):
-            hygro_val = self._adc_service.get_plant_hygrometry_value(i)
-
+            #hygro_val = self._adc_service.get_plant_hygrometry_value(i)
+            hygro_val = 20.0
             # Si on a détecté une diférence d'hygrométrie spontannée on conjuge avec la dernière mesure 
             # pour confirmer ce changement et détecter l'ajout ou le retrait d'un pot.
             # if hygro Val != avergae +/- delta AND hygro_val == last_read +/- delta
