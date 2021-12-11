@@ -137,7 +137,7 @@ class ApiService:
         Notify the API a when plant have been added to a greenhouse
 
         :return UUID of the new plant
-        :rtype: Plant
+        :rtype: str
         """
         try:
             result = self._request(
@@ -146,7 +146,7 @@ class ApiService:
                 payload={"planted_at": planted_at, "position": position},
             )
 
-            return Plant.create_from_dict(result)
+            return result['uuid']
         except HttpError:
             return False
 
