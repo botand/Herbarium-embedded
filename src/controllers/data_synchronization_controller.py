@@ -180,7 +180,7 @@ class DataSynchronizationController:
             self._db_service.execute(UPDATE_PLANT_TRANSMITTED, [plant[0]])
             self._logger.info("Removed plant (%s) was successfully transmitted.")
         else:
-            self._logger.info("Removed plant (%s) unsuccessfully transmitted.")
+            self._logger.info("Removed plant (%s) unsuccessfully transmitted.", plant[0])
 
     def _update_local_plants(self):
         """Update the plants data from the API"""

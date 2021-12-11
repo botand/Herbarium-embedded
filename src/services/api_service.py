@@ -92,8 +92,11 @@ class ApiService:
             answer.json(),
         )
         if answer.text:
-            return None
-        return answer.json()
+            try:
+                return answer.json()
+            except ValueError as e:
+                self._logger.error("Request %s %s body invalid JSON", method, endpoint)
+        return None
 
     def get_greenhouse(self):
         """
