@@ -112,10 +112,11 @@ class HygrometryRegulationController:
                 # Add to DB
                 self._db_service.execute(INSERT_NEW_PLANT, parameters=[self._index_counter])
                 self._logger.info("Ajout !!!")
-            elif plant is not None:
-                # Remove from DB
-                self._db_service.execute(REMOVE_PLANT, parameters=[plant.uuid])
-                self._logger.info("Retrait !!!")
+            else:
+                if plant is not None:
+                    # Remove from DB
+                    self._db_service.execute(REMOVE_PLANT, parameters=[plant.uuid])
+                    self._logger.info("Retrait !!!")
 
             # Redo the cumulative for a new average value
             self._cummulative[self._index_counter] = self._last_read[self._index_counter]
