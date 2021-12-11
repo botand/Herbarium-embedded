@@ -81,7 +81,7 @@ data_synchronization_task:
     delay: 90 # wait 1 min before the first call
   check_removed_plant:
     interval: 15 # check every 15 seconds
-    delay: 30 # wait 2 min before first call
+    delay: 0 # wait 2 min before first call
 adc_config:
   i2c_sda: 2
   i2c_scl: 3
