@@ -150,7 +150,9 @@ class DataSynchronizationController:
             datetime.fromisoformat(new_plant[0]).strftime('%Y-%m-%dT%H:%M:%S.%fZ'), new_plant[1]
         )
 
-        if plant_uuid:
+        self._logger.warn("UUID RECEIVED %s", plant_uuid)
+
+        if plant_uuid is not None:
             self._db_service.execute(
                 UPDATE_PLANT_TRANSMITTED,
                 [
