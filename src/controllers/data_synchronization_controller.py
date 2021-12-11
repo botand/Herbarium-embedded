@@ -173,7 +173,7 @@ class DataSynchronizationController:
         plant = plant[0]
         self._logger.info("Removing %s", str(plant))
 
-        if self._api_service.remove_plant(plant[0]):
+        if self._api_service.remove_plant(plant[0]) is True:
             self._logger.warn("Removed UUID %s", str(plant))
             self._db_service.execute(UPDATE_PLANT_TRANSMITTED, [plant[0]])
             self._logger.info("Removed plant (%s) was successfully transmitted.")
