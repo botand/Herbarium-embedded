@@ -41,7 +41,7 @@ UPDATE_PLANT_TRANSMITTED = "update plant set transmitted=1 where uuid=?"
 INSERT_OR_IGNORE_PLANT = "insert or ignore into plant(uuid, moisture_goal, light_exposure_min_duration, position, transmitted) values (?, ?, ?, ?, 1)"
 UPDATE_PLANT = "update plant set uuid=?, moisture_goal=?, light_exposure_min_duration=?, removed=0, transmitted=1 where position=?"
 UPDATE_PLANT_UUID = (
-    "update plant set uuid=? where position=? and transmitted=0 and removed=0"
+    "update plant set uuid=?, transmitted=1 where position=? and transmitted=0 and removed=0"
 )
 UPDATE_PLANT_LEVELS = (
     "update plant set moisture_goal=?, light_exposure_min_duration=? where uuid=?"
