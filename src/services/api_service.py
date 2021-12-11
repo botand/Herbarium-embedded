@@ -66,39 +66,36 @@ class ApiService:
             endpoint,
             payload
         )
-        answer = self._session.request(
-            method,
-            self._base_url + endpoint,
-            headers={"X-API-Key": self._api_key},
-            json=payload,
-            timeout=5,
-        )
-        self._logger.warn(
-            "Request: %s %s - Response: %d %s",
-            method,
-            endpoint,
-            answer.status_code,
-            answer.json(),
-        )
+        try:
+            answer = self._session.request(
+                method,
+                self._base_url + endpoint,
+                headers={"X-API-Key": self._api_key},
+                json=payload,
+                timeout=5,
+            )
 
-        if answer.status_code >= 400:
-            self._logger.error(
+            if answer.status_code >= 400:
+                self._logger.error(
+                    "Request: %s %s - Response: %d %s",
+                    method,
+                    endpoint,
+                    answer.status_code,
+                    answer.json(),
+                )
+                raise HttpError(answer.status_code)
+
+            self._logger.warn(
                 "Request: %s %s - Response: %d %s",
                 method,
                 endpoint,
                 answer.status_code,
                 answer.json(),
             )
-            raise HttpError(answer.status_code)
-
-        self._logger.warn(
-            "Request: %s %s - Response: %d %s",
-            method,
-            endpoint,
-            answer.status_code,
-            answer.json(),
-        )
-        return answer.json()
+            return answer.json()
+        except Exception as e:
+            self._logger.error(str(e))
+            raise HttpError(-1)
 
     def get_greenhouse(self):
         """
