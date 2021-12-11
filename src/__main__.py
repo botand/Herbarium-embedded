@@ -38,7 +38,7 @@ def main():
     logger = get_logger("root")
     logger.info("Version loaded: %s", config["version"])
 
-    logger.debug("Initializing - Status Indicator")
+    logger.info("Initializing - Status Indicator")
     status_indicator_service = StatusIndicatorService.instance()
     status_pattern = StatusPattern(
             "Solid",
@@ -50,11 +50,11 @@ def main():
     status_indicator_service.update()
 
     # Initializing the Database
-    logger.debug("Initializing - Database")
+    logger.info("Initializing - Database")
     DatabaseService.instance().run_init_scripts()
 
     # Initializing all the controllers
-    logger.debug("Initializing - Controllers")
+    logger.info("Initializing - Controllers")
     internet_connection_controller = InternetConnectionController(config, config_ble)
     data_synchronization_controller = DataSynchronizationController(config)
     hygrometry_regulation_controller = HygrometryRegulationController()
@@ -65,13 +65,13 @@ def main():
     status_indicator_service.update()
 
     try:
-        logger.debug("Initializing - Main Loop")
+        logger.info("Initializing - Main Loop")
 
         plants = [None] * 16
         plant_loading_interval = config["plants_loading"]
         # We want the first loading of the plant being delayed of 30s so the API can populate the database
         previous_plants_loading = time_in_millisecond() - plant_loading_interval + 30000
-        logger.debug("Executing - Main Loop")
+        logger.info("Executing - Main Loop")
 
         while True:
             
