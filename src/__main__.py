@@ -38,7 +38,8 @@ def main():
     logger = get_logger("root")
     logger.info("Version loaded: %s", config["version"])
 
-    logger.info("Initializing - Status Indicator")
+    start_time = time_in_millisecond()
+    logger.debug("Initializing - Status Indicator")
     status_indicator_service = StatusIndicatorService.instance()
     status_pattern = StatusPattern(
             "initial_loading_pattern",
@@ -47,36 +48,49 @@ def main():
             0.1,
         )
     status_indicator_service.add_status(status_pattern)
-    status_indicator_service.update()
+    logger.info("Status indicator initialization took %d ms", time_in_millisecond() - start_time)
+    start_time = time_in_millisecond()
+
 
     # Initializing the Database
-    logger.info("Initializing - Database")
+    logger.debug("Initializing - Database")
     DatabaseService.instance().run_init_scripts()
+    logger.info("Database initialization took %d ms", time_in_millisecond() - start_time)
+    start_time = time_in_millisecond()
 
     # Initializing all the controllers
-    logger.info("Initializing - Controllers")
+    logger.debug("Initializing - Controllers")
     internet_connection_controller = InternetConnectionController(config, config_ble)
     data_synchronization_controller = DataSynchronizationController(config)
     hygrometry_regulation_controller = HygrometryRegulationController()
     luminosity_regulation_controller = LuminosityRegulationController()
+    logger.info("Controllers initialization took %d ms", time_in_millisecond() - start_time)
+    start_time = time_in_millisecond()
 
     try:
-        logger.info("Initializing - Main Loop")
+        logger.debug("Initializing - Main Loop")
 
         plants = [None] * 16
         plant_loading_interval = config["plants_loading"]
         # We want the first loading of the plant being delayed of 30s so the API can populate the database
         previous_plants_loading = time_in_millisecond() - plant_loading_interval + 30000
-        logger.info("Executing - Main Loop")
+        logger.info("Main Loop initialization took %d ms", time_in_millisecond() - start_time)
+        start_time = time_in_millisecond()
+
+        logger.debug("Executing - Main Loop")
 
         while True:
             
             # Connectivity
             internet_connection_controller.update()
             data_synchronization_controller.update()
+            logger.info("ML - Connectivity step took %d ms", time_in_millisecond() - start_time)
+            start_time = time_in_millisecond()
 
             # Status Ring LED Update
             status_indicator_service.update()
+            logger.info("ML - Ring LED step took %d ms", time_in_millisecond() - start_time)
+            start_time = time_in_millisecond()
 
             # Database Update
             if (time_in_millisecond() - previous_plants_loading) > plant_loading_interval:
@@ -85,12 +99,19 @@ def main():
                     plants[plant.position] = plant
                 status_indicator_service.remove_status(status_pattern)
                 previous_plants_loading = time_in_millisecond()
+            logger.info("ML - Database step took %d ms", time_in_millisecond() - start_time)
+            start_time = time_in_millisecond()
 
             # Luminosity Regulation
             luminosity_regulation_controller.update(plants)
+            logger.info("ML - Light Reg. step took %d ms", time_in_millisecond() - start_time)
+            start_time = time_in_millisecond()
 
             # Hygrometry Regulation
             # hygrometry_regulation_controller.update(plants)
+            # logger.info("ML - Hygro. Reg. step took %d ms", time_in_millisecond() - start_time)
+            # start_time = time_in_millisecond()
+
     except KeyboardInterrupt:
         # Stopping all the controllers and services
         logger.debug("Turning off the program")
