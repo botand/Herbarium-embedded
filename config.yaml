@@ -2,7 +2,7 @@ version: 0.10.0
 time_zone_offset: -5
 
 logging:
-  level: 'DEBUG'
+  level: 'INFO'
   path: 'logs'
   filename_suffix: '.log'
 device_uuid: '47804a3a-20d6-b1f3-1e1b-95d8e47d7ae0'

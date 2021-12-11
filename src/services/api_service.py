@@ -65,6 +65,7 @@ class ApiService:
             method,
             endpoint,
         )
+        self._logger.warning(payload)
         answer = self._session.request(
             method,
             self._base_url + endpoint,
