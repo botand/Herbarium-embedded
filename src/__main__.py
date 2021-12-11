@@ -84,7 +84,7 @@ def main():
             # Database Update
             if (time_in_millisecond() - previous_plants_loading) > plant_loading_interval:
                 for plant_data in DatabaseService.instance().execute(GET_PLANTS):
-                    plants.append(Plant.create_from_dict(plant_data))
+                    plants.append(Plant.from_db(plant_data))
                 previous_plants_loading = time_in_millisecond()
 
             # Luminosity Regulation
