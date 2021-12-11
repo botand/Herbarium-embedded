@@ -53,6 +53,7 @@ class HygrometryRegulationController:
         self._delta_detection = hygro_config[_DELTA_DETECTION]
         self._max_sample_regulation = hygro_config[_MAX_SAMPLE_REGULATION]
         self._previous_read_time = 0
+        self._index_counter = 0
 
         # water Shot
         self._shot_duration = hygro_config[_SHOT_DURATION]
@@ -83,59 +84,58 @@ class HygrometryRegulationController:
         self._valve_service.update()
 
         if time_in_millisecond() - self._previous_read_time > self._interval_update:
-            self._hygrometric_update(plants)
+            self._hygrometric_update(plants[self._index_counter])
+            self._index_counter = (self._index_counter + 1) % 16
             self._previous_read_time = time_in_millisecond()
 
-    def _hygrometric_update(self, plants):
+    def _hygrometric_update(self, plant):
         """
         Check for the added or removed plants and ask for hygrometric regulation
         :param plants: plant list - 16 elements by ASC position, but it doesn't matter
         :type plants: list of Plant
         """
-        for i, plant in enumerate(plants):
-            #hygro_val = self._adc_service.get_plant_hygrometry_value(i)
-            hygro_val = 20.0
-            # Si on a détecté une diférence d'hygrométrie spontannée on conjuge avec la dernière mesure 
-            # pour confirmer ce changement et détecter l'ajout ou le retrait d'un pot.
-            # if hygro Val != avergae +/- delta AND hygro_val == last_read +/- delta
-            difference_avg = hygro_val - self._average[i]
-            difference_last_read = hygro_val - self._last_read[i]
+        hygro_val = self._adc_service.get_plant_hygrometry_value(self._index_counter)
+        # Si on a détecté une diférence d'hygrométrie spontannée on conjuge avec la dernière mesure
+        # pour confirmer ce changement et détecter l'ajout ou le retrait d'un pot.
+        # if hygro Val != avergae +/- delta AND hygro_val == last_read +/- delta
+        difference_avg = hygro_val - self._average[self._index_counter]
+        difference_last_read = hygro_val - self._last_read[self._index_counter]
 
-            if ((difference_avg <= -self._delta_detection) or (difference_avg >= self._delta_detection)) and (
-                    (difference_last_read >= -self._delta_detection) and (
-                    difference_last_read <= self._delta_detection)):
-                self._logger.info("Detection !!!")
-                # If it was an adding
-                if hygro_val >= (self._average[i] + self._delta_detection) and plant is None:
-                    # Add to DB
-                    self._db_service.execute(INSERT_NEW_PLANT, parameters=[i])
-                    self._logger.info("Ajout !!!")
-                elif plant is not None:
-                    # Remove from DB
-                    self._db_service.execute(REMOVE_PLANT, parameters=[plant.uuid, plant.position])
-                    self._logger.info("Retrait !!!")
+        if ((difference_avg <= -self._delta_detection) or (difference_avg >= self._delta_detection)) and (
+                (difference_last_read >= -self._delta_detection) and (
+                difference_last_read <= self._delta_detection)):
+            self._logger.info("Detection !!!")
+            # If it was an adding
+            if hygro_val >= (self._average[self._index_counter] + self._delta_detection) and plant is None:
+                # Add to DB
+                self._db_service.execute(INSERT_NEW_PLANT, parameters=[self._index_counter])
+                self._logger.info("Ajout !!!")
+            elif plant is not None:
+                # Remove from DB
+                self._db_service.execute(REMOVE_PLANT, parameters=[plant.uuid, plant.position])
+                self._logger.info("Retrait !!!")
 
-                # Redo the cumulative for a new average value
-                self._cummulative[i] = self._last_read[i]
-                self._nb_sample[i] = 1
+            # Redo the cumulative for a new average value
+            self._cummulative[self._index_counter] = self._last_read[self._index_counter]
+            self._nb_sample[self._index_counter] = 1
 
-            self._cummulative[i] += hygro_val
-            self._nb_sample[i] += 1
-            self._last_read[i] = hygro_val
-            self._logger.info("Pot : %d", i)
+        self._cummulative[self._index_counter] += hygro_val
+        self._nb_sample[self._index_counter] += 1
+        self._last_read[self._index_counter] = hygro_val
+        self._logger.info("Pot : %d", self._index_counter)
 
-            # Hygrometric regulation at every MAX SAMPLE BEFORE REGULATION acquisition cycle
-            if self._nb_sample[i] == self._max_sample_regulation:
-                self._logger.info("Regulation !!!")
-                self._average[i] = self._cummulative[i] / self._nb_sample[i]
-                if plant is not None:
-                    # Database Communication
-                    self._db_service.execute(INSERT_MOISTURE_LEVEL_FOR_PLANT, parameters=[self._average[i], plant.uuid])
-                    # Regulation
-                    if self._average[i] < plant.moisture_goal:
-                        self._query_shot(i)
-                self._cummulative[i] = 0
-                self._nb_sample[i] = 0
+        # Hygrometric regulation at every MAX SAMPLE BEFORE REGULATION acquisition cycle
+        if self._nb_sample[self._index_counter] == self._max_sample_regulation:
+            self._logger.info("Regulation !!!")
+            self._average[self._index_counter] = self._cummulative[self._index_counter] / self._nb_sample[self._index_counter]
+            if plant is not None:
+                # Database Communication
+                self._db_service.execute(INSERT_MOISTURE_LEVEL_FOR_PLANT, parameters=[self._average[self._index_counter], plant.uuid])
+                # Regulation
+                if self._average[self._index_counter] < plant.moisture_goal:
+                    self._query_shot(self._index_counter)
+            self._cummulative[self._index_counter] = 0
+            self._nb_sample[self._index_counter] = 0
 
     def _query_shot(self, plant_position):
         """
