@@ -37,7 +37,6 @@ hygrometry:
 luminosity:
   interval_update: 50 # ms
   time_range_center: 14 #h
-
 status_indicator:
   led_count: 16
   gpio_data_in: 18 # Pin 12, According to the documentation, should be one of GPIO10, GPIO12, GPIO18 or GPIO21. Ref: https://learn.adafruit.com/neopixels-on-raspberry-pi/raspberry-pi-wiring
@@ -74,7 +73,7 @@ data_synchronization_task:
     interval: 600 # update every 10 min
     delay: 350 # wait 5 min before the first call
   update_data:
-    interval: 350 # update every 5min
+    interval: 300 # update every 5min
     delay: 0
   check_new_plant:
     interval: 30 # check every minutes

@@ -67,8 +67,9 @@ def main():
         logger.debug("Initializing - Main Loop")
 
         plants = list()
-        previous_plants_loading = 0
         plant_loading_interval = config["plants_loading"]
+        # We want the first loading of the plant being delayed of 30s so the API can populate the database
+        previous_plants_loading = time_in_millisecond() - (plant_loading_interval / 10)
         logger.debug("Executing - Main Loop")
 
         while True:
