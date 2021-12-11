@@ -54,12 +54,11 @@ class LuminosityRegulationController:
             self._logger.info("first - %d ms", time_in_millisecond() - self._previous_time)
 
             # What time is it ?
-            #now = datetime.utcnow()
-            #hour = (now.hour - self._time_zone_offset) + now.minute / 6
-            ambient_light = self._adc_instance.get_ambient_luminosity_value()
+            now = datetime.utcnow()
+            hour = (now.hour - self._time_zone_offset) + now.minute / 6
+            #ambient_light = self._adc_instance.get_ambient_luminosity_value()
 
-            hour = 15
-
+            ambient_light = 50
             # Regulation for plants
             for i, plant in enumerate(plants):
                 if plant is not None and self._is_on(plant, hour):
