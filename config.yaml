@@ -28,9 +28,9 @@ ble:
 plant_count: 16
 plants_loading:  300000 # ms -> 5min
 hygrometry:
-  delta_detection: 8 # % delta use for deteting the adding or the  removig of a plant
+  delta_detection: 8 # % delta use for detecting the adding or the removing of a plant
   interval_update: 500 # ms
-  max_sample_before_regulation: 120 # use or execute the regulation after a define number of sample (120*interval_update = 60sec)
+  max_sample_before_regulation: 120 # use or execute the regulation after a defined number of sample (120*interval_update = 60sec)
   shot_duration: 3000 # ms
   pump_speed: 75 # %
 
@@ -76,10 +76,10 @@ data_synchronization_task:
     interval: 300 # update every 5min
     delay: 0
   check_new_plant:
-    interval: 30 # check every minutes
+    interval: 30 # check every 30 seconds
     delay: 90 # wait 1 min before the first call
   check_removed_plant:
-    interval: 30 # check every minutes
+    interval: 30 # check every 30 seconds
     delay: 150 # wait 2 min before first call
 adc_config:
   i2c_sda: 2

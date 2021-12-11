@@ -113,8 +113,6 @@ class StatusIndicatorService:
         # remove 1 to the current index
         if self._current_animation_index > index_removed:
             self._current_animation_index -= 1
-        elif self._current_animation_index == index_removed:
-            self._current_animation_index = None
 
     def update(self):
         """
@@ -132,6 +130,7 @@ class StatusIndicatorService:
         if len(self._animations_in_progress) == 0:
             self.turn_off()
             self._current_animation_index = None
+            return
 
         new_animation = False
 
