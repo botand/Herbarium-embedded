@@ -66,7 +66,7 @@ def main():
     try:
         logger.debug("Initializing - Main Loop")
 
-        plants = list()
+        plants = [None] * 16
         plant_loading_interval = config["plants_loading"]
         # We want the first loading of the plant being delayed of 30s so the API can populate the database
         previous_plants_loading = time_in_millisecond() - plant_loading_interval + 30000
@@ -84,15 +84,15 @@ def main():
             # Database Update
             if (time_in_millisecond() - previous_plants_loading) > plant_loading_interval:
                 for plant_data in DatabaseService.instance().execute(GET_PLANTS):
-                    plants.append(Plant.from_db(plant_data))
+                    plant = Plant.from_db(plant_data)
+                    plants[plant.position] = plant
                 previous_plants_loading = time_in_millisecond()
 
             # Luminosity Regulation
-            #luminosity_regulation_controller.update(plants)
+            luminosity_regulation_controller.update(plants)
 
             # Hygrometry Regulation
-            #hygrometry_regulation_controller.update(plants)
-
+            # hygrometry_regulation_controller.update(plants
     except KeyboardInterrupt:
         # Stopping all the controllers and services
         logger.debug("Turning off the program")

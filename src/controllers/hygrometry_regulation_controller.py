@@ -91,8 +91,7 @@ class HygrometryRegulationController:
         :param plants: plant list - 16 elements by ASC position, but it doesn't matter
         :type plants: list of Plant
         """
-        for plant in plants:
-            i = plant.position
+        for i, plant in enumerate(plants):
             hygro_val = self._adc_service.get_plant_hygrometry_value(i)
 
             # Si on a détecté une diférence d'hygrométrie spontannée on conjuge avec la dernière mesure 
@@ -105,12 +104,12 @@ class HygrometryRegulationController:
                     difference_last_read <= self._delta_detection)):
 
                 # If it was an adding
-                if hygro_val >= (self._average[i] + self._delta_detection):
+                if hygro_val >= (self._average[i] + self._delta_detection) and plant is None:
                     # Add to DB
                     self._db_service.execute(INSERT_NEW_PLANT, parameters=[i])
-                else:
+                elif plant is not None:
                     # Remove from DB
-                    self._db_service.execute(REMOVE_PLANT, parameters=[plants[i].uuid, i])
+                    self._db_service.execute(REMOVE_PLANT, parameters=[plant.uuid, plant.position])
 
                 # Redo the cumulative for a new average value
                 self._cummulative[i] = self._last_read[i]
@@ -123,9 +122,9 @@ class HygrometryRegulationController:
             # Hygrometric regulation at every MAX SAMPLE BEFORE REGULATION acquisition cycle
             if self._nb_sample[i] == self._max_sample_regulation:
                 self._average[i] = self._cummulative[i] / self._nb_sample[i]
-                if plant.moisture_goal is not None:
+                if plant is not None:
                     # Database Communication
-                    self._db_service.execute(INSERT_MOISTURE_LEVEL_FOR_PLANT, parameters=[self._average[i], plants[i].uuid])
+                    self._db_service.execute(INSERT_MOISTURE_LEVEL_FOR_PLANT, parameters=[self._average[i], plant.uuid])
                     # Regulation
                     if self._average[i] < plant.moisture_goal:
                         self._query_shot(i)
