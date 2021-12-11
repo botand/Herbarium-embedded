@@ -174,7 +174,7 @@ class DataSynchronizationController:
 
         if self._api_service.remove_plant(plant[0]):
             self._db_service.execute(UPDATE_PLANT_TRANSMITTED, [plant[0]])
-            self._logger.info("Removed plant (%s) was successfully transmitted.")
+            self._logger.info("Removed plant (%s) was successfully transmitted.", plant[0])
         else:
             self._logger.info("Removed plant (%s) unsuccessfully transmitted. Will retry next time.", plant[0])
 
