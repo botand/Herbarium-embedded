@@ -72,7 +72,7 @@ data_synchronization_task:
   # Interval and delays are in seconds
   send_logs:
     interval: 600 # update every 10 min
-    delay: 350 # wait 5 min before the first call
+    delay: 300 # wait 5 min before the first call
   update_data:
     interval: 300 # update every 5min
     delay: 0

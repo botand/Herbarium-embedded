@@ -1,5 +1,6 @@
 """Controller that manage the data synchronization"""
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
 from src.services import (
     ApiService,
     DatabaseService,
@@ -98,7 +99,7 @@ class DataSynchronizationController:
         for data in _sensors_data_raw:
             _sensors_data.append({
                 'type': data[0],
-                'timestamp': data[1],
+                'timestamp': datetime.fromisoformat(data[1]).isoformat(),
                 'value': data[2],
                 'plant_uuid': data[3],
             })
@@ -106,7 +107,7 @@ class DataSynchronizationController:
         for data in _actuators_data_raw:
             _actuators_data.append({
                 'type': data[0],
-                'timestamp': data[1],
+                'timestamp': datetime.fromisoformat(data[1]).isoformat(),
                 'value': data[2],
                 'plant_uuid': data[3],
             })

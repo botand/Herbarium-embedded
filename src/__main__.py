@@ -108,9 +108,9 @@ def main():
             start_time = time_in_millisecond()
 
             # Hygrometry Regulation
-            # hygrometry_regulation_controller.update(plants)
-            # logger.info("ML - Hygro. Reg. step took %d ms", time_in_millisecond() - start_time)
-            # start_time = time_in_millisecond()
+            hygrometry_regulation_controller.update(plants)
+            logger.info("ML - Hygro. Reg. step took %d ms", time_in_millisecond() - start_time)
+            start_time = time_in_millisecond()
 
     except KeyboardInterrupt:
         # Stopping all the controllers and services
