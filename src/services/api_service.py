@@ -68,12 +68,13 @@ class ApiService:
         )
         try:
             answer = self._session.request(
-                method,
-                self._base_url + endpoint,
-                headers={"X-API-Key": self._api_key},
+                method=method,
+                url=self._base_url + endpoint,
+                # headers={"X-API-Key": self._api_key},
                 json=payload,
                 timeout=5,
             )
+            self._logger.warn("here")
         except Exception as e:
             self._logger.error("Request: %s %s - error: %s", method, endpoint, str(e))
             raise HttpError(-1)
