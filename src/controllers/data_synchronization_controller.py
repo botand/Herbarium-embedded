@@ -171,6 +171,7 @@ class DataSynchronizationController:
             self._logger.info("There is no plant removed to transmit.")
             return
         plant = plant[0]
+        self._logger.info("Removing %s", str(plant))
 
         if self._api_service.remove_plant(plant[0]):
             self._logger.warn("Removed UUID %s", str(plant))
