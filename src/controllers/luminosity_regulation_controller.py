@@ -51,6 +51,7 @@ class LuminosityRegulationController:
         :type plants: list
         """
         if (time_in_millisecond() - self._previous_time) > self._update_time:
+            self._logger.debug("first - %d ms", time_in_millisecond() - self._previous_time)
             self._previous_time = time_in_millisecond()
 
             # What time is it ?
@@ -73,6 +74,7 @@ class LuminosityRegulationController:
                     self._led_instance.turn_off(i)
 
         if (time_in_millisecond() - self._previous_log_db) > self._log_db_interval:
+            self._logger.debug("second - %d ms", time_in_millisecond() - self._previous_log_db)
             self._previous_log_db = time_in_millisecond()
 
             ambient_light = self._adc_instance.get_ambient_luminosity_value()

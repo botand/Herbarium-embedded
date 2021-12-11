@@ -84,12 +84,12 @@ def main():
             # Connectivity
             internet_connection_controller.update()
             data_synchronization_controller.update()
-            logger.info("ML - Connectivity step took %d ms", time_in_millisecond() - start_time)
+            logger.debug("ML - Connectivity step took %d ms", time_in_millisecond() - start_time)
             start_time = time_in_millisecond()
 
             # Status Ring LED Update
             status_indicator_service.update()
-            logger.info("ML - Ring LED step took %d ms", time_in_millisecond() - start_time)
+            logger.debug("ML - Ring LED step took %d ms", time_in_millisecond() - start_time)
             start_time = time_in_millisecond()
 
             # Database Update
@@ -99,7 +99,7 @@ def main():
                     plants[plant.position] = plant
                 status_indicator_service.remove_status(status_pattern)
                 previous_plants_loading = time_in_millisecond()
-            logger.info("ML - Database step took %d ms", time_in_millisecond() - start_time)
+            logger.debug("ML - Database step took %d ms", time_in_millisecond() - start_time)
             start_time = time_in_millisecond()
 
             # Luminosity Regulation
