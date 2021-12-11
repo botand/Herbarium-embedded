@@ -60,10 +60,11 @@ class ApiService:
         Raises:
             HttpError when the responses code is superior or equals to 400
         """
-        self._logger.debug(
-            "Sending: %s %s",
+        self._logger.warning(
+            "Sending: %s %s %s",
             method,
             endpoint,
+            payload
         )
         answer = self._session.request(
             method,
