@@ -40,14 +40,13 @@ def main():
 
     logger.debug("Initializing - Status Indicator")
     status_indicator_service = StatusIndicatorService.instance()
-    status_indicator_service.add_status(
-        StatusPattern(
+    status_pattern = StatusPattern(
             "Solid",
             led_utils.COLOR_ORANGE,
             led_utils.SOLID_ANIMATION,
             0.1,
         )
-    )
+    status_indicator_service.add_status(status_pattern)
     status_indicator_service.update()
 
     # Initializing the Database
@@ -61,7 +60,9 @@ def main():
     hygrometry_regulation_controller = HygrometryRegulationController()
     luminosity_regulation_controller = LuminosityRegulationController()
 
-    # Udpate the LED status, à moins qu'au premier tour de boucle ca marche tout seul
+    # Remove the Initializing status
+    status_indicator_service.remove_status(status_pattern)
+    status_indicator_service.update()
 
     try:
         logger.debug("Initializing - Main Loop")
@@ -92,7 +93,7 @@ def main():
             luminosity_regulation_controller.update(plants)
 
             # Hygrometry Regulation
-            # hygrometry_regulation_controller.update(plants
+            # hygrometry_regulation_controller.update(plants)
     except KeyboardInterrupt:
         # Stopping all the controllers and services
         logger.debug("Turning off the program")
