@@ -60,42 +60,40 @@ class ApiService:
         Raises:
             HttpError when the responses code is superior or equals to 400
         """
-        self._logger.warn(
+        self._logger.debug(
             "Sending: %s %s %s",
             method,
             endpoint,
             payload
         )
-        try:
-            answer = self._session.request(
-                method,
-                self._base_url + endpoint,
-                headers={"X-API-Key": self._api_key},
-                json=payload,
-                timeout=5,
-            )
+        answer = self._session.request(
+            method,
+            self._base_url + endpoint,
+            headers={"X-API-Key": self._api_key},
+            json=payload,
+            timeout=5,
+        )
 
-            if answer.status_code >= 400:
-                self._logger.error(
-                    "Request: %s %s - Response: %d %s",
-                    method,
-                    endpoint,
-                    answer.status_code,
-                    answer.json(),
-                )
-                raise HttpError(answer.status_code)
-
-            self._logger.warn(
+        if answer.status_code >= 400:
+            self._logger.error(
                 "Request: %s %s - Response: %d %s",
                 method,
                 endpoint,
                 answer.status_code,
                 answer.json(),
             )
-            return answer.json()
-        except Exception as e:
-            self._logger.error(str(e))
-            raise HttpError(-1)
+            raise HttpError(answer.status_code)
+
+        self._logger.debug(
+            "Request: %s %s - Response: %d %s",
+            method,
+            endpoint,
+            answer.status_code,
+            answer.json(),
+        )
+        if answer.text:
+            return None
+        return answer.json()
 
     def get_greenhouse(self):
         """
