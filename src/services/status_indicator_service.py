@@ -109,10 +109,12 @@ class StatusIndicatorService:
         self._logger.debug("removing pattern: %s", status)
         self._animations_in_progress.pop(index_removed)
 
-        # If the animation playing is the one that removed or is after the one removed,
+        # If the animation playing is the one that is removed or is after the one removed,
         # remove 1 to the current index
-        if self._current_animation_index >= index_removed:
+        if self._current_animation_index > index_removed:
             self._current_animation_index -= 1
+        elif self._current_animation_index == index_removed:
+            self._current_animation_index = None
 
     def update(self):
         """
@@ -150,9 +152,7 @@ class StatusIndicatorService:
             self._current_offset = 0
             new_animation = True
 
-        if (time_in_millisecond() - self._last_update) > self._interval_modifier(
-            new_animation
-        ):
+        if (time_in_millisecond() - self._last_update) > self._interval_modifier(new_animation):
             self._update_animation()
             self._last_update = time_in_millisecond()
 
