@@ -145,6 +145,7 @@ class DataSynchronizationController:
         if len(new_plant) == 0:
             self._logger.info("There is no plant to transmit.")
             return
+        self._logger.warning(new_plant)
         new_plant = new_plant[0]
 
         plant = self._api_service.add_plant(
