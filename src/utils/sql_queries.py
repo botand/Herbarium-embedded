@@ -33,7 +33,7 @@ DELETE_ACTUATORS_TRANSMITTED = "delete from actuators where transmitted=1"
 # Plants
 GET_UNTRANSMITTED_PLANT = "select planted_at, position from plant where transmitted=0 and removed=0 order by planted_at asc limit 1"
 GET_REMOVED_UNTRANSMITTED_PLANT = "select uuid from plant where transmitted=0 and removed=1 order by planted_at asc limit 1"
-GET_PLANTS = "select * from plant"
+GET_PLANTS = "select * from plant where removed=0"
 GET_PLANT_BY_POSITION = "select * from plant where position=?"
 GET_PLANT_BY_UUID = "select * from plant where uuid=?"
 INSERT_NEW_PLANT = "insert into plant(position) values (?)"
