@@ -57,12 +57,13 @@ class LuminosityRegulationController:
             for i, plant in enumerate(plants):
                 if plant is not None and self._is_on(plant, hour):
                     self._led_instance.turn_on(plant.position, 100 - self._adc_instance.get_ambient_luminosity_value())
-                    self._logger.debug(
+                    self._logger.info(
                         "Turn ON Tile %d Lightning (%d %%)",
                         plant.position, 100-self._adc_instance.get_ambient_luminosity_value())
                 else:
                     self._led_instance.turn_off(i)
-                    self._logger.debug("Turn OFF Tile %d Lightning", i)
+                    self._logger.info("Turn OFF Tile %d Lightning", i)
+
 
     def _is_on(self, plant, hour):
         """
