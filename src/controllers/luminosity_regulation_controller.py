@@ -54,10 +54,9 @@ class LuminosityRegulationController:
 
             # What time is it ?
             now = datetime.utcnow()
-            hour = ((24 + now.hour + self._time_zone_offset) % 24) + now.minute / 60
+            #hour = ((24 + now.hour + self._time_zone_offset) % 24) + now.minute / 60
             ambient_light = self._adc_instance.get_ambient_luminosity_value()
-
-            self._logger.info(hour)
+            hour = 14
 
             # Regulation for plants
             for i, plant in enumerate(plants):
