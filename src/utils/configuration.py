@@ -4,7 +4,7 @@ import yaml
 
 # pylint: disable=invalid-name
 
-_file_path = os.environ["CONFIG_YAML_FILE"]
+_file_path = os.getenv("CONFIG_YAML_FILE", "config.yaml")
 
 config = None
 config_ble = None
