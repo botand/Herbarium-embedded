@@ -80,6 +80,7 @@ class HygrometryRegulationController:
         :type plants: list of Plant
         """
         self._shot_update(plants)
+        self._valve_service.update()
 
         if time_in_millisecond() - self._previous_read_time > self._interval_update:
             self._hygrometric_update(plants)

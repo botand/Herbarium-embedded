@@ -41,9 +41,9 @@ def main():
     logger.info("Initializing - Status Indicator")
     status_indicator_service = StatusIndicatorService.instance()
     status_pattern = StatusPattern(
-            "Solid",
+            "initial_loading_pattern",
             led_utils.COLOR_ORANGE,
-            led_utils.SOLID_ANIMATION,
+            led_utils.SPINNING_ANIMATION,
             0.1,
         )
     status_indicator_service.add_status(status_pattern)
@@ -59,10 +59,6 @@ def main():
     data_synchronization_controller = DataSynchronizationController(config)
     hygrometry_regulation_controller = HygrometryRegulationController()
     luminosity_regulation_controller = LuminosityRegulationController()
-
-    # Remove the Initializing status
-    status_indicator_service.remove_status(status_pattern)
-    status_indicator_service.update()
 
     try:
         logger.info("Initializing - Main Loop")
@@ -87,6 +83,7 @@ def main():
                 for plant_data in DatabaseService.instance().execute(GET_PLANTS):
                     plant = Plant.from_db(plant_data)
                     plants[plant.position] = plant
+                status_indicator_service.remove_status(status_pattern)
                 previous_plants_loading = time_in_millisecond()
 
             # Luminosity Regulation

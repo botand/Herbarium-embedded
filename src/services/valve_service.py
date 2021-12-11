@@ -75,11 +75,10 @@ class ValveService:
         self._logger.debug(
             "Valve Initialisation - Closing all the vales"
         )
-        self.close_all()
+
         for i in range(16):
             self._valve_state.append("open")
-        while self._valve_state[15] != "close":
-            self.update()
+        self.close_all()
         self._logger.debug("Valve Initialisation - Done !")
 
     def _select_addr(self, valve_nb):

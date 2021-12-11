@@ -11,13 +11,14 @@ from src.utils import (
     time_in_millisecond,
 )
 
-from src.utils.sql_queries import INSERT_LIGHT_STRIP_ORDER
+from src.utils.sql_queries import INSERT_LIGHT_STRIP_ORDER, INSERT_AMBIANT_LIGHT
 
 _CONTROLLER_TAG = "controllers.LuminosityRegulationController"
 _CONFIG_TAG = "luminosity"
 _PLANT_COUNT = "plant_count"
 _TZ_OFFSET = "time_zone_offset"
 _INTERVAL_UPDATE = "interval_update"
+_INTERVAL_DB_LOG = "log_db_interval"
 _TIME_RANGE_CENTER = "time_range_center"
 
 
@@ -34,6 +35,8 @@ class LuminosityRegulationController:
         lum_config = config[_CONFIG_TAG]
         self._time_zone_offset = config[_TZ_OFFSET]
         self._update_time = lum_config[_INTERVAL_UPDATE]
+        self._log_db_interval = lum_config[_INTERVAL_DB_LOG] * 1000  # s to ms
+        self._previous_log_db = 0
         self._time_range_center = lum_config[_TIME_RANGE_CENTER]
         self._previous_time = 0
         self.time = 0
@@ -53,12 +56,13 @@ class LuminosityRegulationController:
             # What time is it ?
             now = datetime.utcnow()
             hour = (now.hour - self._time_zone_offset) + now.minute / 6
+            ambient_light = self._adc_instance.get_ambient_luminosity_value()
 
             # Regulation for plants
             for i, plant in enumerate(plants):
                 if plant is not None and self._is_on(plant, hour):
                     # Light Regulation
-                    value = 100 - self._adc_instance.get_ambient_luminosity_value()
+                    value = 100 - ambient_light
 
                     if value <= 0:
                         value = 0.0
@@ -67,6 +71,12 @@ class LuminosityRegulationController:
                     self._led_instance.turn_on(plant.position, value)
                 else:
                     self._led_instance.turn_off(i)
+
+        if (time_in_millisecond() - self._previous_log_db) > self._log_db_interval:
+            self._previous_log_db = time_in_millisecond()
+
+            ambient_light = self._adc_instance.get_ambient_luminosity_value()
+            self._db_instance.execute(INSERT_AMBIANT_LIGHT, [ambient_light])
 
     def _is_on(self, plant, hour):
         """
