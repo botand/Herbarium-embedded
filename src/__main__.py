@@ -109,7 +109,7 @@ def main():
 
             # Hygrometry Regulation
             hygrometry_regulation_controller.update(plants)
-            logger.info("ML - Hygro. Reg. step took %d ms", time_in_millisecond() - start_time)
+            logger.debug("ML - Hygro. Reg. step took %d ms", time_in_millisecond() - start_time)
             start_time = time_in_millisecond()
 
     except KeyboardInterrupt:

@@ -84,17 +84,20 @@ class HygrometryRegulationController:
         self._valve_service.update()
 
         if time_in_millisecond() - self._previous_read_time > self._interval_update:
-            self._hygrometric_update(plants[self._index_counter])
+            self._hygrometry_update(plants[self._index_counter])
             self._index_counter = (self._index_counter + 1) % 16
             self._previous_read_time = time_in_millisecond()
 
-    def _hygrometric_update(self, plant):
+    def _hygrometry_update(self, plant):
         """
-        Check for the added or removed plants and ask for hygrometric regulation
-        :param plants: plant list - 16 elements by ASC position, but it doesn't matter
-        :type plants: list of Plant
+        Check for the added or removed plants and ask for hygrometry regulation
+        :param plant: actual Plant
+        :type plant: Plant
         """
+
         hygro_val = self._adc_service.get_plant_hygrometry_value(self._index_counter)
+        self._logger.info("Pot : %d - Val: %d %", self._index_counter, hygro_val)
+
         # Si on a détecté une diférence d'hygrométrie spontannée on conjuge avec la dernière mesure
         # pour confirmer ce changement et détecter l'ajout ou le retrait d'un pot.
         # if hygro Val != avergae +/- delta AND hygro_val == last_read +/- delta
@@ -122,7 +125,7 @@ class HygrometryRegulationController:
         self._cummulative[self._index_counter] += hygro_val
         self._nb_sample[self._index_counter] += 1
         self._last_read[self._index_counter] = hygro_val
-        self._logger.info("Pot : %d", self._index_counter)
+
 
         # Hygrometric regulation at every MAX SAMPLE BEFORE REGULATION acquisition cycle
         if self._nb_sample[self._index_counter] == self._max_sample_regulation:
