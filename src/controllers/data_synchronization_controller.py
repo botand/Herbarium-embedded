@@ -16,7 +16,7 @@ from src.utils import (
     GET_REMOVED_UNTRANSMITTED_PLANT,
     UPDATE_PLANT_LEVELS,
     UPDATE_PLANT_TRANSMITTED,
-    time_in_millisecond, INSERT_OR_IGNORE_PLANT,
+    time_in_millisecond, INSERT_OR_IGNORE_PLANT, UPDATE_PLANT_UUID,
 )
 
 _CONTROLLER_TAG = "controllers.DataSynchronizationController"
@@ -152,7 +152,7 @@ class DataSynchronizationController:
 
         self._logger.warn("UUID RECEIVED %s", plant_uuid)
 
-        if plant_uuid is not None:
+        if plant_uuid is str:
             self._db_service.execute(
                 UPDATE_PLANT_UUID,
                 [
