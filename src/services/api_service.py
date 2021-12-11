@@ -60,47 +60,44 @@ class ApiService:
         Raises:
             HttpError when the responses code is superior or equals to 400
         """
-        self._logger.warn(
+        self._logger.debug(
             "Sending: %s %s %s",
             method,
             endpoint,
             payload
         )
-        try:
-            answer = self._session.request(
-                method=method,
-                url=self._base_url + endpoint,
-                # headers={"X-API-Key": self._api_key},
-                json=payload,
-                timeout=5,
-            )
-            self._logger.warn("here")
 
-            if answer.status_code >= 400:
-                self._logger.error(
-                    "Request: %s %s - Response: %d %s",
-                    method,
-                    endpoint,
-                    answer.status_code,
-                    answer.json() if answer.text else "No body"
-                )
-                raise HttpError(answer.status_code)
+        answer = self._session.request(
+            method=method,
+            url=self._base_url + endpoint,
+            headers={"X-API-Key": self._api_key},
+            json=payload,
+            timeout=5,
+        )
 
-            self._logger.warn(
+        if answer.status_code >= 400:
+            self._logger.error(
                 "Request: %s %s - Response: %d %s",
                 method,
                 endpoint,
                 answer.status_code,
-                answer.json() if answer.text else "No body",
+                answer.json() if answer.text else "No body"
             )
-            if answer.status_code != 202:
-                try:
-                    return answer.json()
-                except Exception as e:
-                    self._logger.error("Request %s %s body invalid JSON", method, endpoint)
-        except Exception as e:
-            self._logger.error("Request: %s %s - error: %s", method, endpoint, str(e))
-            raise HttpError(-1)
+            raise HttpError(answer.status_code)
+
+        self._logger.debug(
+            "Request: %s %s - Response: %d %s",
+            method,
+            endpoint,
+            answer.status_code,
+            answer.json() if answer.text else "No body",
+        )
+        if answer.text:
+            try:
+                return answer.json()
+            except ValueError as e:
+                self._logger.error("Request %s %s body invalid JSON", method, endpoint)
+                raise HttpError(answer.status_code)
         return None
 
     def get_greenhouse(self):
