@@ -31,14 +31,14 @@ UPDATE_ACTUATORS_TRANSMITTED_FROM_DATE = (
 DELETE_ACTUATORS_TRANSMITTED = "delete from actuators where transmitted=1"
 
 # Plants
-GET_UNTRANSMITTED_PLANT = "select * from plant where transmitted=0 and removed=0 order by planted_at asc limit 1"
-GET_REMOVED_UNTRANSMITTED_PLANT = "select * from plant where transmitted=0 and removed=1 order by planted_at asc limit 1"
+GET_UNTRANSMITTED_PLANT = "select planted_at, position from plant where transmitted=0 and removed=0 order by planted_at asc limit 1"
+GET_REMOVED_UNTRANSMITTED_PLANT = "select planted_at, position from plant where transmitted=0 and removed=1 order by planted_at asc limit 1"
 GET_PLANTS = "select * from plant"
 GET_PLANT_BY_POSITION = "select * from plant where position=?"
 GET_PLANT_BY_UUID = "select * from plant where uuid=?"
 INSERT_NEW_PLANT = "insert into plant(position) values (?)"
 UPDATE_PLANT_TRANSMITTED = "update plant set transmitted=1 where uuid=?"
-INSERT_OR_IGNORE_PLANT = "insert or ignore into plant(uuid, moisture_goal, light_exposure_min_duration, position) values (?, ?, ?, ?)"
+INSERT_OR_IGNORE_PLANT = "insert or ignore into plant(uuid, moisture_goal, light_exposure_min_duration, position, transmitted) values (?, ?, ?, ?, 1)"
 UPDATE_PLANT = "update plant set uuid=?, moisture_goal=?, light_exposure_min_duration=?, removed=0, transmitted=1 where position=?"
 UPDATE_PLANT_INFO = (
     "update plant set moisture_goal=?, light_exposure_min_duration=? where uuid=?"

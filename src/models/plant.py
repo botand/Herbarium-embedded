@@ -46,3 +46,7 @@ class Plant:
             if "override_light_exposure_min_duration" in data
             else data["type"]["light_exposure_min_duration"],
         )
+
+    @staticmethod
+    def from_db(data):
+        return Plant(data[0], data[1], data[2], data[3])

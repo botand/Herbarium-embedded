@@ -86,28 +86,46 @@ class DataSynchronizationController:
     def _send_logs(self):
         """Transmit all the un-transmitted logs from the API"""
         self._logger.info("Start send logs to the API.")
-        _sensors_data = self._db_service.execute(
+        _sensors_data_raw = self._db_service.execute(
             GET_UNTRANSMITTED_SENSORS_DATA, commit=False
         )
-        _actuators_data = self._db_service.execute(
+        _sensors_data = []
+        _actuators_data_raw = self._db_service.execute(
             GET_UNTRANSMITTED_ACTUATORS_ORDERS, commit=False
         )
+        _actuators_data = []
+
+        for data in _sensors_data_raw:
+            _sensors_data.append({
+                'type': data[0],
+                'timestamp': data[1],
+                'value': data[2],
+                'plant_uuid': data[3],
+            })
+
+        for data in _actuators_data_raw:
+            _actuators_data.append({
+                'type': data[0],
+                'timestamp': data[1],
+                'value': data[2],
+                'plant_uuid': data[3],
+            })
 
         if self._api_service.send_logs(_sensors_data, _actuators_data):
             if len(_sensors_data) > 0:
                 self._db_service.execute(
                     UPDATE_SENSORS_TRANSMITTED_FROM_DATE,
                     parameters=[
-                        _sensors_data[0]["timestamp"],
-                        _sensors_data[-1]["timestamp"],
+                        _sensors_data[0][1],
+                        _sensors_data[-1][1],
                     ],
                 )
             if len(_actuators_data) > 0:
                 self._db_service.execute(
                     UPDATE_ACTUATORS_TRANSMITTED_FROM_DATE,
                     parameters=[
-                        _actuators_data[0]["timestamp"],
-                        _actuators_data[-1]["timestamp"],
+                        _actuators_data[0][1],
+                        _actuators_data[-1][1],
                     ],
                 )
             self._logger.info("Logs successfully transmitted to the API.")
@@ -125,7 +143,7 @@ class DataSynchronizationController:
         new_plant = new_plant[0]
 
         plant = self._api_service.add_plant(
-            new_plant["planted_at"], new_plant["position"]
+            new_plant[0], new_plant[1]
         )
 
         if plant:
@@ -152,8 +170,8 @@ class DataSynchronizationController:
             return
         plant = plant[0]
 
-        if self._api_service.remove_plant(plant["uuid"]):
-            self._db_service.execute(UPDATE_PLANT_TRANSMITTED, [plant["uuid"]])
+        if self._api_service.remove_plant(plant[0]):
+            self._db_service.execute(UPDATE_PLANT_TRANSMITTED, [plant[0]])
             self._logger.info("Removed plant (%s) was successfully transmitted.")
         else:
             self._logger.info("Removed plant (%s) unsuccessfully transmitted.")
