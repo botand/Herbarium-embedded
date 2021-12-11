@@ -104,7 +104,7 @@ def main():
 
             # Luminosity Regulation
             luminosity_regulation_controller.update(plants)
-            logger.info("ML - Light Reg. step took %d ms", time_in_millisecond() - start_time)
+            logger.debug("ML - Light Reg. step took %d ms", time_in_millisecond() - start_time)
             start_time = time_in_millisecond()
 
             # Hygrometry Regulation
