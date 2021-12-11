@@ -96,7 +96,7 @@ class HygrometryRegulationController:
         """
 
         hygro_val = self._adc_service.get_plant_hygrometry_value(self._index_counter)
-        self._logger.info(f"Pot : {self._index_counter} - Val: {hygro_val}%")
+        self._logger.info(f"Pot : {self._index_counter} - Val: {hygro_val}% - Plant : {plant}")
 
         # Si on a détecté une diférence d'hygrométrie spontannée on conjuge avec la dernière mesure
         # pour confirmer ce changement et détecter l'ajout ou le retrait d'un pot.
