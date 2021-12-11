@@ -54,7 +54,7 @@ class LuminosityRegulationController:
 
             # What time is it ?
             now = datetime.utcnow()
-            hour = (now.hour + self._time_zone_offset) + now.minute / 60
+            hour = ((24 + now.hour + self._time_zone_offset) % 24) + now.minute / 60
             if hour < 0:
                 hour = 24 - hour
             elif hour > 23:
