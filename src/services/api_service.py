@@ -60,7 +60,7 @@ class ApiService:
         Raises:
             HttpError when the responses code is superior or equals to 400
         """
-        self._logger.debug(
+        self._logger.warn(
             "Sending: %s %s %s",
             method,
             endpoint,
@@ -72,6 +72,13 @@ class ApiService:
             headers={"X-API-Key": self._api_key},
             json=payload,
             timeout=5,
+        )
+        self._logger.warn(
+            "Request: %s %s - Response: %d %s",
+            method,
+            endpoint,
+            answer.status_code,
+            answer.json(),
         )
 
         if answer.status_code >= 400:
