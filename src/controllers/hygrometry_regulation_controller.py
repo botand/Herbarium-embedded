@@ -122,6 +122,7 @@ class HygrometryRegulationController:
             self._cummulative[i] += hygro_val
             self._nb_sample[i] += 1
             self._last_read[i] = hygro_val
+            self._logger.info("Pot : %d", i)
 
             # Hygrometric regulation at every MAX SAMPLE BEFORE REGULATION acquisition cycle
             if self._nb_sample[i] == self._max_sample_regulation:
