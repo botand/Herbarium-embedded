@@ -88,10 +88,10 @@ def main():
                 previous_plants_loading = time_in_millisecond()
 
             # Luminosity Regulation
-            luminosity_regulation_controller.update(plants)
+            #luminosity_regulation_controller.update(plants)
 
             # Hygrometry Regulation
-            hygrometry_regulation_controller.update(plants)
+            #hygrometry_regulation_controller.update(plants)
 
     except KeyboardInterrupt:
         # Stopping all the controllers and services
