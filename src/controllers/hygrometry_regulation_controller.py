@@ -83,7 +83,6 @@ class HygrometryRegulationController:
         self._valve_service.update()
 
         if time_in_millisecond() - self._previous_read_time > self._interval_update:
-            self._logger.info("Update Hygrometric !!!")
             self._hygrometric_update(plants)
             self._previous_read_time = time_in_millisecond()
 
@@ -101,17 +100,20 @@ class HygrometryRegulationController:
             # if hygro Val != avergae +/- delta AND hygro_val == last_read +/- delta
             difference_avg = hygro_val - self._average[i]
             difference_last_read = hygro_val - self._last_read[i]
+
             if ((difference_avg <= -self._delta_detection) or (difference_avg >= self._delta_detection)) and (
                     (difference_last_read >= -self._delta_detection) and (
                     difference_last_read <= self._delta_detection)):
-
+                self._logger.info("Detection !!!")
                 # If it was an adding
                 if hygro_val >= (self._average[i] + self._delta_detection) and plant is None:
                     # Add to DB
                     self._db_service.execute(INSERT_NEW_PLANT, parameters=[i])
+                    self._logger.info("Ajout !!!")
                 elif plant is not None:
                     # Remove from DB
                     self._db_service.execute(REMOVE_PLANT, parameters=[plant.uuid, plant.position])
+                    self._logger.info("Retrait !!!")
 
                 # Redo the cumulative for a new average value
                 self._cummulative[i] = self._last_read[i]
@@ -123,6 +125,7 @@ class HygrometryRegulationController:
 
             # Hygrometric regulation at every MAX SAMPLE BEFORE REGULATION acquisition cycle
             if self._nb_sample[i] == self._max_sample_regulation:
+                self._logger.info("Regulation !!!")
                 self._average[i] = self._cummulative[i] / self._nb_sample[i]
                 if plant is not None:
                     # Database Communication
