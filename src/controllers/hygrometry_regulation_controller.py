@@ -114,7 +114,7 @@ class HygrometryRegulationController:
                 self._logger.info("Ajout !!!")
             elif plant is not None:
                 # Remove from DB
-                self._db_service.execute(REMOVE_PLANT, parameters=[plant.uuid, plant.position])
+                self._db_service.execute(REMOVE_PLANT, parameters=[plant.uuid])
                 self._logger.info("Retrait !!!")
 
             # Redo the cumulative for a new average value
