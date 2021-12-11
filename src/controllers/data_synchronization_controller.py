@@ -12,10 +12,9 @@ from src.utils import (
     GET_UNTRANSMITTED_ACTUATORS_ORDERS,
     UPDATE_SENSORS_TRANSMITTED_FROM_DATE,
     UPDATE_ACTUATORS_TRANSMITTED_FROM_DATE,
-    UPDATE_PLANT,
     GET_UNTRANSMITTED_PLANT,
     GET_REMOVED_UNTRANSMITTED_PLANT,
-    UPDATE_PLANT_INFO,
+    UPDATE_PLANT_LEVELS,
     UPDATE_PLANT_TRANSMITTED,
     time_in_millisecond, INSERT_OR_IGNORE_PLANT,
 )
@@ -153,7 +152,7 @@ class DataSynchronizationController:
 
         if plant_uuid:
             self._db_service.execute(
-                UPDATE_PLANT,
+                UPDATE_PLANT_TRANSMITTED,
                 [
                     plant_uuid,
                     new_plant[1]
@@ -195,7 +194,7 @@ class DataSynchronizationController:
                 ],
             )
             self._db_service.execute(
-                UPDATE_PLANT_INFO,
+                UPDATE_PLANT_LEVELS,
                 parameters=[
                     plant.moisture_goal,
                     plant.light_exposure_min_duration,
