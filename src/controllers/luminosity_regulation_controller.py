@@ -55,10 +55,6 @@ class LuminosityRegulationController:
             # What time is it ?
             now = datetime.utcnow()
             hour = ((24 + now.hour + self._time_zone_offset) % 24) + now.minute / 60
-            if hour < 0:
-                hour = 24 - hour
-            elif hour > 23:
-                hour = hour - 24
             ambient_light = self._adc_instance.get_ambient_luminosity_value()
 
             self._logger.info(hour)
