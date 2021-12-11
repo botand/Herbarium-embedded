@@ -152,7 +152,7 @@ class DataSynchronizationController:
 
         self._logger.warn("UUID RECEIVED %s", plant_uuid)
 
-        if plant_uuid is str:
+        if isinstance(plant_uuid, str):
             self._db_service.execute(
                 UPDATE_PLANT_UUID,
                 [
