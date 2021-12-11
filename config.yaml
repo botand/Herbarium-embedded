@@ -74,7 +74,7 @@ data_synchronization_task:
     interval: 600 # update every 10 min
     delay: 300 # wait 5 min before the first call
   update_data:
-    interval: 120 # update every 2min
+    interval: 300 # update every 5min
     delay: 0
   check_new_plant:
     interval: 15 # check every 15 seconds

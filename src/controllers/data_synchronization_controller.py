@@ -16,7 +16,8 @@ from src.utils import (
     GET_REMOVED_UNTRANSMITTED_PLANT,
     UPDATE_PLANT_LEVELS,
     UPDATE_PLANT_TRANSMITTED,
-    time_in_millisecond, INSERT_OR_IGNORE_PLANT, UPDATE_PLANT_UUID,
+    time_in_millisecond, INSERT_OR_IGNORE_PLANT, UPDATE_PLANT_UUID, DELETE_PLANT_REMOVED_TRANSMITTED,
+    DELETE_SENSORS_TRANSMITTED, DELETE_ACTUATORS_TRANSMITTED,
 )
 
 _CONTROLLER_TAG = "controllers.DataSynchronizationController"
@@ -203,6 +204,10 @@ class DataSynchronizationController:
                     plant.uuid,
                 ],
             )
+            # Clear transmitted plant, sensors and actuators values
+            self._db_service.execute(DELETE_PLANT_REMOVED_TRANSMITTED)
+            self._db_service.execute(DELETE_SENSORS_TRANSMITTED)
+            self._db_service.execute(DELETE_ACTUATORS_TRANSMITTED)
         self._logger.info("Gathering plants data from the API was successfully.")
 
     def stop(self):

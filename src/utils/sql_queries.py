@@ -48,4 +48,4 @@ UPDATE_PLANT_LEVELS = (
 )
 UPDATE_PLANT_POSITION = "update plant set position=?, removed=0 where uuid=?"
 REMOVE_PLANT = "update plant set removed=1, transmitted=0 where uuid=?"
-DELETE_PLANT = "delete from plant where uuid=?"
+DELETE_PLANT_REMOVED_TRANSMITTED = "delete from plant where transmitted=1 and removed=1"
