@@ -97,18 +97,26 @@ class DataSynchronizationController:
         _actuators_data = []
 
         for data in _sensors_data_raw:
+            if data[2] == 0:
+                value = False
+            else:
+                value = True
             _sensors_data.append({
                 'type': data[0],
-                'timestamp': datetime.fromisoformat(data[1]).isoformat(),
-                'value': data[2],
+                'timestamp': datetime.fromisoformat(data[1]).strftime('%Y-%m-%dT%H:%M:%SZ'),
+                'value': value,
                 'plant_uuid': data[3],
             })
 
         for data in _actuators_data_raw:
+            if data[2] == 0:
+                value = False
+            else:
+                value = True
             _actuators_data.append({
                 'type': data[0],
-                'timestamp': datetime.fromisoformat(data[1]).isoformat(),
-                'value': data[2],
+                'timestamp': datetime.fromisoformat(data[1]).strftime('%Y-%m-%dT%H:%M:%SZ'),
+                'value': value,
                 'plant_uuid': data[3],
             })
 
