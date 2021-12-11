@@ -66,13 +66,17 @@ class ApiService:
             endpoint,
             payload
         )
-        answer = self._session.request(
-            method,
-            self._base_url + endpoint,
-            headers={"X-API-Key": self._api_key},
-            json=payload,
-            timeout=5,
-        )
+        try:
+            answer = self._session.request(
+                method,
+                self._base_url + endpoint,
+                headers={"X-API-Key": self._api_key},
+                json=payload,
+                timeout=5,
+            )
+        except Exception as e:
+            self._logger.error("Request: %s %s - error: %s", method, endpoint, str(e))
+            raise HttpError(-1)
 
         if answer.status_code >= 400:
             self._logger.error(
@@ -84,7 +88,7 @@ class ApiService:
             )
             raise HttpError(answer.status_code)
 
-        self._logger.debug(
+        self._logger.warn(
             "Request: %s %s - Response: %d %s",
             method,
             endpoint,
@@ -94,7 +98,7 @@ class ApiService:
         if answer.status_code != 202:
             try:
                 return answer.json()
-            except ValueError as e:
+            except Exception as e:
                 self._logger.error("Request %s %s body invalid JSON", method, endpoint)
         return None
 
