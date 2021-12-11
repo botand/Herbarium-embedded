@@ -103,7 +103,7 @@ class DataSynchronizationController:
                 value = True
             _sensors_data.append({
                 'type': data[0],
-                'timestamp': datetime.fromisoformat(data[1]).strftime('%Y-%m-%dT%H:%M:%SZ'),
+                'timestamp': datetime.fromisoformat(data[1]).strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
                 'value': value,
                 'plant_uuid': data[3],
             })
@@ -115,7 +115,7 @@ class DataSynchronizationController:
                 value = True
             _actuators_data.append({
                 'type': data[0],
-                'timestamp': datetime.fromisoformat(data[1]).strftime('%Y-%m-%dT%H:%M:%SZ'),
+                'timestamp': datetime.fromisoformat(data[1]).strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
                 'value': value,
                 'plant_uuid': data[3],
             })
