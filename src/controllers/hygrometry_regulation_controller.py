@@ -101,15 +101,14 @@ class HygrometryRegulationController:
         # Si on a détecté une diférence d'hygrométrie spontannée on conjuge avec la dernière mesure
         # pour confirmer ce changement et détecter l'ajout ou le retrait d'un pot.
         # if hygro Val != avergae +/- delta AND hygro_val == last_read +/- delta
-        difference_avg = hygro_val - self._average[self._index_counter]
-        difference_last_read = hygro_val - self._last_read[self._index_counter]
+        difference_avg = abs(hygro_val - self._average[self._index_counter])
+        difference_last_read = abs(hygro_val - self._last_read[self._index_counter])
 
-        if ((difference_avg <= -self._delta_detection) or (difference_avg >= self._delta_detection)) and (
-                (difference_last_read >= -self._delta_detection) and (
-                difference_last_read <= self._delta_detection)):
+        if (difference_avg >= self._delta_detection) and (difference_last_read <= self._delta_detection):
+
             self._logger.info("Detection !!!")
             # If it was an adding
-            if hygro_val >= (self._average[self._index_counter] + self._delta_detection) and plant is None:
+            if (hygro_val > self._average[self._index_counter]) and plant is None:
                 # Add to DB
                 self._db_service.execute(INSERT_NEW_PLANT, parameters=[self._index_counter])
                 self._logger.info("Ajout !!!")
@@ -121,6 +120,8 @@ class HygrometryRegulationController:
             # Redo the cumulative for a new average value
             self._cummulative[self._index_counter] = self._last_read[self._index_counter]
             self._nb_sample[self._index_counter] = 1
+            self._average[self._index_counter] = self._cummulative[self._index_counter] / \
+                                                 self._nb_sample[self._index_counter]
 
         self._cummulative[self._index_counter] += hygro_val
         self._nb_sample[self._index_counter] += 1
@@ -130,7 +131,8 @@ class HygrometryRegulationController:
         # Hygrometric regulation at every MAX SAMPLE BEFORE REGULATION acquisition cycle
         if self._nb_sample[self._index_counter] == self._max_sample_regulation:
             self._logger.info("Regulation !!!")
-            self._average[self._index_counter] = self._cummulative[self._index_counter] / self._nb_sample[self._index_counter]
+            self._average[self._index_counter] = self._cummulative[self._index_counter] / \
+                                                 self._nb_sample[self._index_counter]
             if plant is not None:
                 # Database Communication
                 self._db_service.execute(INSERT_MOISTURE_LEVEL_FOR_PLANT, parameters=[self._average[self._index_counter], plant.uuid])
