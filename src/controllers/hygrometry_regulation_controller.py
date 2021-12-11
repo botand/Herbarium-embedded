@@ -83,6 +83,7 @@ class HygrometryRegulationController:
         self._valve_service.update()
 
         if time_in_millisecond() - self._previous_read_time > self._interval_update:
+            self._logger.debug("Update Hygrometric !!!")
             self._hygrometric_update(plants)
             self._previous_read_time = time_in_millisecond()
 
