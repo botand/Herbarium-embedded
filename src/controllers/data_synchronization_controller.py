@@ -148,7 +148,7 @@ class DataSynchronizationController:
         new_plant = new_plant[0]
 
         plant = self._api_service.add_plant(
-            new_plant[0], new_plant[1]
+            datetime.fromisoformat(new_plant[0]).strftime('%Y-%m-%dT%H:%M:%S.%fZ'), new_plant[1]
         )
 
         if plant:
