@@ -119,7 +119,9 @@ class ApiService:
         :rtype: boolean
         """
         try:
-            self._logger.debug("Sending request for send_logs")
+            self._logger.debug(
+                f"Sending request for send_logs with {len(sensors_data)} sensors data "
+                f"{len(actuators_data)} actuators data")
             self._request(
                 HTTP_PUT,
                 greenhouse_send_data_url(config["device_uuid"]),
