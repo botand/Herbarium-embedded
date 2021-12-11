@@ -27,6 +27,9 @@ class Plant:
         """Minimum quantity of light in hours for the plant"""
         return self._light_exposure_min_duration
 
+    def __str__(self) -> str:
+        return f'Plant {self.uuid}'
+
     @staticmethod
     def create_from_dict(data):
         """
