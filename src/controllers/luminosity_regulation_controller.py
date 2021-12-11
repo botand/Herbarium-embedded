@@ -58,7 +58,7 @@ class LuminosityRegulationController:
             hour = (now.hour + self._time_zone_offset) + now.minute / 60
             ambient_light = self._adc_instance.get_ambient_luminosity_value()
 
-            self._logger.info("%l H", hour)
+            self._logger.info(hour)
 
             # Regulation for plants
             for i, plant in enumerate(plants):
@@ -70,7 +70,7 @@ class LuminosityRegulationController:
                         value = 0.0
                     elif value >= 100:
                         value = 100.0
-                    # self._led_instance.turn_on(plant.position, value)
+                    self._led_instance.turn_on(plant.position, value)
                 elif self._light_state[i] is True:
                     self._light_state[i] = False
                     self._led_instance.turn_off(i)
@@ -79,7 +79,6 @@ class LuminosityRegulationController:
 
         if (time_in_millisecond() - self._previous_log_db) > self._log_db_interval:
             self._logger.info("second - %d ms", time_in_millisecond() - self._previous_log_db)
-
 
             ambient_light = self._adc_instance.get_ambient_luminosity_value()
             self._db_instance.execute(INSERT_AMBIANT_LIGHT, [ambient_light])
