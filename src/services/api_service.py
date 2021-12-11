@@ -82,7 +82,7 @@ class ApiService:
                     method,
                     endpoint,
                     answer.status_code,
-                    answer.json(),
+                    answer.json() if answer.text else "No body"
                 )
                 raise HttpError(answer.status_code)
 
@@ -91,7 +91,7 @@ class ApiService:
                 method,
                 endpoint,
                 answer.status_code,
-                answer.json(),
+                answer.json() if answer.text else "No body",
             )
             if answer.status_code != 202:
                 try:
