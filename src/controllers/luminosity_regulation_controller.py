@@ -37,6 +37,7 @@ class LuminosityRegulationController:
         self._time_range_center = lum_config[_TIME_RANGE_CENTER]
         self._previous_time = 0
         self.time = 0
+        self._light_state = [False]*16
         self._logger.debug("initialized")
 
     def update(self, plants):
@@ -70,7 +71,6 @@ class LuminosityRegulationController:
                     self._led_instance.turn_off(i)
                     self._logger.info("Turn OFF Tile %d Lightning", i)
 
-
     def _is_on(self, plant, hour):
         """
         Detect if we need to turn on the lightning
@@ -85,8 +85,11 @@ class LuminosityRegulationController:
                       self._time_range_center + plant.light_exposure_min_duration / 2)
 
         # if we are in the time range, turn on the lighting.
-        if time_range[0] <= hour <= time_range[1]:
+        if time_range[0] <= hour <= time_range[1] and not self._light_state[plant.position]:
             self._db_instance.execute(INSERT_LIGHT_STRIP_ORDER, parameters=[1, plant.uuid])
+            self._light_state[plant.position] = True
             return True
-        self._db_instance.execute(INSERT_LIGHT_STRIP_ORDER, parameters=[0, plant.uuid])
+        if self._light_state[plant.position]:
+            self._db_instance.execute(INSERT_LIGHT_STRIP_ORDER, parameters=[0, plant.uuid])
+            self._light_state[plant.position] = False
         return False
