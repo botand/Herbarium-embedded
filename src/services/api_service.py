@@ -91,7 +91,7 @@ class ApiService:
             answer.status_code,
             answer.json(),
         )
-        if answer.text:
+        if answer.status_code != 202:
             try:
                 return answer.json()
             except ValueError as e:
