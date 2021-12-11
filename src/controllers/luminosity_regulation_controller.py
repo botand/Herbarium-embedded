@@ -51,11 +51,14 @@ class LuminosityRegulationController:
         :type plants: list
         """
         if (time_in_millisecond() - self._previous_time) > self._update_time:
-            self._logger.info("first - %d ms", time_in_millisecond() - self._previous_time)
 
             # What time is it ?
             now = datetime.utcnow()
             hour = (now.hour + self._time_zone_offset) + now.minute / 60
+            if hour < 0:
+                hour = 24 - hour
+            elif hour > 23:
+                hour = hour - 24
             ambient_light = self._adc_instance.get_ambient_luminosity_value()
 
             self._logger.info(hour)
@@ -78,7 +81,6 @@ class LuminosityRegulationController:
             self._previous_time = time_in_millisecond()
 
         if (time_in_millisecond() - self._previous_log_db) > self._log_db_interval:
-            self._logger.info("second - %d ms", time_in_millisecond() - self._previous_log_db)
 
             ambient_light = self._adc_instance.get_ambient_luminosity_value()
             self._db_instance.execute(INSERT_AMBIANT_LIGHT, [ambient_light])
