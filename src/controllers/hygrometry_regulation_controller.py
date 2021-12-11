@@ -106,7 +106,7 @@ class HygrometryRegulationController:
 
         if (difference_avg >= self._delta_detection) and (difference_last_read <= self._delta_detection):
 
-            self._logger.info("Detection !!!")
+            self._logger.info(f"Detection !!! hygro_val : {hygro_val}% - AVG : {self._average[self._index_counter]}%")
             # If it was an adding
             if (hygro_val > self._average[self._index_counter]) and plant is None:
                 # Add to DB
