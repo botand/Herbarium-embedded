@@ -86,7 +86,7 @@ class ADCService:
         Considering the 0% is 40 lux and 100% is 1000 lux.
         """
         value = self._ambient_luminosity_channel.voltage
-        value = 5.08e-9 * exp(8.07 * value)
+        value = 3.53e-11 * exp(9.64 * value)
         self._logger.debug(
             f"Amb. Lum. : {value} %"
         )
