@@ -48,6 +48,8 @@ class DatabaseService:
         :return the results of the query
         :rtype: list
         """
+        if parameters is None:
+            parameters = []
         self._lock.acquire()
         self._logger.debug(
             "Executing query: '%s' with params %s.", query, str(parameters)
