@@ -154,7 +154,7 @@ class DataSynchronizationController:
 
         if plant_uuid is not None:
             self._db_service.execute(
-                UPDATE_PLANT_TRANSMITTED,
+                UPDATE_PLANT_UUID,
                 [
                     plant_uuid,
                     new_plant[1]
