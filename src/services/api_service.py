@@ -140,8 +140,6 @@ class ApiService:
         :rtype: Plant
         """
         try:
-            self._logger.warning(planted_at)
-            self._logger.warning(position)
             result = self._request(
                 HTTP_PUT,
                 greenhouse_notify_added_plant_url(config["device_uuid"]),

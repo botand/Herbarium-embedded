@@ -16,15 +16,13 @@ def greenhouse_send_data_url(uuid):
     return f"/greenhouse/{uuid}/logs"
 
 
-def greenhouse_notify_added_plant_url(uuid, position):
+def greenhouse_notify_added_plant_url(uuid):
     """
     Build the URL to notify the API about a new plant.
     :param uuid Universal unique identifier of the greenhouse
     :type uuid str
-    :param position of the plant in the greenhouse
-    :type position int
     """
-    return f"/greenhouse/{uuid}/plant/{position}"
+    return f"/greenhouse/{uuid}/plant"
 
 
 def greenhouse_remove_plant_url(uuid):
