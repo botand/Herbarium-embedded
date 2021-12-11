@@ -147,18 +147,16 @@ class DataSynchronizationController:
             return
         new_plant = new_plant[0]
 
-        plant = self._api_service.add_plant(
+        plant_uuid = self._api_service.add_plant(
             datetime.fromisoformat(new_plant[0]).strftime('%Y-%m-%dT%H:%M:%S.%fZ'), new_plant[1]
         )
 
-        if plant:
+        if plant_uuid:
             self._db_service.execute(
                 UPDATE_PLANT,
                 [
-                    plant.uuid,
-                    plant.moisture_goal,
-                    plant.light_exposure_min_duration,
-                    plant.position,
+                    plant_uuid,
+                    new_plant[1]
                 ],
             )
             self._logger.info("Plant successfully transmitted.")
