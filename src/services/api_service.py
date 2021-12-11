@@ -75,32 +75,32 @@ class ApiService:
                 timeout=5,
             )
             self._logger.warn("here")
-        except Exception as e:
-            self._logger.error("Request: %s %s - error: %s", method, endpoint, str(e))
-            raise HttpError(-1)
 
-        if answer.status_code >= 400:
-            self._logger.error(
+            if answer.status_code >= 400:
+                self._logger.error(
+                    "Request: %s %s - Response: %d %s",
+                    method,
+                    endpoint,
+                    answer.status_code,
+                    answer.json(),
+                )
+                raise HttpError(answer.status_code)
+
+            self._logger.warn(
                 "Request: %s %s - Response: %d %s",
                 method,
                 endpoint,
                 answer.status_code,
                 answer.json(),
             )
-            raise HttpError(answer.status_code)
-
-        self._logger.warn(
-            "Request: %s %s - Response: %d %s",
-            method,
-            endpoint,
-            answer.status_code,
-            answer.json(),
-        )
-        if answer.status_code != 202:
-            try:
-                return answer.json()
-            except Exception as e:
-                self._logger.error("Request %s %s body invalid JSON", method, endpoint)
+            if answer.status_code != 202:
+                try:
+                    return answer.json()
+                except Exception as e:
+                    self._logger.error("Request %s %s body invalid JSON", method, endpoint)
+        except Exception as e:
+            self._logger.error("Request: %s %s - error: %s", method, endpoint, str(e))
+            raise HttpError(-1)
         return None
 
     def get_greenhouse(self):
