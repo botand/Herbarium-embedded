@@ -225,7 +225,7 @@ class HygrometryRegulationController:
                 self._empty_water_status = True
                 self._status_indicator_service.remove_status(self._low_water_status_pattern)
                 self._status_indicator_service.add_status(self._empty_water_status_pattern)
-            elif self._water_lvl <= 20:
+            elif self._water_lvl <= 20 and not self._empty_water_status:
                 self._status_indicator_service.add_status(self._low_water_status_pattern)
             elif self._water_lvl >= 25:
                 if self._empty_water_status:
