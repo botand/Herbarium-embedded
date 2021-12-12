@@ -235,12 +235,14 @@ class HygrometryRegulationController:
                 self._status_indicator_service.remove_status(self._empty_water_status_pattern)
                 self._status_indicator_service.remove_status(self._low_water_status_pattern)
 
-            if self._water_lvl >= 90 and not self._high_water_status:
+            if self._water_lvl >= 100 and not self._high_water_status:
                 self._logger.warning(f"High Level Reach")
                 self._high_water_status = True
                 self._status_indicator_service.add_status(self._high_water_status_pattern)
                 self._previous_time_high_water = time_in_millisecond()
 
+            if self._water_lvl <= 90 and self._high_water_status:
+                self._high_water_status = False
+
         if self._high_water_status and ((time_in_millisecond() - self._previous_time_high_water) > self._high_level_alarm_duration):
             self._status_indicator_service.remove_status(self._high_water_status_pattern)
-            self._high_water_status = False
