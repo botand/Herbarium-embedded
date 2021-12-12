@@ -160,9 +160,9 @@ class DataSynchronizationController:
                         new_plant[1]
                     ],
                 )
-                self._logger.info("Plant at positions %d successfully transmitted.", new_plant[0])
+                self._logger.info("Plant at positions %d successfully transmitted.", new_plant[1])
             else:
-                self._logger.info("Plant at position %d unsuccessfully transmitted.", new_plant[0])
+                self._logger.info("Plant at position %d unsuccessfully transmitted.", new_plant[1])
 
     def _notify_removed_plant(self):
         """Notify the API about the plants that was removed"""
