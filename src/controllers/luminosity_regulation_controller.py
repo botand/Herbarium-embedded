@@ -69,6 +69,7 @@ class LuminosityRegulationController:
                         value = 100.0
                     self._led_instance.turn_on(plant.position, value)
                 elif self._light_state[i] is True:
+                    self._logger.info("Turn OFF Tile %d", i)
                     self._light_state[i] = False
                     self._led_instance.turn_off(i)
 
@@ -80,8 +81,6 @@ class LuminosityRegulationController:
             self._db_instance.execute(INSERT_AMBIANT_LIGHT, [ambient_light])
             self._previous_log_db = time_in_millisecond()
 
-
-
     def _is_on(self, plant, hour):
         """
         Detect if we need to turn on the lightning
@@ -90,7 +89,6 @@ class LuminosityRegulationController:
         :return true if we need to turn on the lights
         :rtype bool
         """
-
         # Distribute the exposure time around 14h to create the time range
         time_range = (self._time_range_center - plant.light_exposure_min_duration / 2,
                       self._time_range_center + plant.light_exposure_min_duration / 2)
