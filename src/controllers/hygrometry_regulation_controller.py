@@ -165,6 +165,11 @@ class HygrometryRegulationController:
         if self._nb_sample[self._index_counter] == self._max_sample_regulation:
             self._average[self._index_counter] = self._cummulative[self._index_counter] / \
                                                  self._nb_sample[self._index_counter]
+            if self._average[self._index_counter] < 0:
+                self._average[self._index_counter] = 0.0
+            elif self._average[self._index_counter] > 100:
+                self._average[self._index_counter] = 100.0
+
             if plant is not None:
                 # Database Communication
                 self._db_service.execute(INSERT_MOISTURE_LEVEL_FOR_PLANT,
