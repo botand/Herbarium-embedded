@@ -94,7 +94,7 @@ class LuminosityRegulationController:
                       self._time_range_center + plant.light_exposure_min_duration / 2)
 
         # if we are in the time range, turn on the lighting.
-        if time_range[0] <= hour <= time_range[1]:
+        if time_range[0] <= hour < time_range[1]:
             if not self._light_state[plant.position]:
                 self._db_instance.execute(INSERT_LIGHT_STRIP_ORDER, parameters=[1, plant.uuid])
                 self._light_state[plant.position] = True
