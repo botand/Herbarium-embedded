@@ -53,9 +53,9 @@ class InternetConnectionController:
 
         # Check if already connected.
         if self._internet_connection_service.check_wifi() is False:
-            self._logger.debug("Not connected to wifi. Searching for wifi credentials")
+            self._logger.info("Not connected to wifi. Searching for wifi credentials")
             if os.path.isfile(_WIFI_CREDENTIALS_FILE_PATH) is True:
-                self._logger.debug("Wifi credentials found.")
+                self._logger.info("Wifi credentials found.")
                 with open(_WIFI_CREDENTIALS_FILE_PATH, "r") as file:
                     credentials = yaml.safe_load(file)
                     self.connect_to_wifi(
@@ -73,7 +73,7 @@ class InternetConnectionController:
             # Check connection status
             connection_is_healthy = self._internet_connection_service.check_connection()
 
-            if connection_is_healthy != self._connection_is_healthy:
+            if connection_is_healthy != self._connection_is_healthy or connection_is_healthy is False:
                 self._logger.info(
                     "Connection is %s",
                     "healthy" if connection_is_healthy is True else "unhealthy",
@@ -114,6 +114,8 @@ class InternetConnectionController:
                 with open(_WIFI_CREDENTIALS_FILE_PATH, "w") as file:
                     file.write(yaml.dump({"ssid": ssid, "psk": password}))
                     file.close()
+        else:
+            self._logger.warn("Connection to %s is failed", ssid)
 
     def stop(self):
         """Discard the controller"""
