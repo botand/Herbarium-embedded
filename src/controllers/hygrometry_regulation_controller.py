@@ -78,7 +78,7 @@ class HygrometryRegulationController:
 
         # Water Level
         self._water_lvl = 0
-        self._empty_water_status = True
+        self._empty_water_status = False
         self._high_water_status = False
         self._previous_water_db_update = 0
         self._previous_time_high_water = 0
