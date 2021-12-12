@@ -30,7 +30,7 @@ plants_loading: 30000 # ms -> 30 sec
 hygrometry:
   delta_detection: 8 # % delta use for detecting the adding or the removing of a plant
   interval_update: 50 # ms
-  max_sample_before_regulation: 375 # use or execute the regulation after a defined number of sample (375*16*interval_update = 5min)
+  max_sample_before_regulation: 75 # use or execute the regulation after a defined number of sample (375*16*interval_update = 5min)
   shot_duration: 10000 # ms
   pump_speed: 75 # %
   high_level_alarm_duration: 10000 # ms
