@@ -26,7 +26,7 @@ ble:
       uuid: 'ddb4c99c-d127-4314-bb6f-597c4cb1859d'
       descriptors:
 plant_count: 16
-plants_loading: 25000 # ms -> 25 sec
+plants_loading: 30000 # ms -> 25 sec
 hygrometry:
   delta_detection: 8 # % delta use for detecting the adding or the removing of a plant
   interval_update: 50 # ms
@@ -74,7 +74,7 @@ data_synchronization_task:
     interval: 60 # update every minute
     delay: 120 # wait 1 min before the first call
   update_data:
-    interval: 20 # update every 20s
+    interval: 25 # update every 20s
     delay: 0
   check_new_plant:
     interval: 15 # check every 15 seconds
