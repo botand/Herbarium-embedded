@@ -218,7 +218,7 @@ class HygrometryRegulationController:
         self._water_lvl = self._adc_service.get_water_level_value()
         if (time_in_millisecond() - self._previous_water_db_update) > self._interval_update*100:
             self._db_service.execute(INSERT_TANK_LEVEL, parameters=[self._water_lvl])
-            self._logger.warning(f"Water Level : {self._water_lvl} %")
+            self._logger.info(f"Water Level : {self._water_lvl} %")
             self._previous_water_db_update = time_in_millisecond()
 
         if not self._query_status:
