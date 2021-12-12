@@ -85,7 +85,7 @@ class ApiService:
             )
             raise HttpError(answer.status_code)
 
-        self._logger.warn(
+        self._logger.debug(
             "Request: %s %s - Response: %d %s",
             method,
             endpoint,
