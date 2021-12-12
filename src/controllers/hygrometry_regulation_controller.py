@@ -149,7 +149,9 @@ class HygrometryRegulationController:
                     # Remove from DB
                     self._db_service.execute(REMOVE_PLANT, parameters=[plant.uuid])
                     self._logger.info("Plant (%s) removal detected", plant.uuid)
-                    self._shot_query_queue.remove(plant.position)
+
+                    if plant.position in self._shot_query_queue:
+                        self._shot_query_queue.remove(plant.position)
 
             # Redo the cumulative for a new average value
             self._cummulative[self._index_counter] = self._last_read[self._index_counter]
