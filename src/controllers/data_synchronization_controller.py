@@ -211,7 +211,6 @@ class DataSynchronizationController:
         self._db_service.execute(DELETE_SENSORS_TRANSMITTED)
         self._db_service.execute(DELETE_ACTUATORS_TRANSMITTED)
         if len(uuids) > 0:
-            self._logger.info(DELETE_PLANT_NOT_IN_UUID_LIST.replace("?", '","'.join(uuids)))
             self._db_service.execute(DELETE_PLANT_NOT_IN_UUID_LIST.replace("?", '","'.join(uuids)))
 
         self._logger.info("Gathering plants data from the API was successfully.")
