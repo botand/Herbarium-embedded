@@ -23,11 +23,11 @@ class Plant:
         return self._moisture_goal
 
     @property
-    def light_exposure_min_duration(self):
+    def light_exposure_min_duration(self) -> float:
         """Minimum quantity of light in hours for the plant"""
         return self._light_exposure_min_duration
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         return f'Plant {self.uuid}'
 
     @staticmethod
