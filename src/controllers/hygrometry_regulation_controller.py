@@ -78,7 +78,7 @@ class HygrometryRegulationController:
 
         # Water Level
         self._water_lvl = 0
-        self._low_water_status = True
+        self._empty_water_status = True
         self._high_water_status = False
         self._previous_water_db_update = 0
         self._previous_time_high_water = 0
@@ -193,7 +193,7 @@ class HygrometryRegulationController:
         :type plants: list of Plant
         """
 
-        if len(self._shot_query_queue) > 0 and not self._low_water_status:
+        if len(self._shot_query_queue) > 0 and not self._empty_water_status:
             if not self._query_status:
                 self._previous_shot_time = time_in_millisecond()
                 self._db_service.execute(INSERT_VALVE_ORDER, parameters=[1, plants[self._shot_query_queue[0]].uuid])
@@ -207,7 +207,7 @@ class HygrometryRegulationController:
                 self._db_service.execute(INSERT_PUMP_ORDER, parameters=[0])
                 self._pump_service.stop()
                 self._query_status = False
-                self._logger.debug(f"{_CONTROLLER_TAG} Shot Done for plant {self._shot_query_queue[0]}")
+                self._logger.debug(f"Shot Done for plant {self._shot_query_queue[0]}")
                 self._shot_query_queue.pop(0)
 
     def _water_level_update(self):
@@ -220,18 +220,21 @@ class HygrometryRegulationController:
             self._db_service.execute(INSERT_TANK_LEVEL, parameters=[self._water_lvl])
 
         if not self._query_status:
-            if self._water_lvl <= 0:
-                self._low_water_status = True
+            if self._water_lvl <= 0 and not self._empty_water_status:
+                self._logger.warning(f"Tank Empty")
+                self._empty_water_status = True
                 self._status_indicator_service.remove_status(self._low_water_status_pattern)
                 self._status_indicator_service.add_status(self._empty_water_status_pattern)
             elif self._water_lvl <= 20:
-                self._low_water_status = True
                 self._status_indicator_service.add_status(self._low_water_status_pattern)
             elif self._water_lvl >= 25:
-                self._low_water_status = False
+                if self._empty_water_status:
+                    self._logger.info(f"Refill")
+                self._empty_water_status = False
                 self._status_indicator_service.remove_status(self._empty_water_status_pattern)
                 self._status_indicator_service.remove_status(self._low_water_status_pattern)
             elif self._water_lvl >= 100 and not self._high_water_status:
+                self._logger.warning(f"High Level Reach")
                 self._high_water_status = True
                 self._status_indicator_service.add_status(self._high_water_status_pattern)
                 self._previous_time_high_water = time_in_millisecond()
