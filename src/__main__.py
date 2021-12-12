@@ -94,10 +94,11 @@ def main():
 
             # Database Update
             if (time_in_millisecond() - previous_plants_loading) > plant_loading_interval:
+                plants = [None] * 16
                 for plant_data in DatabaseService.instance().execute(GET_PLANTS):
-                    print(plant_data)
                     plant = Plant.from_db(plant_data)
                     plants[plant.position] = plant
+                logger.info("Plants loaded: %s", str(plants))
                 status_indicator_service.remove_status(status_pattern)
                 previous_plants_loading = time_in_millisecond()
             logger.debug("ML - Database step took %d ms", time_in_millisecond() - start_time)
