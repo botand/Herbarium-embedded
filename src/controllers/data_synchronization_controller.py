@@ -189,6 +189,7 @@ class DataSynchronizationController:
 
         for plant in plants:
             uuids.append(plant.uuid)
+            self._logger.info("Adding %s", plant.uuid)
             self._db_service.execute(
                 INSERT_OR_IGNORE_PLANT,
                 parameters=[
@@ -207,10 +208,14 @@ class DataSynchronizationController:
                 ],
             )
         # Clear transmitted plant, sensors and actuators values
+        self._logger.info("Deletion of the transmitted removed plant")
         self._db_service.execute(DELETE_PLANT_REMOVED_TRANSMITTED)
+        self._logger.info("Deletion of the transmitted sensors data")
         self._db_service.execute(DELETE_SENSORS_TRANSMITTED)
+        self._logger.info("Deletion of the transmitted actuators data")
         self._db_service.execute(DELETE_ACTUATORS_TRANSMITTED)
         if len(uuids) > 0:
+            self._logger.info("Deletion of the plants that aren't in the API")
             self._db_service.execute(DELETE_PLANT_IN_UUID_LIST.replace("?", '","'.join(uuids)))
 
         self._logger.info("Gathering plants data from the API was successfully.")
