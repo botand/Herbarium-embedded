@@ -96,7 +96,7 @@ class HygrometryRegulationController:
         """
 
         hygro_val = self._adc_service.get_plant_hygrometry_value(self._index_counter)
-        self._logger.info(f"Pot : {self._index_counter} - Val: {hygro_val}% - Plant : {plant}")
+        self._logger.debug(f"Pot : {self._index_counter} - Val: {hygro_val}% - Plant : {plant}")
 
         # Si on a détecté une diférence d'hygrométrie spontannée on conjuge avec la dernière mesure
         # pour confirmer ce changement et détecter l'ajout ou le retrait d'un pot.
@@ -106,17 +106,18 @@ class HygrometryRegulationController:
 
         if (difference_avg >= self._delta_detection) and (difference_last_read <= self._delta_detection):
 
-            self._logger.info(f"Detection !!! hygro_val : {hygro_val}% - AVG : {self._average[self._index_counter]}%")
+            self._logger.debug(
+                f"Plant detection - hygro_val : {hygro_val}% - AVG : {self._average[self._index_counter]}%")
             # If it was an adding
             if (hygro_val > self._average[self._index_counter]) and plant is None:
                 # Add to DB
                 self._db_service.execute(INSERT_NEW_PLANT, parameters=[self._index_counter])
-                self._logger.info("Ajout !!!")
+                self._logger.info("New plant at position %d detected", self._index_counter)
             else:
                 if plant is not None:
                     # Remove from DB
                     self._db_service.execute(REMOVE_PLANT, parameters=[plant.uuid])
-                    self._logger.info("Retrait !!!")
+                    self._logger.info("Plant (%s) removal detected", plant.uuid)
 
             # Redo the cumulative for a new average value
             self._cummulative[self._index_counter] = self._last_read[self._index_counter]
@@ -128,15 +129,16 @@ class HygrometryRegulationController:
         self._nb_sample[self._index_counter] += 1
         self._last_read[self._index_counter] = hygro_val
 
-
         # Hygrometric regulation at every MAX SAMPLE BEFORE REGULATION acquisition cycle
         if self._nb_sample[self._index_counter] == self._max_sample_regulation:
-            self._logger.info("Regulation !!!")
             self._average[self._index_counter] = self._cummulative[self._index_counter] / \
                                                  self._nb_sample[self._index_counter]
             if plant is not None:
                 # Database Communication
-                self._db_service.execute(INSERT_MOISTURE_LEVEL_FOR_PLANT, parameters=[self._average[self._index_counter], plant.uuid])
+                self._db_service.execute(INSERT_MOISTURE_LEVEL_FOR_PLANT,
+                                         parameters=[self._average[self._index_counter], plant.uuid])
+                self._logger.info("Registering moisture level %d%% for %s at position %d ",
+                                  self._average[self._index_counter], plant.uuid, plant.position)
                 # Regulation
                 if self._average[self._index_counter] < plant.moisture_goal:
                     self._query_shot(self._index_counter)
@@ -150,7 +152,7 @@ class HygrometryRegulationController:
         :type plant_position: int
         """
         self._shot_query_queue.append(plant_position)
-        self._logger.debug("Shot planned for plant %d", plant_position)
+        self._logger.info("Querying shot for plant at position %d", plant_position)
 
     def _shot_update(self, plants):
         """

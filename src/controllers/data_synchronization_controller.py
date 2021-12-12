@@ -140,46 +140,46 @@ class DataSynchronizationController:
     def _notify_new_plant(self):
         """Notify the API when a new plant is detected"""
         self._logger.info("Start send new plant to the API.")
-        new_plant = self._db_service.execute(GET_UNTRANSMITTED_PLANT)
+        new_plants = self._db_service.execute(GET_UNTRANSMITTED_PLANT)
 
-        if len(new_plant) == 0:
+        if len(new_plants) == 0:
             self._logger.info("There is no plant to transmit.")
             return
-        new_plant = new_plant[0]
+        self._logger.info("There is %d plant to transmit.", len(new_plants))
 
-        plant_uuid = self._api_service.add_plant(
-            datetime.fromisoformat(new_plant[0]).strftime('%Y-%m-%dT%H:%M:%S.%fZ'), new_plant[1]
-        )
-
-        self._logger.warn("UUID RECEIVED %s", plant_uuid)
-
-        if isinstance(plant_uuid, str):
-            self._db_service.execute(
-                UPDATE_PLANT_UUID,
-                [
-                    plant_uuid,
-                    new_plant[1]
-                ],
+        for new_plant in new_plants:
+            plant_uuid = self._api_service.add_plant(
+                datetime.fromisoformat(new_plant[0]).strftime('%Y-%m-%dT%H:%M:%S.%fZ'), new_plant[1]
             )
-            self._logger.info("Plant successfully transmitted.")
-        else:
-            self._logger.info("Plant unsuccessfully transmitted.")
+
+            if isinstance(plant_uuid, str):
+                self._db_service.execute(
+                    UPDATE_PLANT_UUID,
+                    [
+                        plant_uuid,
+                        new_plant[1]
+                    ],
+                )
+                self._logger.info("Plant at positions %d successfully transmitted.", new_plant[0])
+            else:
+                self._logger.info("Plant at position %d unsuccessfully transmitted.", new_plant[0])
 
     def _notify_removed_plant(self):
         """Notify the API about the plants that was removed"""
         self._logger.info("Start send removed plant to the API.")
-        plant = self._db_service.execute(GET_REMOVED_UNTRANSMITTED_PLANT)
+        plants = self._db_service.execute(GET_REMOVED_UNTRANSMITTED_PLANT)
 
-        if len(plant) == 0:
+        if len(plants) == 0:
             self._logger.info("There is no plant removed to transmit.")
             return
-        plant = plant[0]
+        self._logger.info("There is %d plant to transmit.", len(plants))
 
-        if self._api_service.remove_plant(plant[0]):
-            self._db_service.execute(UPDATE_PLANT_TRANSMITTED, [plant[0]])
-            self._logger.info("Removed plant (%s) was successfully transmitted.", plant[0])
-        else:
-            self._logger.info("Removed plant (%s) unsuccessfully transmitted. Will retry next time.", plant[0])
+        for plant in plants:
+            if self._api_service.remove_plant(plant[0]):
+                self._db_service.execute(UPDATE_PLANT_TRANSMITTED, [plant[0]])
+                self._logger.info("Removed plant (%s) was successfully transmitted.", plant[0])
+            else:
+                self._logger.info("Removed plant (%s) unsuccessfully transmitted. Will retry next time.", plant[0])
 
     def _update_local_plants(self):
         """Update the plants data from the API"""
