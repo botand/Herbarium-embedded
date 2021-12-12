@@ -17,7 +17,7 @@ from src.utils import (
     UPDATE_PLANT_LEVELS,
     UPDATE_PLANT_TRANSMITTED,
     time_in_millisecond, INSERT_OR_IGNORE_PLANT, UPDATE_PLANT_UUID, DELETE_PLANT_REMOVED_TRANSMITTED,
-    DELETE_SENSORS_TRANSMITTED, DELETE_ACTUATORS_TRANSMITTED,
+    DELETE_SENSORS_TRANSMITTED, DELETE_ACTUATORS_TRANSMITTED, DELETE_PLANT_IN_UUID_LIST,
 )
 
 _CONTROLLER_TAG = "controllers.DataSynchronizationController"
@@ -78,8 +78,8 @@ class DataSynchronizationController:
         for task in self._tasks:
             time_elapsed = current_time - task["last_update"]
             if (
-                time_elapsed > task["interval"]
-                and self._internet_connection_service.last_connection_check
+                    time_elapsed > task["interval"]
+                    and self._internet_connection_service.last_connection_check
             ):
                 self._executor.submit(task["function"])
                 task["last_update"] = current_time
@@ -185,8 +185,10 @@ class DataSynchronizationController:
         """Update the plants data from the API"""
         self._logger.info("Start gathering plants data from the API.")
         plants = self._api_service.get_greenhouse()
+        uuids = []
 
         for plant in plants:
+            uuids.append(plant.uuid)
             self._db_service.execute(
                 INSERT_OR_IGNORE_PLANT,
                 parameters=[
@@ -204,10 +206,12 @@ class DataSynchronizationController:
                     plant.uuid,
                 ],
             )
-            # Clear transmitted plant, sensors and actuators values
-            self._db_service.execute(DELETE_PLANT_REMOVED_TRANSMITTED)
-            self._db_service.execute(DELETE_SENSORS_TRANSMITTED)
-            self._db_service.execute(DELETE_ACTUATORS_TRANSMITTED)
+        # Clear transmitted plant, sensors and actuators values
+        self._db_service.execute(DELETE_PLANT_REMOVED_TRANSMITTED)
+        self._db_service.execute(DELETE_SENSORS_TRANSMITTED)
+        self._db_service.execute(DELETE_ACTUATORS_TRANSMITTED)
+        self._db_service.execute(DELETE_PLANT_IN_UUID_LIST.replace("?", '","'.join(uuids)))
+
         self._logger.info("Gathering plants data from the API was successfully.")
 
     def stop(self):
