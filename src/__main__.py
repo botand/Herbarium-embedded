@@ -71,6 +71,7 @@ def main():
         logger.debug("Initializing - Main Loop")
 
         plants = [None] * 16
+        plants_loaded = False
         plant_loading_interval = config["plants_loading"]
         # We want the first loading of the plant being delayed of 30s so the API can populate the database
         previous_plants_loading = time_in_millisecond() - plant_loading_interval + 30000
@@ -101,8 +102,12 @@ def main():
                 logger.info("Plants loaded: %s", str(plants))
                 status_indicator_service.remove_status(status_pattern)
                 previous_plants_loading = time_in_millisecond()
+                plants_loaded = True
             logger.debug("ML - Database step took %d ms", time_in_millisecond() - start_time)
             start_time = time_in_millisecond()
+
+            if not plants_loaded:
+                continue
 
             # Luminosity Regulation
             luminosity_regulation_controller.update(plants)
