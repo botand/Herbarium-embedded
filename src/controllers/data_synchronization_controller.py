@@ -17,7 +17,7 @@ from src.utils import (
     UPDATE_PLANT_LEVELS,
     UPDATE_PLANT_TRANSMITTED,
     time_in_millisecond, INSERT_OR_IGNORE_PLANT, UPDATE_PLANT_UUID, DELETE_PLANT_REMOVED_TRANSMITTED,
-    DELETE_SENSORS_TRANSMITTED, DELETE_ACTUATORS_TRANSMITTED, DELETE_PLANT_IN_UUID_LIST,
+    DELETE_SENSORS_TRANSMITTED, DELETE_ACTUATORS_TRANSMITTED, DELETE_PLANT_NOT_IN_UUID_LIST,
 )
 
 _CONTROLLER_TAG = "controllers.DataSynchronizationController"
@@ -216,8 +216,8 @@ class DataSynchronizationController:
         self._db_service.execute(DELETE_ACTUATORS_TRANSMITTED)
         if len(uuids) > 0:
             self._logger.info("Deletion of the plants that aren't in the API")
-            self._logger.info(DELETE_PLANT_IN_UUID_LIST.replace("?", '","'.join(uuids)))
-            self._db_service.execute(DELETE_PLANT_IN_UUID_LIST.replace("?", '","'.join(uuids)))
+            self._logger.info(DELETE_PLANT_NOT_IN_UUID_LIST.replace("?", '","'.join(uuids)))
+            self._db_service.execute(DELETE_PLANT_NOT_IN_UUID_LIST.replace("?", '","'.join(uuids)))
 
         self._logger.info("Gathering plants data from the API was successfully.")
 
