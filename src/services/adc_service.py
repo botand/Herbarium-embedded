@@ -61,13 +61,13 @@ class ADCService:
         Get water level in percentage
         :return: water level [0-100]
         :rtype float
-        In the report we have indicate the water level expression.
-        Considering the 0% is 200mL lux and 100% is 1000 mL.
+        In the report we have indicated the water level expression.
+        Considering the 0% is 200mL and 100% is 1000 mL.
         The absolute minimum is -5% (160mL) and maximum absolute is 120% (1150mL).
         We use a double conversion. First in order to get the water volume.
-        Since we use a power serie, it is impossible to have negative number.
-        Also the minimum is 200mL but its not the absolute minimum. 
-        In that way we can technicaly go below 0% and conserve a better R^2 in the expression.
+        Since we use a power series, it is impossible to have negative number.
+        Also the minimum is 200mL but it's not the absolute minimum.
+        In that way we can technically go below 0% and conserve a better R^2 in the expression.
         """
         value = self._water_level_channel.voltage
         value = 3469 * value ** -2.91

@@ -33,6 +33,7 @@ hygrometry:
   max_sample_before_regulation: 7 # use or execute the regulation after a defined number of sample (120*interval_update = 60sec)
   shot_duration: 3000 # ms
   pump_speed: 75 # %
+  high_level_alarm_duration: 10000 # ms
 luminosity:
   interval_update: 50 # ms
   time_range_center: 14 #h

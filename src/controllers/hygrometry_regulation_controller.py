@@ -1,19 +1,20 @@
 """HygrometryRegulationController"""
+from src.models import StatusPattern
 from src.services import (
     ADCService,
     DatabaseService,
     PumpService,
-    ValveService
+    ValveService, StatusIndicatorService
 )
 from src.utils.configuration import config
 from src.utils import (
     get_logger,
-    time_in_millisecond,
+    time_in_millisecond, led_utils,
 )
 from src.utils.sql_queries import (
     INSERT_MOISTURE_LEVEL_FOR_PLANT,
     INSERT_NEW_PLANT,
-    REMOVE_PLANT, INSERT_VALVE_ORDER, INSERT_PUMP_ORDER
+    REMOVE_PLANT, INSERT_VALVE_ORDER, INSERT_PUMP_ORDER, INSERT_TANK_LEVEL
 )
 
 _CONTROLLER_TAG = "controllers.HygromertyRegulationController"
@@ -28,6 +29,7 @@ _MAX_SAMPLE_REGULATION = "max_sample_before_regulation"
 # For water shot Attribution
 _SHOT_DURATION = "shot_duration"
 _PUMP_SPEED = "pump_speed"
+_HIGH_LEVEL_ALARM_DURATION = "high_level_alarm_duration"
 
 
 class HygrometryRegulationController:
@@ -38,6 +40,25 @@ class HygrometryRegulationController:
     _valve_service = ValveService.instance()
     _pump_service = PumpService.instance()
     _db_service = DatabaseService.instance()
+    _status_indicator_service = StatusIndicatorService.instance()
+    _empty_water_status_pattern = StatusPattern(
+        "low_water_pattern",
+        led_utils.COLOR_BLUE,
+        led_utils.BLINKING_ANIMATION,
+        0.3,
+    )
+    _low_water_status_pattern = StatusPattern(
+        "low_water_pattern",
+        led_utils.COLOR_BLUE,
+        led_utils.BREATHING_ANIMATION,
+        0.3,
+    )
+    _high_water_status_pattern = StatusPattern(
+        "low_water_pattern",
+        led_utils.COLOR_RED,
+        led_utils.BLINKING_ANIMATION,
+        0.3,
+    )
 
     def __init__(self):
         """Initialize the Controller"""
@@ -54,6 +75,14 @@ class HygrometryRegulationController:
         self._max_sample_regulation = hygro_config[_MAX_SAMPLE_REGULATION]
         self._previous_read_time = 0
         self._index_counter = 0
+
+        # Water Level
+        self._water_lvl = 0
+        self._low_water_status = True
+        self._high_water_status = False
+        self._previous_water_db_update = 0
+        self._previous_time_high_water = 0
+        self._high_level_alarm_duration = hygro_config[_HIGH_LEVEL_ALARM_DURATION]
 
         # water Shot
         self._shot_duration = hygro_config[_SHOT_DURATION]
@@ -74,12 +103,14 @@ class HygrometryRegulationController:
     def update(self, plants):
         """
         Execute the following updates:
+        - Check for Water Level
         - Check for add or removed plants
         - Check for Hygrometry
         - Give some water shots for hygrometry regulation
         :param plants: plant list - 16 elements by ASC position
         :type plants: list of Plant
         """
+        self._water_level_update()
         self._shot_update(plants)
         self._valve_service.update()
 
@@ -123,7 +154,7 @@ class HygrometryRegulationController:
             self._cummulative[self._index_counter] = self._last_read[self._index_counter]
             self._nb_sample[self._index_counter] = 1
             self._average[self._index_counter] = self._cummulative[self._index_counter] / \
-                                                 self._nb_sample[self._index_counter]
+                self._nb_sample[self._index_counter]
 
         self._cummulative[self._index_counter] += hygro_val
         self._nb_sample[self._index_counter] += 1
@@ -161,7 +192,8 @@ class HygrometryRegulationController:
         :param plants: plant list - 16 elements by ASC position, but it doesn't matter
         :type plants: list of Plant
         """
-        if len(self._shot_query_queue) > 0:
+
+        if len(self._shot_query_queue) > 0 and not self._low_water_status:
             if not self._query_status:
                 self._previous_shot_time = time_in_millisecond()
                 self._db_service.execute(INSERT_VALVE_ORDER, parameters=[1, plants[self._shot_query_queue[0]].uuid])
@@ -177,3 +209,32 @@ class HygrometryRegulationController:
                 self._query_status = False
                 self._logger.debug(f"{_CONTROLLER_TAG} Shot Done for plant {self._shot_query_queue[0]}")
                 self._shot_query_queue.pop(0)
+
+    def _water_level_update(self):
+        """
+        Check the water Level, block the shot if low water level and update the ring led for different states.
+        """
+        self._water_lvl = self._adc_service.get_water_level_value()
+        if (time_in_millisecond() - self._previous_water_db_update) > self._interval_update*100:
+            self._db_service.execute(INSERT_TANK_LEVEL, parameters=[self._water_lvl])
+
+        if not self._query_status:
+            if self._water_lvl <= 0:
+                self._low_water_status = True
+                self._status_indicator_service.remove_status(self._low_water_status_pattern)
+                self._status_indicator_service.add_status(self._empty_water_status_pattern)
+            elif self._water_lvl <= 20:
+                self._low_water_status = True
+                self._status_indicator_service.add_status(self._low_water_status_pattern)
+            elif self._water_lvl >= 25:
+                self._low_water_status = False
+                self._status_indicator_service.remove_status(self._empty_water_status_pattern)
+                self._status_indicator_service.remove_status(self._low_water_status_pattern)
+            elif self._water_lvl >= 100 and not self._high_water_status:
+                self._high_water_status = True
+                self._status_indicator_service.add_status(self._high_water_status_pattern)
+                self._previous_time_high_water = time_in_millisecond()
+
+        if self._high_water_status and ((time_in_millisecond() - self._previous_time_high_water) > self._high_level_alarm_duration):
+            self._status_indicator_service.remove_status(self._high_water_status_pattern)
+            self._high_water_status = False
