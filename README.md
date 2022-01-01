@@ -1,17 +1,18 @@
-# Herbarium-embedded
+# Herbarium - Embedded software
 
-Embedded software of Herbarium
+Herbarium is a semi-autonomous greenhouse that can help people growing plants in their house. 
 
-## What is it?
-
-Herbarium is a semi-autonomous greenhouse that can help people growing plants in their house while proposing recipe to
-consume their in-house production.
-
-This is an end of study project realized by three student of the [ÉTS](etsmtl.ca):
+This is an end of study project realized by three student of the ÉTS:
 
 - Charles Chaumienne (electrical engineering)
 - Youssef Hammami (software engineering)
 - [Xavier Chrétien (software engineering)](https://github.com/apomalyn).
+
+This project is divided in three (3) parts:
+
+- Embedded software (this repository)
+- [API REST](https://github.com/botand/herbarium-api)
+- [Mobile application](https://github.com/botand/herbarium-mobile) 
 
 ## Code
 
